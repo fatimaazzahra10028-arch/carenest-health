@@ -1,9 +1,19 @@
 @import "tailwindcss";
 
-/* Tambahkan font custom jika ingin lebih mirip desain */
-@layer base {
-  body {
-    @apply bg-[#F9FAF7] text-slate-900 antialiased;
-    font-family: 'Inter', sans-serif;
-  }
+@theme {
+  --color-primary: #7DA2C3;
+  --color-secondary: #A8E6CF;
+  --color-accent: #FFD3B6;
+  --color-bg: #F8FAFC;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--color-bg);
+  @apply text-slate-700 antialiased;
+}
+
+h1, h2, h3, .font-kids {
+  font-family: 'Quicksand', sans-serif;
+  @apply font-bold;
 }
