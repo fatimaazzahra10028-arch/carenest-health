@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Baby, OrangeSlice, Footprints, Shapes, Backpack, Books, Clock, ArrowRight } from '@phosphor-icons/react';
 
 const categories = [
-  // Warna menggunakan kombinasi opacity dari primary agar selaras
   { id: 'neonatal', age: 'Neonatal', range: '0–28 Hari', icon: <Baby size={32} weight="duotone" />, color: 'bg-primary/10', iconColor: 'text-primary' },
   { id: 'bayi', age: 'Bayi', range: '0–11 Bulan', icon: <OrangeSlice size={32} weight="duotone" />, color: 'bg-secondary/20', iconColor: 'text-green-600' },
   { id: 'batita', age: 'Batita', range: '1–3 Tahun', icon: <Footprints size={32} weight="duotone" />, color: 'bg-accent/20', iconColor: 'text-orange-400' },
@@ -19,7 +18,15 @@ const allArticles = [
     title: "Perawatan Tali Pusar Bayi Baru Lahir", 
     author: "dr. Siska", 
     date: "2 Jam lalu", 
-    img: "https://images.unsplash.com/photo-1566004100631-35d015d6a491?q=80&w=200&auto=format&fit=crop" 
+    img: "https://images.unsplash.com/photo-1566004100631-35d015d6a491?q=80&w=200&auto=format&fit=crop",
+    desc: "Tali pusar bayi baru lahir memerlukan perawatan khusus agar tetap kering dan terhindar dari infeksi. Moms tidak perlu panik jika melihat tali pusar belum lepas, kuncinya adalah menjaga kebersihan dan sirkulasi udara yang baik di area perut si kecil.",
+    steps: [
+      "Cuci tangan dengan sabun sebelum menyentuh area pusar bayi.",
+      "Bersihkan pangkal tali pusar dengan air matang jika terkena kotoran/urin.",
+      "Keringkan dengan kasa steril atau biarkan terkena udara hingga benar-benar kering.",
+      "Lipat popok di bawah tali pusar agar tidak tertutup dan lembap.",
+      "Hindari penggunaan bedak, minyak, atau ramuan tradisional pada tali pusar."
+    ]
   },
   { 
     id: 2, 
@@ -27,7 +34,15 @@ const allArticles = [
     title: "Jadwal MPASI Pertama: Menu 4 Bintang", 
     author: "Akil Girtzi, S.Gz", 
     date: "1 hari lalu", 
-    img: "🥣" 
+    img: "🥣",
+    desc: "Memasuki usia 6 bulan, kebutuhan nutrisi bayi meningkat dan tidak lagi cukup hanya dari ASI. Menu 4 Bintang adalah standar pemberian MPASI yang mengandung gizi lengkap untuk mendukung pertumbuhan otak dan fisik si kecil.",
+    steps: [
+      "Karbohidrat: Gunakan beras putih, beras merah, ubi, atau kentang.",
+      "Protein Hewani: Prioritaskan hati ayam, daging sapi, atau telur untuk zat besi.",
+      "Protein Nabati: Tambahkan tempe, tahu, atau kacang-kacangan.",
+      "Sayuran: Masukkan wortel, bayam, atau labu siam sebagai sumber serat.",
+      "Tekstur: Mulai dengan tekstur bubur saring (puree) yang halus."
+    ]
   },
   { 
     id: 3, 
@@ -35,7 +50,15 @@ const allArticles = [
     title: "Anak Pilih-pilih Makanan? Ini Solusinya", 
     author: "dr. Budi", 
     date: "3 hari lalu", 
-    img: "🥦" 
+    img: "🥦",
+    desc: "Fase 'Picky Eater' sangat umum pada usia batita karena mereka mulai menunjukkan kemandirian. Tugas Moms adalah tetap menyediakan pilihan makanan bergizi tanpa harus ada drama di meja makan.",
+    steps: [
+      "Jangan memaksa atau mengancam anak agar mau makan.",
+      "Sajikan makanan dalam porsi kecil namun sering.",
+      "Variasikan bentuk potongan sayur atau buah agar menarik secara visual.",
+      "Jadwalkan makan bersama keluarga agar anak bisa meniru kebiasaan makan Moms.",
+      "Kenalkan satu jenis makanan baru secara perlahan berdampingan dengan makanan favoritnya."
+    ]
   },
   { 
     id: 4, 
@@ -43,7 +66,15 @@ const allArticles = [
     title: "Bayi Sering Kuning? Kenali Penyebabnya", 
     author: "dr. Siska", 
     date: "5 hari lalu", 
-    img: "🌞" 
+    img: "🌞",
+    desc: "Kuning pada bayi baru lahir biasanya disebabkan oleh kadar bilirubin yang tinggi. Meski sebagian besar bersifat normal (fisiologis), Moms harus tetap waspada dan mengenali tanda-tanda kapan kondisi ini berbahaya.",
+    steps: [
+      "Berikan ASI sesering mungkin (8-12 kali sehari) untuk membantu pembuangan bilirubin.",
+      "Amati warna kuning di bawah cahaya matahari yang terang.",
+      "Jemur bayi di pagi hari sekitar pukul 7.30 - 8.30 selama 10-15 menit.",
+      "Segera bawa ke dokter jika kuning menyebar hingga ke lengan atau kaki bayi.",
+      "Pastikan bayi tetap aktif dan tidak terlihat terlalu lemas."
+    ]
   },
   { 
     id: 5, 
@@ -51,13 +82,20 @@ const allArticles = [
     title: "Aktivitas Motorik Kasar di Rumah", 
     author: "dr. Sari", 
     date: "6 hari lalu", 
-    img: "🏃" 
+    img: "🏃",
+    desc: "Melatih motorik kasar membantu balita mengontrol gerakan tubuh, keseimbangan, dan koordinasi. Moms tidak butuh alat mahal, cukup gunakan barang yang ada di rumah untuk bermain sambil belajar.",
+    steps: [
+      "Permainan Jalur Selotip: Buat garis lurus atau zig-zag di lantai dan minta anak berjalan di atasnya.",
+      "Lompat Pulau: Gunakan bantal kecil sebagai 'pulau' yang harus dilompati anak.",
+      "Lempar Bola: Gunakan keranjang pakaian dan bola plastik untuk melatih akurasi.",
+      "Berjoget Bebas: Putar musik dan ajak anak menari mengikuti irama.",
+      "Zebra Cross: Latih koordinasi mata dan kaki dengan berpura-pura menyeberang jalan."
+    ]
   },
 ];
 
-const CategoryBlogSystem = () => {
+const CategoryBlogSystem = ({ onArticleClick }) => {
   const [selectedCategory, setSelectedCategory] = useState('neonatal');
-
   const filteredArticles = allArticles.filter(art => art.categoryId === selectedCategory);
 
   return (
@@ -118,11 +156,13 @@ const CategoryBlogSystem = () => {
                 filteredArticles.map((article) => (
                   <motion.div
                     key={article.id}
+                    layoutId={`article-${article.id}`}
+                    onClick={() => onArticleClick && onArticleClick(article)}
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.3 }}
-                    className="bg-white p-5 rounded-[2rem] shadow-sm flex gap-4 border border-slate-50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 transition-all group"
+                    className="bg-white p-5 rounded-[2rem] shadow-sm flex gap-4 border border-slate-50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 transition-all group cursor-pointer"
                   >
                     {/* Thumbnail */}
                     <div className="w-20 h-20 bg-bg rounded-2xl flex items-center justify-center text-3xl shrink-0 overflow-hidden shadow-inner border border-slate-50">

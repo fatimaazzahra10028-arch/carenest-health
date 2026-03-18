@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import CategoryBlogSystem from './components/CategoryBlogSystem';
-import { motion } from 'framer-motion';
+import BlogDetail from './components/BlogDetail'; // Pastikan file ini sudah dibuat
+import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
+  // STATE: Menyimpan artikel yang sedang dipilih untuk dibaca
+  const [activeArticle, setActiveArticle] = useState(null);
+
   return (
-    // PENTING: Jangan gunakan 'overflow-hidden' di sini agar sticky navbar jalan
     <div className="min-h-screen bg-[#f0f7ff] relative font-outfit">
       
-      {/* --- LAYER 0: BACKGROUND ILLUSTRATIONS (Static & Non-blocking) --- */}
+      {/* --- LAYER 0: BACKGROUND ILLUSTRATIONS (Tetap Tampil) --- */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {/* Awan Kiri */}
         <motion.div 
@@ -32,7 +35,7 @@ function App() {
           </svg>
         </motion.div>
 
-        {/* Gunung Latar Belakang - Menggunakan fixed agar tetap di bawah saat scroll */}
+        {/* Gunung Latar Belakang */}
         <div className="absolute bottom-0 left-0 w-full flex items-end justify-between opacity-30">
           <svg viewBox="0 0 500 200" className="w-[45%] text-blue-200 fill-current mb-[-2px]">
             <path d="M0 200 L250 40 L500 200 Z" />
@@ -49,73 +52,98 @@ function App() {
       {/* --- LAYER 1: STICKY NAVIGATION --- */}
       <Navbar />
 
-      {/* --- LAYER 2: MAIN CONTENT --- */}
-      <main className="relative z-10 overflow-x-hidden">
-        
-        {/* Hero Section */}
-        <section className="pt-16 pb-12 px-6 text-center">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: 'spring', damping: 20 }}
-            className="max-w-4xl mx-auto"
-          >
-            <h1 className="text-4xl md:text-6xl text-slate-800 font-bold leading-[1.1] mb-6 font-kids">
-              MomsCare: Teman Setia <br/> 
-              <span className="text-primary italic">Ibu Rawat Si Kecil.</span>
-            </h1>
-            <p className="text-lg text-slate-500 mb-10 font-medium max-w-2xl mx-auto">
-              Informasi kesehatan akurat untuk setiap langkah pertumbuhan buah hati. <br className="hidden md:block"/>
-              <span className="text-primary font-bold italic">"Tumbuh Hebat Bersama Ibu"</span>
-            </p>
+      {/* --- LAYER 2: MAIN CONTENT (Dinamis) --- */}
+      <main className="relative z-10 overflow-x-hidden min-h-[80vh]">
+        <AnimatePresence mode="wait">
+          {!activeArticle ? (
+            /* HALAMAN UTAMA (HERO + BLOG SYSTEM + CTA) */
+            <motion.div 
+              key="home"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {/* Hero Section */}
+              <section className="pt-16 pb-12 px-6 text-center">
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ type: 'spring', damping: 20 }}
+                  className="max-w-4xl mx-auto"
+                >
+                  <h1 className="text-4xl md:text-6xl text-slate-800 font-bold leading-[1.1] mb-6 font-kids">
+                    MomsCare: Teman Setia <br/> 
+                    <span className="text-primary italic">Ibu Rawat Si Kecil.</span>
+                  </h1>
+                  <p className="text-lg text-slate-500 mb-10 font-medium max-w-2xl mx-auto">
+                    Informasi kesehatan akurat untuk setiap langkah pertumbuhan buah hati. <br className="hidden md:block"/>
+                    <span className="text-primary font-bold italic">"Tumbuh Hebat Bersama Ibu"</span>
+                  </p>
 
-            {/* Search Bar with Glassmorphism */}
-            <div className="relative max-w-lg mx-auto group">
-              <input 
-                type="text" 
-                placeholder="Cari: Imunisasi, MPASI, Gizi..."
-                className="w-full px-8 py-4 rounded-full border-2 border-white/50 bg-white/60 backdrop-blur-md focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-sm font-medium shadow-xl group-hover:shadow-2xl"
+                  {/* Search Bar */}
+                  <div className="relative max-w-lg mx-auto group">
+                    <input 
+                      type="text" 
+                      placeholder="Cari: Imunisasi, MPASI, Gizi..."
+                      className="w-full px-8 py-4 rounded-full border-2 border-white/50 bg-white/60 backdrop-blur-md focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-sm font-medium shadow-xl group-hover:shadow-2xl"
+                    />
+                    <button className="absolute right-2 top-2 bg-primary p-2.5 rounded-full text-white px-7 font-bold text-sm hover:brightness-110 transition-all shadow-lg active:scale-95">
+                      Cari
+                    </button>
+                  </div>
+                </motion.div>
+              </section>
+
+              {/* DYNAMIC SYSTEM BLOG */}
+              <div className="relative">
+                {/* Mengirim fungsi onArticleClick agar bisa ditangkap oleh CategoryBlogSystem */}
+                <CategoryBlogSystem onArticleClick={(article) => setActiveArticle(article)} />
+              </div>
+
+              {/* CTA Cards Section */}
+              <section className="px-6 md:px-20 py-24 grid md:grid-cols-2 gap-8 max-w-7xl mx-auto">
+                <motion.div 
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="bg-white/40 backdrop-blur-md p-10 rounded-[3rem] border-2 border-white flex items-center justify-between group cursor-pointer shadow-xl shadow-blue-900/5 transition-all"
+                >
+                  <div className="max-w-[70%]">
+                    <h3 className="text-2xl text-slate-800 font-bold mb-2 font-kids">Cek Grafik Pertumbuhan</h3>
+                    <p className="text-slate-500 text-sm font-medium">Pantau berat & tinggi badan ideal si kecil sesuai standar WHO.</p>
+                  </div>
+                  <div className="text-6xl group-hover:scale-110 transition-transform grayscale-[0.5] group-hover:grayscale-0">📊</div>
+                </motion.div>
+
+                <motion.div 
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="bg-white/40 backdrop-blur-md p-10 rounded-[3rem] border-2 border-white flex items-center justify-between group cursor-pointer shadow-xl shadow-green-900/5 transition-all"
+                >
+                  <div className="max-w-[70%]">
+                    <h3 className="text-2xl text-slate-800 font-bold mb-2 font-kids">Reminder Imunisasi</h3>
+                    <p className="text-slate-500 text-sm font-medium">Jangan lewatkan jadwal vaksin. Kami ingatkan tepat waktu!</p>
+                  </div>
+                  <div className="text-6xl group-hover:rotate-12 transition-transform grayscale-[0.5] group-hover:grayscale-0">🗓️</div>
+                </motion.div>
+              </section>
+            </motion.div>
+          ) : (
+            /* HALAMAN DETAIL ARTIKEL (Saat activeArticle tidak null) */
+            <motion.div 
+              key="detail"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <BlogDetail 
+                article={activeArticle} 
+                onBack={() => setActiveArticle(null)} 
               />
-              <button className="absolute right-2 top-2 bg-primary p-2.5 rounded-full text-white px-7 font-bold text-sm hover:brightness-110 transition-all shadow-lg active:scale-95">
-                Cari
-              </button>
-            </div>
-          </motion.div>
-        </section>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* --- DYNAMIC SYSTEM BLOG --- */}
-        <div className="relative">
-          <CategoryBlogSystem />
-        </div>
-
-        {/* CTA Cards Section */}
-        <section className="px-6 md:px-20 py-24 grid md:grid-cols-2 gap-8 max-w-7xl mx-auto">
-          <motion.div 
-            whileHover={{ y: -8, scale: 1.02 }}
-            className="bg-white/40 backdrop-blur-md p-10 rounded-[3rem] border-2 border-white flex items-center justify-between group cursor-pointer shadow-xl shadow-blue-900/5 transition-all"
-          >
-            <div className="max-w-[70%]">
-              <h3 className="text-2xl text-slate-800 font-bold mb-2 font-kids">Cek Grafik Pertumbuhan</h3>
-              <p className="text-slate-500 text-sm font-medium">Pantau berat & tinggi badan ideal si kecil sesuai standar WHO.</p>
-            </div>
-            <div className="text-6xl group-hover:scale-110 transition-transform grayscale-[0.5] group-hover:grayscale-0">📊</div>
-          </motion.div>
-
-          <motion.div 
-            whileHover={{ y: -8, scale: 1.02 }}
-            className="bg-white/40 backdrop-blur-md p-10 rounded-[3rem] border-2 border-white flex items-center justify-between group cursor-pointer shadow-xl shadow-green-900/5 transition-all"
-          >
-            <div className="max-w-[70%]">
-              <h3 className="text-2xl text-slate-800 font-bold mb-2 font-kids">Reminder Imunisasi</h3>
-              <p className="text-slate-500 text-sm font-medium">Jangan lewatkan jadwal vaksin. Kami ingatkan tepat waktu!</p>
-            </div>
-            <div className="text-6xl group-hover:rotate-12 transition-transform grayscale-[0.5] group-hover:grayscale-0">🗓️</div>
-          </motion.div>
-        </section>
-
-        {/* Footer */}
+        {/* Footer (Selalu tampil di bawah) */}
         <footer className="py-12 text-center border-t border-white/20">
-            <p className="text-xs font-bold text-slate-400 tracking-[0.2em] uppercase">© 2026 MomsCare Indonesia • Crafted with Heart</p>
+          <p className="text-xs font-bold text-slate-400 tracking-[0.2em] uppercase">© 2026 MomsCare Indonesia • Crafted with Heart</p>
         </footer>
       </main>
 
