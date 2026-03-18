@@ -1,102 +1,20 @@
+// src/components/CategoryBlogSystem.jsx
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Baby, OrangeSlice, Footprints, Shapes, Backpack, Books, Clock, ArrowRight } from '@phosphor-icons/react';
+import { Clock, ArrowRight } from '@phosphor-icons/react';
+// IMPORT DATA DISINI
+import { categories, allArticles } from '../data/blogData';
 
-const categories = [
-  { id: 'neonatal', age: 'Neonatal', range: '0–28 Hari', icon: <Baby size={32} weight="duotone" />, color: 'bg-primary/10', iconColor: 'text-primary' },
-  { id: 'bayi', age: 'Bayi', range: '0–11 Bulan', icon: <OrangeSlice size={32} weight="duotone" />, color: 'bg-secondary/20', iconColor: 'text-green-600' },
-  { id: 'batita', age: 'Batita', range: '1–3 Tahun', icon: <Footprints size={32} weight="duotone" />, color: 'bg-accent/20', iconColor: 'text-orange-400' },
-  { id: 'balita', age: 'Balita', range: '3–5 Tahun', icon: <Shapes size={32} weight="duotone" />, color: 'bg-pink-100', iconColor: 'text-pink-400' },
-  { id: 'prasekolah', age: 'Prasekolah', range: '5–6 Tahun', icon: <Backpack size={32} weight="duotone" />, color: 'bg-purple-100', iconColor: 'text-purple-400' },
-  { id: 'sekolah', age: 'Sekolah', range: '6–10 Tahun', icon: <Books size={32} weight="duotone" />, color: 'bg-blue-100', iconColor: 'text-blue-400' },
-];
-
-const allArticles = [
-  { 
-    id: 1, 
-    categoryId: 'neonatal', 
-    title: "Perawatan Tali Pusar Bayi Baru Lahir", 
-    author: "dr. Siska", 
-    date: "2 Jam lalu", 
-    img: "https://images.unsplash.com/photo-1566004100631-35d015d6a491?q=80&w=200&auto=format&fit=crop",
-    desc: "Tali pusar bayi baru lahir memerlukan perawatan khusus agar tetap kering dan terhindar dari infeksi. Moms tidak perlu panik jika melihat tali pusar belum lepas, kuncinya adalah menjaga kebersihan dan sirkulasi udara yang baik di area perut si kecil.",
-    steps: [
-      "Cuci tangan dengan sabun sebelum menyentuh area pusar bayi.",
-      "Bersihkan pangkal tali pusar dengan air matang jika terkena kotoran/urin.",
-      "Keringkan dengan kasa steril atau biarkan terkena udara hingga benar-benar kering.",
-      "Lipat popok di bawah tali pusar agar tidak tertutup dan lembap.",
-      "Hindari penggunaan bedak, minyak, atau ramuan tradisional pada tali pusar."
-    ]
-  },
-  { 
-    id: 2, 
-    categoryId: 'bayi', 
-    title: "Jadwal MPASI Pertama: Menu 4 Bintang", 
-    author: "Akil Girtzi, S.Gz", 
-    date: "1 hari lalu", 
-    img: "🥣",
-    desc: "Memasuki usia 6 bulan, kebutuhan nutrisi bayi meningkat dan tidak lagi cukup hanya dari ASI. Menu 4 Bintang adalah standar pemberian MPASI yang mengandung gizi lengkap untuk mendukung pertumbuhan otak dan fisik si kecil.",
-    steps: [
-      "Karbohidrat: Gunakan beras putih, beras merah, ubi, atau kentang.",
-      "Protein Hewani: Prioritaskan hati ayam, daging sapi, atau telur untuk zat besi.",
-      "Protein Nabati: Tambahkan tempe, tahu, atau kacang-kacangan.",
-      "Sayuran: Masukkan wortel, bayam, atau labu siam sebagai sumber serat.",
-      "Tekstur: Mulai dengan tekstur bubur saring (puree) yang halus."
-    ]
-  },
-  { 
-    id: 3, 
-    categoryId: 'batita', 
-    title: "Anak Pilih-pilih Makanan? Ini Solusinya", 
-    author: "dr. Budi", 
-    date: "3 hari lalu", 
-    img: "🥦",
-    desc: "Fase 'Picky Eater' sangat umum pada usia batita karena mereka mulai menunjukkan kemandirian. Tugas Moms adalah tetap menyediakan pilihan makanan bergizi tanpa harus ada drama di meja makan.",
-    steps: [
-      "Jangan memaksa atau mengancam anak agar mau makan.",
-      "Sajikan makanan dalam porsi kecil namun sering.",
-      "Variasikan bentuk potongan sayur atau buah agar menarik secara visual.",
-      "Jadwalkan makan bersama keluarga agar anak bisa meniru kebiasaan makan Moms.",
-      "Kenalkan satu jenis makanan baru secara perlahan berdampingan dengan makanan favoritnya."
-    ]
-  },
-  { 
-    id: 4, 
-    categoryId: 'neonatal', 
-    title: "Bayi Sering Kuning? Kenali Penyebabnya", 
-    author: "dr. Siska", 
-    date: "5 hari lalu", 
-    img: "🌞",
-    desc: "Kuning pada bayi baru lahir biasanya disebabkan oleh kadar bilirubin yang tinggi. Meski sebagian besar bersifat normal (fisiologis), Moms harus tetap waspada dan mengenali tanda-tanda kapan kondisi ini berbahaya.",
-    steps: [
-      "Berikan ASI sesering mungkin (8-12 kali sehari) untuk membantu pembuangan bilirubin.",
-      "Amati warna kuning di bawah cahaya matahari yang terang.",
-      "Jemur bayi di pagi hari sekitar pukul 7.30 - 8.30 selama 10-15 menit.",
-      "Segera bawa ke dokter jika kuning menyebar hingga ke lengan atau kaki bayi.",
-      "Pastikan bayi tetap aktif dan tidak terlihat terlalu lemas."
-    ]
-  },
-  { 
-    id: 5, 
-    categoryId: 'balita', 
-    title: "Aktivitas Motorik Kasar di Rumah", 
-    author: "dr. Sari", 
-    date: "6 hari lalu", 
-    img: "🏃",
-    desc: "Melatih motorik kasar membantu balita mengontrol gerakan tubuh, keseimbangan, dan koordinasi. Moms tidak butuh alat mahal, cukup gunakan barang yang ada di rumah untuk bermain sambil belajar.",
-    steps: [
-      "Permainan Jalur Selotip: Buat garis lurus atau zig-zag di lantai dan minta anak berjalan di atasnya.",
-      "Lompat Pulau: Gunakan bantal kecil sebagai 'pulau' yang harus dilompati anak.",
-      "Lempar Bola: Gunakan keranjang pakaian dan bola plastik untuk melatih akurasi.",
-      "Berjoget Bebas: Putar musik dan ajak anak menari mengikuti irama.",
-      "Zebra Cross: Latih koordinasi mata dan kaki dengan berpura-pura menyeberang jalan."
-    ]
-  },
-];
-
-const CategoryBlogSystem = ({ onArticleClick }) => {
+const CategoryBlogSystem = ({ onArticleClick, searchQuery = "" }) => {
   const [selectedCategory, setSelectedCategory] = useState('neonatal');
-  const filteredArticles = allArticles.filter(art => art.categoryId === selectedCategory);
+  
+  // --- LOGIKA FILTER: Kategori DAN Pencarian Judul ---
+  const filteredArticles = allArticles.filter(art => {
+    const matchesCategory = art.categoryId === selectedCategory;
+    const matchesSearch = art.title.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="relative z-30 font-outfit"> 
@@ -164,12 +82,12 @@ const CategoryBlogSystem = ({ onArticleClick }) => {
                     transition={{ duration: 0.3 }}
                     className="bg-white p-5 rounded-[2rem] shadow-sm flex gap-4 border border-slate-50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 transition-all group cursor-pointer"
                   >
-                    {/* Thumbnail */}
+                    {/* Thumbnail Logic */}
                     <div className="w-20 h-20 bg-bg rounded-2xl flex items-center justify-center text-3xl shrink-0 overflow-hidden shadow-inner border border-slate-50">
-                      {article.img.startsWith('http') ? (
+                      {article.img && article.img.startsWith('http') ? (
                         <img src={article.img} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                       ) : (
-                        <span className="group-hover:scale-125 transition-transform duration-500 inline-block">{article.img}</span>
+                        <span className="group-hover:scale-125 transition-transform duration-500 inline-block">{article.img || '📝'}</span>
                       )}
                     </div>
 
@@ -188,12 +106,19 @@ const CategoryBlogSystem = ({ onArticleClick }) => {
                 ))
               ) : (
                 <motion.div 
+                  key="empty"
                   initial={{ opacity: 0 }} 
                   animate={{ opacity: 1 }} 
+                  exit={{ opacity: 0 }}
                   className="col-span-full py-20 text-center"
                 >
-                  <div className="text-4xl mb-4">✨</div>
-                  <p className="text-slate-400 font-kids italic">Belum ada artikel untuk kategori ini. <br/> Tim ahli kami sedang menyiapkannya untuk Moms! 👋</p>
+                  <div className="text-4xl mb-4">🔍</div>
+                  <p className="text-slate-400 font-kids italic">
+                    {searchQuery 
+                      ? `Tidak ada artikel "${searchQuery}" di kategori ini.` 
+                      : "Belum ada artikel untuk kategori ini."}
+                    <br/> Coba cari topik lain ya Moms! 👋
+                  </p>
                 </motion.div>
               )}
             </AnimatePresence>

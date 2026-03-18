@@ -1,25 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Context & Components
-import { AuthProvider, useAuth } from './context/AuthContext'; // Sesuaikan path-nya
+import { AuthProvider, useAuth } from './context/AuthContext'; 
 import Navbar from './components/Navbar';
 import CategoryBlogSystem from './components/CategoryBlogSystem';
 import BlogDetail from './components/BlogDetail';
 import AuthPage from './components/AuthPage';
+import FavoritePage from './components/FavoritePage'; 
 
 function AppContent() {
   // STATE: Navigasi & UI
   const [activeArticle, setActiveArticle] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
-  const { user } = useAuth(); // Mendeteksi status login dari context
+  const [showFavorites, setShowFavorites] = useState(false); 
+  const [searchQuery, setSearchQuery] = useState(""); 
+  const { user } = useAuth(); 
+
+  // REF: Untuk menandai lokasi bagian blog
+  const blogSectionRef = useRef(null);
+
+  // FUNGSI: Scroll ke bagian blog saat cari diklik/enter
+  const handleSearchTrigger = (e) => {
+    if (e) e.preventDefault();
+    if (blogSectionRef.current) {
+      blogSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // FUNGSI PUSAT: Buka artikel (Dipakai di Home & Favorite)
+  const handleOpenArticle = (article) => {
+    setActiveArticle(article);   // Set artikel aktif untuk ditampilkan di BlogDetail
+    setShowFavorites(false);      // Pastikan halaman favorite tertutup
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll ke atas otomatis
+  };
 
   return (
     <div className="min-h-screen bg-[#f0f7ff] relative font-outfit selection:bg-primary/20">
       
-      {/* --- LAYER 0: BACKGROUND ILLUSTRATIONS (Fixed & Persistent) --- */}
+      {/* --- LAYER 0: BACKGROUND ILLUSTRATIONS --- */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        {/* Awan Kiri */}
         <motion.div 
           animate={{ x: [0, 40, 0] }} 
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
@@ -30,7 +50,6 @@ function AppContent() {
           </svg>
         </motion.div>
 
-        {/* Awan Kanan */}
         <motion.div 
           animate={{ x: [0, -30, 0] }} 
           transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
@@ -41,7 +60,6 @@ function AppContent() {
           </svg>
         </motion.div>
 
-        {/* Gunung Latar Belakang */}
         <div className="absolute bottom-0 left-0 w-full flex items-end justify-between opacity-30">
           <svg viewBox="0 0 500 200" className="w-[45%] text-blue-200 fill-current mb-[-2px]">
             <path d="M0 200 L250 40 L500 200 Z" />
@@ -56,13 +74,52 @@ function AppContent() {
       </div>
 
       {/* --- LAYER 1: NAVIGATION --- */}
-      <Navbar onOpenAuth={() => setShowAuth(true)} />
+      <Navbar 
+        onOpenAuth={() => setShowAuth(true)} 
+        onOpenFavorites={() => {
+            setShowFavorites(true);
+            setActiveArticle(null); 
+        }}
+        isFavoritePage={showFavorites}
+      />
 
-      {/* --- LAYER 2: MAIN CONTENT (Dinamis Berdasarkan State) --- */}
+      {/* --- LAYER 2: MAIN CONTENT --- */}
       <main className="relative z-10 min-h-screen pt-4 md:pt-10">
         <AnimatePresence mode="wait">
-          {!activeArticle ? (
-            /* --- HALAMAN BERANDA --- */
+          
+          {/* TAMPILAN 1: HALAMAN FAVORITE */}
+          {showFavorites ? (
+            <motion.div
+              key="favorites-page"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+            >
+              <FavoritePage 
+                onBack={() => setShowFavorites(false)} 
+                onArticleClick={handleOpenArticle} 
+              />
+            </motion.div>
+          ) : 
+          
+          /* TAMPILAN 2: DETAIL ARTIKEL */
+          activeArticle ? (
+            <motion.div 
+              key="detail"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            >
+              <BlogDetail 
+                article={activeArticle} 
+                onBack={() => setActiveArticle(null)} 
+              />
+            </motion.div>
+          ) : (
+            
+            /* TAMPILAN 3: HOME / BERANDA */
             <motion.div 
               key="home"
               initial={{ opacity: 0, y: 10 }}
@@ -86,26 +143,34 @@ function AppContent() {
                     <span className="text-primary font-bold italic">"Tumbuh Hebat Bersama Ibu"</span>
                   </p>
 
-                  {/* Search Bar with Glassmorphism */}
-                  <div className="relative max-w-lg mx-auto group">
+                  <form 
+                    onSubmit={handleSearchTrigger}
+                    className="relative max-w-lg mx-auto group"
+                  >
                     <input 
                       type="text" 
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)} 
                       placeholder="Cari: Imunisasi, MPASI, Gizi..."
                       className="w-full px-8 py-4 rounded-full border-2 border-white/50 bg-white/60 backdrop-blur-md focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-sm font-medium shadow-xl group-hover:shadow-2xl"
                     />
-                    <button className="absolute right-2 top-2 bg-primary p-2.5 rounded-full text-white px-7 font-bold text-sm hover:brightness-110 transition-all shadow-lg active:scale-95">
+                    <button 
+                      type="submit"
+                      className="absolute right-2 top-2 bg-primary p-2.5 rounded-full text-white px-7 font-bold text-sm hover:brightness-110 transition-all shadow-lg active:scale-95"
+                    >
                       Cari
                     </button>
-                  </div>
+                  </form>
                 </motion.div>
               </section>
 
-              {/* System Blog */}
-              <div className="relative">
-                <CategoryBlogSystem onArticleClick={(article) => setActiveArticle(article)} />
+              <div className="relative" ref={blogSectionRef}>
+                <CategoryBlogSystem 
+                  onArticleClick={handleOpenArticle} 
+                  searchQuery={searchQuery} 
+                />
               </div>
 
-              {/* CTA Cards Section */}
               <section className="px-6 md:px-20 py-24 grid md:grid-cols-2 gap-8 max-w-7xl mx-auto">
                 <motion.div 
                   whileHover={{ y: -8, scale: 1.02 }}
@@ -130,48 +195,32 @@ function AppContent() {
                 </motion.div>
               </section>
             </motion.div>
-          ) : (
-            /* --- HALAMAN DETAIL ARTIKEL --- */
-            <motion.div 
-              key="detail"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            >
-              <BlogDetail 
-                article={activeArticle} 
-                onBack={() => setActiveArticle(null)} 
-              />
-            </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Footer */}
         <footer className="py-12 text-center border-t border-white/20">
           <p className="text-xs font-bold text-slate-400 tracking-[0.2em] uppercase">© 2026 MomsCare Indonesia • Crafted with Heart</p>
         </footer>
       </main>
 
-      {/* --- LAYER 3: AUTH OVERLAY (Floating Popup) --- */}
+      {/* --- LAYER 3: AUTH OVERLAY --- */}
       <AnimatePresence>
         {showAuth && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-             <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-5xl"
-             >
-               {/* Tombol Tutup Modern */}
-               <button 
-                onClick={() => setShowAuth(false)}
-                className="absolute top-8 right-12 z-[210] bg-white/10 hover:bg-white/20 p-2 rounded-full text-slate-500 hover:text-slate-800 transition-all font-bold backdrop-blur-md"
-               >
-                 ✕
-               </button>
-               <AuthPage onSuccess={() => setShowAuth(false)} />
-             </motion.div>
+              <motion.div 
+               initial={{ opacity: 0, scale: 0.9, y: 20 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.9, y: 20 }}
+               className="relative w-full max-w-5xl"
+              >
+                <button 
+                 onClick={() => setShowAuth(false)}
+                 className="absolute top-8 right-12 z-[210] bg-white/10 hover:bg-white/20 p-2 rounded-full text-slate-500 hover:text-slate-800 transition-all font-bold backdrop-blur-md"
+                >
+                  ✕
+                </button>
+                <AuthPage onSuccess={() => setShowAuth(false)} />
+              </motion.div>
           </div>
         )}
       </AnimatePresence>
@@ -202,7 +251,6 @@ function AppContent() {
   );
 }
 
-// Wrapper untuk menyediakan Context
 function App() {
   return (
     <AuthProvider>
