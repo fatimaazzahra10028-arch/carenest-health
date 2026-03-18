@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
-import Navbar from './components/Navbar';
-import CategoryBlogSystem from './components/CategoryBlogSystem';
-import BlogDetail from './components/BlogDetail'; // Pastikan file ini sudah dibuat
 import { motion, AnimatePresence } from 'framer-motion';
 
-function App() {
-  // STATE: Menyimpan artikel yang sedang dipilih untuk dibaca
+// Context & Components
+import { AuthProvider, useAuth } from './context/AuthContext'; // Sesuaikan path-nya
+import Navbar from './components/Navbar';
+import CategoryBlogSystem from './components/CategoryBlogSystem';
+import BlogDetail from './components/BlogDetail';
+import AuthPage from './components/AuthPage';
+
+function AppContent() {
+  // STATE: Navigasi & UI
   const [activeArticle, setActiveArticle] = useState(null);
+  const [showAuth, setShowAuth] = useState(false);
+  const { user } = useAuth(); // Mendeteksi status login dari context
 
   return (
-    <div className="min-h-screen bg-[#f0f7ff] relative font-outfit">
+    <div className="min-h-screen bg-[#f0f7ff] relative font-outfit selection:bg-primary/20">
       
-      {/* --- LAYER 0: BACKGROUND ILLUSTRATIONS (Tetap Tampil) --- */}
+      {/* --- LAYER 0: BACKGROUND ILLUSTRATIONS (Fixed & Persistent) --- */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {/* Awan Kiri */}
         <motion.div 
@@ -49,26 +55,26 @@ function App() {
         </div>
       </div>
 
-      {/* --- LAYER 1: STICKY NAVIGATION --- */}
-      <Navbar />
+      {/* --- LAYER 1: NAVIGATION --- */}
+      <Navbar onOpenAuth={() => setShowAuth(true)} />
 
-      {/* --- LAYER 2: MAIN CONTENT (Dinamis) --- */}
-      <main className="relative z-10 overflow-x-hidden min-h-[80vh]">
+      {/* --- LAYER 2: MAIN CONTENT (Dinamis Berdasarkan State) --- */}
+      <main className="relative z-10 min-h-screen pt-4 md:pt-10">
         <AnimatePresence mode="wait">
           {!activeArticle ? (
-            /* HALAMAN UTAMA (HERO + BLOG SYSTEM + CTA) */
+            /* --- HALAMAN BERANDA --- */
             <motion.div 
               key="home"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4 }}
             >
               {/* Hero Section */}
               <section className="pt-16 pb-12 px-6 text-center">
                 <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ type: 'spring', damping: 20 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
                   className="max-w-4xl mx-auto"
                 >
                   <h1 className="text-4xl md:text-6xl text-slate-800 font-bold leading-[1.1] mb-6 font-kids">
@@ -80,7 +86,7 @@ function App() {
                     <span className="text-primary font-bold italic">"Tumbuh Hebat Bersama Ibu"</span>
                   </p>
 
-                  {/* Search Bar */}
+                  {/* Search Bar with Glassmorphism */}
                   <div className="relative max-w-lg mx-auto group">
                     <input 
                       type="text" 
@@ -94,9 +100,8 @@ function App() {
                 </motion.div>
               </section>
 
-              {/* DYNAMIC SYSTEM BLOG */}
+              {/* System Blog */}
               <div className="relative">
-                {/* Mengirim fungsi onArticleClick agar bisa ditangkap oleh CategoryBlogSystem */}
                 <CategoryBlogSystem onArticleClick={(article) => setActiveArticle(article)} />
               </div>
 
@@ -110,7 +115,7 @@ function App() {
                     <h3 className="text-2xl text-slate-800 font-bold mb-2 font-kids">Cek Grafik Pertumbuhan</h3>
                     <p className="text-slate-500 text-sm font-medium">Pantau berat & tinggi badan ideal si kecil sesuai standar WHO.</p>
                   </div>
-                  <div className="text-6xl group-hover:scale-110 transition-transform grayscale-[0.5] group-hover:grayscale-0">📊</div>
+                  <div className="text-6xl group-hover:scale-110 transition-transform">📊</div>
                 </motion.div>
 
                 <motion.div 
@@ -121,17 +126,18 @@ function App() {
                     <h3 className="text-2xl text-slate-800 font-bold mb-2 font-kids">Reminder Imunisasi</h3>
                     <p className="text-slate-500 text-sm font-medium">Jangan lewatkan jadwal vaksin. Kami ingatkan tepat waktu!</p>
                   </div>
-                  <div className="text-6xl group-hover:rotate-12 transition-transform grayscale-[0.5] group-hover:grayscale-0">🗓️</div>
+                  <div className="text-6xl group-hover:rotate-12 transition-transform">🗓️</div>
                 </motion.div>
               </section>
             </motion.div>
           ) : (
-            /* HALAMAN DETAIL ARTIKEL (Saat activeArticle tidak null) */
+            /* --- HALAMAN DETAIL ARTIKEL --- */
             <motion.div 
               key="detail"
-              initial={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
             >
               <BlogDetail 
                 article={activeArticle} 
@@ -141,13 +147,36 @@ function App() {
           )}
         </AnimatePresence>
 
-        {/* Footer (Selalu tampil di bawah) */}
+        {/* Footer */}
         <footer className="py-12 text-center border-t border-white/20">
           <p className="text-xs font-bold text-slate-400 tracking-[0.2em] uppercase">© 2026 MomsCare Indonesia • Crafted with Heart</p>
         </footer>
       </main>
 
-      {/* --- FLOATING ELEMENTS (Z-50) --- */}
+      {/* --- LAYER 3: AUTH OVERLAY (Floating Popup) --- */}
+      <AnimatePresence>
+        {showAuth && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+             <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-5xl"
+             >
+               {/* Tombol Tutup Modern */}
+               <button 
+                onClick={() => setShowAuth(false)}
+                className="absolute top-8 right-12 z-[210] bg-white/10 hover:bg-white/20 p-2 rounded-full text-slate-500 hover:text-slate-800 transition-all font-bold backdrop-blur-md"
+               >
+                 ✕
+               </button>
+               <AuthPage onSuccess={() => setShowAuth(false)} />
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* --- MASKOT FLOATING HELP --- */}
       <motion.div 
         animate={{ y: [0, -12, 0] }}
         transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
@@ -162,14 +191,23 @@ function App() {
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            className="absolute -top-14 -left-32 bg-white px-5 py-3 rounded-2xl rounded-br-none text-[13px] font-bold shadow-2xl border border-slate-50 whitespace-nowrap text-slate-700"
+            className="absolute -top-14 -left-32 bg-white px-5 py-3 rounded-2xl rounded-br-none text-[13px] font-bold shadow-2xl border border-slate-50 whitespace-nowrap text-slate-700 pointer-events-none"
           >
-            Butuh bantuan, Moms? 👋
+            Halo Moms {user ? user.name : ''}! 👋
             <div className="absolute bottom-[-8px] right-0 w-4 h-4 bg-white rotate-45 border-r border-b border-slate-50"></div>
           </motion.div>
         </div>
       </motion.div>
     </div>
+  );
+}
+
+// Wrapper untuk menyediakan Context
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

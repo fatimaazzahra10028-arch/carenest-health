@@ -1,107 +1,148 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, User, ShareNetwork, BookmarkSimple, Clock, ChatCircleDots, CheckCircle } from '@phosphor-icons/react';
+import { 
+  ArrowLeft, Calendar, User, ShareNetwork, 
+  BookmarkSimple, Clock, ChatCircleDots, 
+  Quotes, Sparkle 
+} from '@phosphor-icons/react';
 
 const BlogDetail = ({ article, onBack }) => {
-  // Otomatis scroll ke atas saat detail dibuka
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   if (!article) return null;
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -30 }}
-      className="max-w-4xl mx-auto px-6 py-10 relative z-20"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="min-h-screen pb-20 bg-[#fbfdff]"
     >
-      {/* Tombol Kembali */}
-      <button 
-        onClick={onBack}
-        className="flex items-center gap-2 text-primary font-bold mb-8 group"
-      >
-        <div className="bg-white p-2 rounded-full shadow-md group-hover:bg-primary group-hover:text-white transition-all">
-          <ArrowLeft size={20} weight="bold" />
-        </div>
-        <span className="font-kids text-slate-600 group-hover:text-primary transition-colors">Kembali</span>
-      </button>
-
-      {/* Konten Utama */}
-      <div className="bg-white/70 backdrop-blur-md rounded-[3rem] p-6 md:p-12 border border-white shadow-xl">
-        <header className="mb-10">
-          <div className="flex flex-wrap items-center gap-4 mb-6">
-            <span className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
-              {article.categoryId}
-            </span>
-            <div className="flex items-center gap-4 text-slate-400 text-xs font-bold">
-              <span className="flex items-center gap-1"><Calendar size={16} /> {article.date}</span>
-              <span className="flex items-center gap-1"><User size={16} /> {article.author}</span>
+      {/* --- 1. HERO SECTION (Ditingkatkan tingginya agar image Jelas) --- */}
+      <div className="relative h-[45vh] md:h-[55vh] w-full overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          {article.img.startsWith('http') ? (
+            <img 
+              src={article.img} 
+              alt={article.title} 
+              /* Menggunakan h-full object-cover agar gambar mengisi area dengan benar */
+              className="w-full h-full object-cover brightness-[0.95]" 
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
+               <span className="text-[100px] opacity-10">{article.img}</span>
             </div>
-          </div>
+          )}
+          {/* Overlay gradasi diperhalus agar tidak menutupi gambar bagian atas */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#fbfdff] via-transparent to-transparent opacity-60" />
+        </div>
+
+        {/* Navigasi Atas */}
+        <div className="relative z-30 max-w-5xl mx-auto px-6 pt-8 flex justify-between items-center">
+          <motion.button 
+            whileHover={{ x: -4 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onBack}
+            className="flex items-center gap-2 bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl shadow-lg text-primary font-bold border border-white"
+          >
+            <ArrowLeft size={18} weight="bold" />
+            <span className="font-kids text-xs">Kembali</span>
+          </motion.button>
           
-          <h1 className="text-3xl md:text-5xl font-kids text-slate-800 leading-tight mb-8">
-            {article.title}
-          </h1>
+          <span className="bg-black/20 backdrop-blur-md text-white border border-white/30 px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest">
+            {article.categoryId}
+          </span>
+        </div>
+      </div>
 
-          <div className="w-full h-64 md:h-[400px] bg-slate-100 rounded-[2.5rem] overflow-hidden shadow-inner flex items-center justify-center relative border-4 border-white">
-            {article.img.startsWith('http') ? (
-              <img src={article.img} alt={article.title} className="w-full h-full object-cover" />
-            ) : (
-              <div className="bg-gradient-to-br from-primary/5 to-secondary/10 w-full h-full flex items-center justify-center">
-                <span className="text-[120px] drop-shadow-lg">{article.img}</span>
-              </div>
-            )}
-          </div>
-        </header>
-
-        {/* BAGIAN DESKRIPSI & LANGKAH PRAKTIS */}
-        <article className="prose prose-blue max-w-none text-slate-600 font-medium leading-relaxed">
-          {/* Deskripsi Artikel */}
-          <div className="text-lg mb-8 leading-relaxed italic border-l-4 border-primary/20 pl-6 text-slate-600 bg-primary/5 py-4 rounded-r-2xl">
-            {article.desc}
-          </div>
-
-          <h3 className="text-2xl font-kids text-slate-800 mt-10 mb-6 flex items-center gap-2">
-            <span className="bg-secondary/20 p-2 rounded-xl text-secondary">
-              <Clock size={24} weight="duotone" />
-            </span>
-            Langkah Praktis untuk Moms
-          </h3>
-
-          {/* List Langkah Praktis dari Data Article */}
-          <div className="grid gap-4">
-            {article.steps && article.steps.map((step, index) => (
-              <motion.div 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                key={index} 
-                className="flex items-start gap-4 bg-white/50 p-4 rounded-2xl border border-white hover:border-primary/20 transition-colors"
-              >
-                <div className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center shrink-0 font-bold text-sm shadow-md shadow-primary/20">
-                  {index + 1}
+      {/* --- 2. MAIN CONTENT (Margin Top dihilangkan agar image terlihat utuh) --- */}
+      <div className="max-w-5xl mx-auto px-6 mt-6 relative z-40">
+        <div className="flex flex-col lg:flex-row gap-8">
+          
+          {/* SISI KIRI: Penulis */}
+          <aside className="lg:w-[28%]">
+            <div className="lg:sticky lg:top-10 space-y-6">
+              <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-blue-900/5">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary">
+                    <User size={24} weight="duotone" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Penulis</p>
+                    <p className="text-sm font-bold text-slate-700">{article.author}</p>
+                  </div>
                 </div>
-                <p className="text-slate-700 font-semibold">{step}</p>
-              </motion.div>
-            ))}
-          </div>
-        </article>
+                <div className="space-y-3 pt-4 border-t border-slate-50">
+                  <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500">
+                    <Calendar size={16} className="text-primary" /> {article.date}
+                  </div>
+                  <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500">
+                    <Clock size={16} className="text-primary" /> 5 Menit Baca
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
 
-        {/* Action Buttons */}
-        <div className="mt-12 pt-8 border-t border-slate-100 flex flex-wrap gap-4 justify-between items-center">
-          <div className="flex gap-2">
-            <button className="flex items-center gap-2 bg-slate-100 px-6 py-3 rounded-2xl font-bold text-slate-600 hover:bg-primary/10 hover:text-primary transition-all active:scale-95">
-              <ShareNetwork size={20} /> Share
-            </button>
-            <button className="flex items-center gap-2 bg-slate-100 px-6 py-3 rounded-2xl font-bold text-slate-600 hover:bg-primary/10 hover:text-primary transition-all active:scale-95">
-              <BookmarkSimple size={20} /> Simpan
-            </button>
-          </div>
-          <button className="bg-primary text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all flex items-center gap-2 active:scale-95">
-            <ChatCircleDots size={22} weight="bold" /> Konsultasi Ahli
-          </button>
+          {/* SISI KANAN: Konten */}
+          <main className="lg:w-[72%]">
+            <div className="bg-white rounded-[3rem] p-8 md:p-14 shadow-2xl shadow-blue-900/5 border border-slate-50">
+              
+              <h1 className="text-3xl md:text-5xl font-kids text-slate-800 leading-[1.2] mb-10">
+                {article.title}
+              </h1>
+
+              {/* Kutipan / Intro */}
+              <div className="relative mb-14 p-8 bg-slate-50 rounded-[2rem] border-l-4 border-secondary/30">
+                <Quotes size={40} weight="fill" className="text-primary/5 absolute top-4 right-6" />
+                <p className="text-slate-600 text-base md:text-lg italic leading-relaxed relative z-10">
+                  {article.desc}
+                </p>
+              </div>
+
+              {/* Langkah Praktis */}
+              <div className="space-y-12">
+                <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
+                  <Sparkle size={28} weight="fill" className="text-secondary" />
+                  <h3 className="text-2xl font-kids text-slate-800">Langkah Penting</h3>
+                </div>
+
+                <div className="grid gap-12">
+                  {article.steps && article.steps.map((step, index) => (
+                    <div key={index} className="relative group">
+                      <span className="absolute -top-10 -left-4 text-8xl font-black text-slate-50 group-hover:text-primary/5 transition-colors select-none -z-10">
+                        {index + 1}
+                      </span>
+                      <div className="relative z-10 pl-2">
+                        <p className="text-slate-700 font-medium text-base md:text-xl leading-relaxed">
+                          {step}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer */}
+              <footer className="mt-20 pt-10 border-t border-slate-100 flex flex-col md:flex-row gap-6 items-center justify-between">
+                <div className="flex gap-4">
+                  <button className="p-3 bg-slate-50 rounded-xl text-slate-400 hover:text-primary transition-all shadow-sm">
+                    <BookmarkSimple size={24} weight="bold" />
+                  </button>
+                  <button className="p-3 bg-slate-50 rounded-xl text-slate-400 hover:text-primary transition-all shadow-sm">
+                    <ShareNetwork size={24} weight="bold" />
+                  </button>
+                </div>
+                
+                <button className="w-full md:w-auto bg-primary text-white px-10 py-4 rounded-2xl font-bold text-sm shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3">
+                  <ChatCircleDots size={24} weight="fill" /> Konsultasi Sekarang
+                </button>
+              </footer>
+            </div>
+          </main>
+
         </div>
       </div>
     </motion.div>
