@@ -15,7 +15,7 @@ const Hero = () => {
         {/* Background Image & Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent z-10"></div>
         <img 
-          src="/src/assets/hero.jpg" 
+          src="https://images.pexels.com/photos/5268320/pexels-photo-5268320.jpeg?auto=compress&cs=tinysrgb&w=1600" 
           className="absolute inset-0 w-full h-full object-cover object-[center_20%]"
           alt="Mother and child healthcare"
         />
