@@ -3,7 +3,7 @@ import {
   Baby, 
   OrangeSlice, 
   Footprints, 
-  Tetrahedron, 
+  Shapes, // Ganti Tetrahedron menjadi Shapes
   Backpack, 
   Books 
 } from '@phosphor-icons/react';
@@ -12,7 +12,8 @@ const categories = [
   { age: 'Neonatal', range: '0–28 Hari', icon: <Baby size={42} weight="duotone" />, color: 'bg-blue-50', iconColor: 'text-blue-500', blobColor: 'bg-blue-200/50' },
   { age: 'Bayi', range: '0–11 Bulan', icon: <OrangeSlice size={42} weight="duotone" />, color: 'bg-orange-50', iconColor: 'text-orange-500', blobColor: 'bg-orange-200/50' },
   { age: 'Batita', range: '1–3 Tahun', icon: <Footprints size={42} weight="duotone" />, color: 'bg-green-50', iconColor: 'text-green-500', blobColor: 'bg-green-200/50' },
-  { age: 'Balita', range: '3–5 Tahun', icon: <Tetrahedron size={42} weight="duotone" />, color: 'bg-red-50', iconColor: 'text-red-500', blobColor: 'bg-red-200/50' },
+  // Ikon Shapes digunakan di sini untuk menggantikan Tetrahedron
+  { age: 'Balita', range: '3–5 Tahun', icon: <Shapes size={42} weight="duotone" />, color: 'bg-red-50', iconColor: 'text-red-500', blobColor: 'bg-red-200/50' },
   { age: 'Prasekolah', range: '5–6 Tahun', icon: <Backpack size={42} weight="duotone" />, color: 'bg-purple-50', iconColor: 'text-purple-500', blobColor: 'bg-purple-200/50' },
   { age: 'Usia Sekolah', range: '6–10 Tahun', icon: <Books size={42} weight="duotone" />, color: 'bg-indigo-50', iconColor: 'text-indigo-500', blobColor: 'bg-indigo-200/50' },
 ];
