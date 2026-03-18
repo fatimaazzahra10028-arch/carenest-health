@@ -1,3 +1,6 @@
+/* Import Google Fonts di baris paling atas */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Quicksand:wght@500;600;700&display=swap');
+
 @import "tailwindcss";
 
 @theme {
@@ -5,15 +8,19 @@
   --color-secondary: #A8E6CF;
   --color-accent: #FFD3B6;
   --color-bg: #F8FAFC;
+  
+  /* Daftarkan font ke dalam theme Tailwind v4 */
+  --font-outfit: "Outfit", sans-serif;
+  --font-kids: "Quicksand", sans-serif;
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-outfit);
   background-color: var(--color-bg);
   @apply text-slate-700 antialiased;
 }
 
 h1, h2, h3, .font-kids {
-  font-family: 'Quicksand', sans-serif;
+  font-family: var(--font-kids);
   @apply font-bold;
 }
