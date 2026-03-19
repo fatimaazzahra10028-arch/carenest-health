@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, UserPlus, ListChecks, ChatCircleDots, House, SquaresFour, UserCircle, SignOut, BookmarkSimple } from '@phosphor-icons/react';
 import { useAuth } from '../context/AuthContext';
 
-const Navbar = ({ onOpenAuth, onOpenFavorites, isFavoritePage }) => {
+const Navbar = ({ onOpenAuth, onOpenFavorites, onGoHome, isFavoritePage }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showBadge, setShowBadge] = useState(false);
   const { user, logout } = useAuth();
@@ -15,18 +15,15 @@ const Navbar = ({ onOpenAuth, onOpenFavorites, isFavoritePage }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // 2. Logika Badge Notifikasi (Hanya muncul jika ada item baru yang belum dilihat)
+  // 2. Logika Badge Notifikasi
   useEffect(() => {
     const checkNewFavorites = () => {
       const favs = JSON.parse(localStorage.getItem('momscare_favorites') || '[]');
       const lastCount = parseInt(localStorage.getItem('momscare_fav_count_viewed') || '0');
 
-      // Tampilkan badge HANYA jika jumlah favorit sekarang lebih banyak dari yang terakhir dilihat
-      // DAN sedang tidak di halaman favorite
       if (favs.length > lastCount && !isFavoritePage) {
         setShowBadge(true);
       } else if (isFavoritePage) {
-        // Jika sedang di halaman favorite, tandai semua sudah dilihat
         setShowBadge(false);
         localStorage.setItem('momscare_fav_count_viewed', favs.length.toString());
       } else if (favs.length === 0) {
@@ -37,7 +34,6 @@ const Navbar = ({ onOpenAuth, onOpenFavorites, isFavoritePage }) => {
 
     checkNewFavorites();
     
-    // Sinkronisasi otomatis
     const interval = setInterval(checkNewFavorites, 1000);
     window.addEventListener('storage', checkNewFavorites);
 
@@ -56,8 +52,11 @@ const Navbar = ({ onOpenAuth, onOpenFavorites, isFavoritePage }) => {
           ? 'py-3 bg-white/90 backdrop-blur-xl shadow-xl shadow-blue-100/30 border-b md:border border-primary/20 md:rounded-[2rem]' 
           : 'py-5 bg-white/70 backdrop-blur-lg border-b md:border border-white/40 md:rounded-[2rem]'}`}
     >
-      {/* Brand */}
-      <div className="flex items-center gap-2 group cursor-pointer" onClick={() => window.location.href = '/'}>
+      {/* Brand - Klik ini juga balik ke Beranda */}
+      <div 
+        className="flex items-center gap-2 group cursor-pointer" 
+        onClick={onGoHome}
+      >
         <div className="bg-primary/10 p-2 rounded-xl group-hover:rotate-12 transition-transform">
           <Heart size={28} weight="fill" className="text-primary" />
         </div>
@@ -66,7 +65,15 @@ const Navbar = ({ onOpenAuth, onOpenFavorites, isFavoritePage }) => {
 
       {/* Nav Links */}
       <div className="hidden md:flex gap-8 items-center">
-        <NavLink icon={<House size={20} weight="duotone" />} label="Beranda" active={!isFavoritePage} />
+        {/* Tombol Beranda diperbaiki dengan onClick */}
+        <button onClick={onGoHome} className="focus:outline-none">
+          <NavLink 
+            icon={<House size={20} weight="duotone" />} 
+            label="Beranda" 
+            active={!isFavoritePage} 
+          />
+        </button>
+        
         <NavLink icon={<SquaresFour size={20} weight="duotone" />} label="Kategori" />
         <NavLink icon={<ListChecks size={20} weight="duotone" />} label="Checklist" />
         <NavLink icon={<ChatCircleDots size={20} weight="duotone" />} label="Konsultasi" />
@@ -88,7 +95,6 @@ const Navbar = ({ onOpenAuth, onOpenFavorites, isFavoritePage }) => {
         >
           <BookmarkSimple size={22} weight={isFavoritePage ? "fill" : "bold"} />
           
-          {/* Badge Titik: Muncul HANYA jika ada item baru (showBadge) */}
           <AnimatePresence>
             {showBadge && (
               <motion.span 
@@ -146,10 +152,11 @@ const Navbar = ({ onOpenAuth, onOpenFavorites, isFavoritePage }) => {
   );
 };
 
+// NavLink diubah sedikit agar props active bekerja maksimal
 const NavLink = ({ icon, label, active = false }) => (
-  <a href="#" className={`flex items-center gap-1.5 text-sm font-bold transition-all hover:text-primary ${active ? 'text-primary' : 'text-slate-500'}`}>
+  <div className={`flex items-center gap-1.5 text-sm font-bold transition-all hover:text-primary cursor-pointer ${active ? 'text-primary' : 'text-slate-500'}`}>
     {icon} <span>{label}</span>
-  </a>
+  </div>
 );
 
 export default Navbar;

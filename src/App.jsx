@@ -8,17 +8,38 @@ import CategoryBlogSystem from './components/CategoryBlogSystem';
 import BlogDetail from './components/BlogDetail';
 import AuthPage from './components/AuthPage';
 import FavoritePage from './components/FavoritePage'; 
+import GrowthTracker from './components/GrowthTracker';
+import ImmunizationTracker from './components/ImmunizationTracker'; 
 
 function AppContent() {
   // STATE: Navigasi & UI
   const [activeArticle, setActiveArticle] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false); 
+  const [showGrowthTracker, setShowGrowthTracker] = useState(false);
+  const [showImmunization, setShowImmunization] = useState(false); 
   const [searchQuery, setSearchQuery] = useState(""); 
   const { user } = useAuth(); 
 
+  // --- STATE BARU: DATA ANAK (Pusat Informasi) ---
+  const [childData, setChildData] = useState({
+    name: "",
+    age: 0,
+    weight: 0,
+    height: 0
+  });
+
   // REF: Untuk menandai lokasi bagian blog
   const blogSectionRef = useRef(null);
+
+  // FUNGSI: Kembali ke Beranda (Tampilan Utama)
+  const handleGoHome = () => {
+    setActiveArticle(null);    
+    setShowFavorites(false);   
+    setShowGrowthTracker(false);
+    setShowImmunization(false); 
+    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+  };
 
   // FUNGSI: Scroll ke bagian blog saat cari diklik/enter
   const handleSearchTrigger = (e) => {
@@ -30,9 +51,16 @@ function AppContent() {
 
   // FUNGSI PUSAT: Buka artikel (Dipakai di Home & Favorite)
   const handleOpenArticle = (article) => {
-    setActiveArticle(article);   // Set artikel aktif untuk ditampilkan di BlogDetail
-    setShowFavorites(false);      // Pastikan halaman favorite tertutup
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll ke atas otomatis
+    setActiveArticle(article);   
+    setShowFavorites(false);      
+    setShowGrowthTracker(false);
+    setShowImmunization(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+  };
+
+  // FUNGSI: Menerima update data dari Growth Tracker
+  const handleSaveGrowthData = (data) => {
+    setChildData(data); // Simpan data anak agar bisa dipakai di Imunisasi
   };
 
   return (
@@ -76,9 +104,12 @@ function AppContent() {
       {/* --- LAYER 1: NAVIGATION --- */}
       <Navbar 
         onOpenAuth={() => setShowAuth(true)} 
+        onGoHome={handleGoHome} 
         onOpenFavorites={() => {
             setShowFavorites(true);
             setActiveArticle(null); 
+            setShowGrowthTracker(false);
+            setShowImmunization(false);
         }}
         isFavoritePage={showFavorites}
       />
@@ -103,7 +134,40 @@ function AppContent() {
             </motion.div>
           ) : 
           
-          /* TAMPILAN 2: DETAIL ARTIKEL */
+          /* TAMPILAN 2: GROWTH TRACKER (TERHUBUNG) */
+          showGrowthTracker ? (
+            <motion.div
+              key="growth-tracker"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+            >
+              <GrowthTracker 
+                onBack={() => setShowGrowthTracker(false)} 
+                onSave={handleSaveGrowthData} // Hubungkan fungsi simpan
+                initialData={childData}       // Kirim data yang sudah ada
+              />
+            </motion.div>
+          ) :
+
+          /* TAMPILAN 3: IMMUNIZATION TRACKER (TERHUBUNG) */
+          showImmunization ? (
+            <motion.div
+              key="immunization-tracker"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.4 }}
+            >
+              <ImmunizationTracker 
+                childData={childData}        // Kirim data dari Tracker ke sini
+                onBack={() => setShowImmunization(false)} 
+              />
+            </motion.div>
+          ) :
+
+          /* TAMPILAN 4: DETAIL ARTIKEL */
           activeArticle ? (
             <motion.div 
               key="detail"
@@ -119,7 +183,7 @@ function AppContent() {
             </motion.div>
           ) : (
             
-            /* TAMPILAN 3: HOME / BERANDA */
+            /* TAMPILAN 5: HOME / BERANDA */
             <motion.div 
               key="home"
               initial={{ opacity: 0, y: 10 }}
@@ -172,7 +236,12 @@ function AppContent() {
               </div>
 
               <section className="px-6 md:px-20 py-24 grid md:grid-cols-2 gap-8 max-w-7xl mx-auto">
+                {/* KARTU GROWTH TRACKER */}
                 <motion.div 
+                  onClick={() => {
+                    setShowGrowthTracker(true);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                   whileHover={{ y: -8, scale: 1.02 }}
                   className="bg-white/40 backdrop-blur-md p-10 rounded-[3rem] border-2 border-white flex items-center justify-between group cursor-pointer shadow-xl shadow-blue-900/5 transition-all"
                 >
@@ -183,7 +252,12 @@ function AppContent() {
                   <div className="text-6xl group-hover:scale-110 transition-transform">📊</div>
                 </motion.div>
 
+                {/* KARTU REMINDER */}
                 <motion.div 
+                  onClick={() => {
+                    setShowImmunization(true);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                   whileHover={{ y: -8, scale: 1.02 }}
                   className="bg-white/40 backdrop-blur-md p-10 rounded-[3rem] border-2 border-white flex items-center justify-between group cursor-pointer shadow-xl shadow-green-900/5 transition-all"
                 >
@@ -213,13 +287,11 @@ function AppContent() {
                exit={{ opacity: 0, scale: 0.9, y: 20 }}
                className="relative w-full max-w-5xl"
               >
-                <button 
-                 onClick={() => setShowAuth(false)}
-                 className="absolute top-8 right-12 z-[210] bg-white/10 hover:bg-white/20 p-2 rounded-full text-slate-500 hover:text-slate-800 transition-all font-bold backdrop-blur-md"
-                >
-                  ✕
-                </button>
-                <AuthPage onSuccess={() => setShowAuth(false)} />
+                {/* TOMBOL X LUAR SUDAH DIHAPUS DARI SINI */}
+                <AuthPage 
+                  onSuccess={() => setShowAuth(false)} 
+                  onClose={() => setShowAuth(false)} 
+                />
               </motion.div>
           </div>
         )}
