@@ -1,13 +1,20 @@
 // src/components/CategoryBlogSystem.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, ArrowRight } from '@phosphor-icons/react';
 // IMPORT DATA DISINI
 import { categories, allArticles } from '../data/blogData';
 
-const CategoryBlogSystem = ({ onArticleClick, searchQuery = "" }) => {
+const CategoryBlogSystem = ({ onArticleClick, searchQuery = "", onArticlesLoaded }) => {
   const [selectedCategory, setSelectedCategory] = useState('neonatal');
   
+  // --- BARU: KIRIM DATA KE PARENT (App.jsx) AGAR BISA DIBACA BLOGDETAIL ---
+  useEffect(() => {
+    if (onArticlesLoaded && allArticles) {
+      onArticlesLoaded(allArticles);
+    }
+  }, [onArticlesLoaded]);
+
   // --- LOGIKA FILTER: Kategori DAN Pencarian Judul ---
   const filteredArticles = allArticles.filter(art => {
     const matchesCategory = art.categoryId === selectedCategory;
@@ -83,8 +90,8 @@ const CategoryBlogSystem = ({ onArticleClick, searchQuery = "" }) => {
                     className="bg-white p-5 rounded-[2rem] shadow-sm flex gap-4 border border-slate-50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 transition-all group cursor-pointer"
                   >
                     {/* Thumbnail Logic */}
-                    <div className="w-20 h-20 bg-bg rounded-2xl flex items-center justify-center text-3xl shrink-0 overflow-hidden shadow-inner border border-slate-50">
-                      {article.img && article.img.startsWith('http') ? (
+                    <div className="w-20 h-20 bg-slate-50 rounded-2xl flex items-center justify-center text-3xl shrink-0 overflow-hidden shadow-inner border border-slate-50">
+                      {article.img && typeof article.img === 'string' && article.img.startsWith('http') ? (
                         <img src={article.img} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                       ) : (
                         <span className="group-hover:scale-125 transition-transform duration-500 inline-block">{article.img || '📝'}</span>

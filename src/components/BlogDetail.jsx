@@ -6,12 +6,11 @@ import {
   Quotes, Sparkle, CheckCircle, CaretRight
 } from '@phosphor-icons/react';
 
-const BlogDetail = ({ article, onBack, allArticles = [] }) => {
+const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsultClick }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
-  // 1. Cek apakah artikel sudah ada di favorite saat halaman dibuka
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
@@ -22,7 +21,6 @@ const BlogDetail = ({ article, onBack, allArticles = [] }) => {
     }
   }, [article]);
 
-  // 2. Fungsi Tambah/Hapus Favorite
   const toggleFavorite = () => {
     const favorites = JSON.parse(localStorage.getItem('momscare_favorites') || '[]');
     
@@ -30,6 +28,7 @@ const BlogDetail = ({ article, onBack, allArticles = [] }) => {
       const updated = favorites.filter(fav => fav.id !== article.id);
       localStorage.setItem('momscare_favorites', JSON.stringify(updated));
       setIsSaved(false);
+      setToastMessage("Dihapus dari Favorite");
     } else {
       const newFavorite = {
         id: article.id,
@@ -43,14 +42,12 @@ const BlogDetail = ({ article, onBack, allArticles = [] }) => {
       favorites.push(newFavorite);
       localStorage.setItem('momscare_favorites', JSON.stringify(favorites));
       setIsSaved(true);
-      
       setToastMessage("Berhasil disimpan ke Favorite!");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2000);
     }
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
   };
 
-  // 3. FUNGSI SHARE (Logika Utama)
   const handleShare = async () => {
     const shareData = {
       title: article.title,
@@ -60,12 +57,10 @@ const BlogDetail = ({ article, onBack, allArticles = [] }) => {
 
     try {
       if (navigator.share) {
-        // Munculkan menu share native HP
         await navigator.share(shareData);
       } else {
-        // Fallback: Copy Link untuk Laptop/Desktop
         await navigator.clipboard.writeText(window.location.href);
-        setToastMessage("Link berhasil disalin ke papan klip!");
+        setToastMessage("Link berhasil disalin!");
         setShowToast(true);
         setTimeout(() => setShowToast(false), 2000);
       }
@@ -76,28 +71,42 @@ const BlogDetail = ({ article, onBack, allArticles = [] }) => {
 
   if (!article) return null;
 
-  // Filter Artikel Terkait (Mencari kategori yang sama, maksimal 2 artikel)
+  const currentCategory = article.categoryId || article.category;
   const relatedArticles = allArticles
-    .filter(item => (item.categoryId === article.categoryId || item.category === article.category) && item.id !== article.id)
-    .slice(0, 2);
+    .filter(item => 
+      (item.categoryId === currentCategory || item.category === currentCategory) && 
+      item.id !== article.id
+    )
+    .slice(0, 3);
 
   const displayImage = article.img || article.image || "";
+
+  // Helper for rendering structured content if available
+  const renderContent = () => {
+    if (article.content && Array.isArray(article.content)) {
+      return article.content.map((block, idx) => {
+        if (block.type === 'subtitle') return <h3 key={idx} className="text-2xl font-kids text-slate-800 mt-10 mb-4">{block.text}</h3>;
+        return <p key={idx} className="text-slate-600 leading-relaxed mb-6 text-lg">{block.text}</p>;
+      });
+    }
+    return null;
+  };
 
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen pb-20 bg-[#fbfdff] relative"
+      className="min-h-screen pb-20 bg-[#fbfdff] relative font-outfit"
     >
       {/* Toast Notification */}
       <AnimatePresence>
         {showToast && (
           <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-slate-800 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-bold whitespace-nowrap"
+            initial={{ opacity: 0, y: 50, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: 20, x: "-50%" }}
+            className="fixed bottom-10 left-1/2 z-[100] bg-slate-800 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-bold whitespace-nowrap"
           >
             <CheckCircle size={20} weight="fill" className="text-secondary" />
             {toastMessage}
@@ -108,22 +117,21 @@ const BlogDetail = ({ article, onBack, allArticles = [] }) => {
       {/* --- 1. HERO SECTION --- */}
       <div className="relative h-[45vh] md:h-[55vh] w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
-          {displayImage && typeof displayImage === 'string' && displayImage.startsWith('http') ? (
+          {displayImage && typeof displayImage === 'string' && (displayImage.startsWith('http') || displayImage.startsWith('/')) ? (
             <img 
               src={displayImage} 
               alt={article.title} 
-              className="w-full h-full object-cover brightness-[0.95]" 
+              className="w-full h-full object-cover brightness-[0.9]" 
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
-               <span className="text-[100px] opacity-10">{displayImage || "🍼"}</span>
+            <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+               <span className="text-[100px] opacity-20">{displayImage || "🍼"}</span>
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#fbfdff] via-transparent to-transparent opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#fbfdff] via-transparent to-transparent" />
         </div>
 
-        {/* Navigasi Atas */}
-        <div className="relative z-30 max-w-5xl mx-auto px-6 pt-8 flex justify-between items-center">
+        <div className="relative z-30 max-w-6xl mx-auto px-6 pt-8 flex justify-between items-center">
           <motion.button 
             whileHover={{ x: -4 }}
             whileTap={{ scale: 0.95 }}
@@ -134,43 +142,18 @@ const BlogDetail = ({ article, onBack, allArticles = [] }) => {
             <span className="font-kids text-xs">Kembali</span>
           </motion.button>
           
-          <span className="bg-black/20 backdrop-blur-md text-white border border-white/30 px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest">
-            {article.categoryId || article.category}
+          <span className="bg-primary text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20">
+            {currentCategory}
           </span>
         </div>
       </div>
 
       {/* --- 2. MAIN CONTENT AREA --- */}
-      <div className="max-w-5xl mx-auto px-6 mt-6 relative z-40">
-        <div className="flex flex-col lg:flex-row gap-8">
+      <div className="max-w-6xl mx-auto px-6 -mt-10 relative z-40">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
           
-          {/* SISI KIRI: Penulis & Metadata */}
-          <aside className="lg:w-[28%]">
-            <div className="lg:sticky lg:top-10 space-y-6">
-              <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-blue-900/5">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary">
-                    <User size={24} weight="duotone" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Penulis</p>
-                    <p className="text-sm font-bold text-slate-700">{article.author || "Tim MomsCare"}</p>
-                  </div>
-                </div>
-                <div className="space-y-3 pt-4 border-t border-slate-50">
-                  <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500">
-                    <Calendar size={16} className="text-primary" /> {article.date || "Baru saja"}
-                  </div>
-                  <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500">
-                    <Clock size={16} className="text-primary" /> 5 Menit Baca
-                  </div>
-                </div>
-              </div>
-            </div>
-          </aside>
-
-          {/* SISI KANAN: Konten Artikel Utama */}
-          <main className="lg:w-[72%]">
+          {/* SISI KIRI (72%): Konten Utama */}
+          <main className="lg:w-[72%] w-full">
             <div className="bg-white rounded-[3rem] p-8 md:p-14 shadow-2xl shadow-blue-900/5 border border-slate-50">
               
               <h1 className="text-3xl md:text-5xl font-kids text-slate-800 leading-[1.2] mb-10">
@@ -183,6 +166,11 @@ const BlogDetail = ({ article, onBack, allArticles = [] }) => {
                 <p className="text-slate-600 text-base md:text-lg italic leading-relaxed relative z-10">
                   {article.desc || article.excerpt}
                 </p>
+              </div>
+
+              {/* Extended Content (If Any) */}
+              <div className="mb-12">
+                {renderContent()}
               </div>
 
               {/* Langkah Praktis */}
@@ -213,7 +201,7 @@ const BlogDetail = ({ article, onBack, allArticles = [] }) => {
                 </div>
               </div>
 
-              {/* Footer Artikel: Bookmark & Share */}
+              {/* Footer Artikel */}
               <footer className="mt-20 pt-10 border-t border-slate-100 flex flex-col md:flex-row gap-6 items-center justify-between">
                 <div className="flex gap-4">
                   <motion.button 
@@ -228,7 +216,6 @@ const BlogDetail = ({ article, onBack, allArticles = [] }) => {
                     {isSaved ? "Tersimpan" : "Simpan"}
                   </motion.button>
                   
-                  {/* ICON SHARE DENGAN LOGIKA */}
                   <button 
                     onClick={handleShare}
                     className="p-4 bg-slate-50 rounded-2xl text-slate-400 hover:text-primary transition-all shadow-sm active:scale-90"
@@ -237,53 +224,91 @@ const BlogDetail = ({ article, onBack, allArticles = [] }) => {
                   </button>
                 </div>
                 
-                <button className="w-full md:w-auto bg-primary text-white px-10 py-4 rounded-2xl font-bold text-sm shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 font-outfit">
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={onConsultClick}
+                  className="w-full md:w-auto bg-primary text-white px-10 py-4 rounded-2xl font-bold text-sm shadow-xl shadow-primary/20 transition-all flex items-center justify-center gap-3"
+                >
                   <ChatCircleDots size={24} weight="fill" /> Konsultasi Sekarang
-                </button>
+                </motion.button>
               </footer>
             </div>
+          </main>
 
-            {/* --- 3. RELATED ARTICLES SECTION --- */}
-            {relatedArticles.length > 0 && (
-              <div className="mt-16">
-                <div className="flex items-center justify-between mb-8 px-4">
-                  <h3 className="text-2xl font-kids text-slate-800">Mungkin Moms Suka</h3>
-                  <div className="h-1 flex-1 bg-slate-100 mx-6 rounded-full opacity-50" />
+          {/* SISI KANAN (28%): Sidebar Sticky */}
+          <aside className="lg:w-[28%] w-full lg:sticky lg:top-10 h-fit space-y-6">
+            <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-blue-900/5">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                  <User size={24} weight="duotone" />
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {relatedArticles.map((item) => (
-                    <motion.div
-                      key={item.id}
-                      whileHover={{ y: -5 }}
-                      className="bg-white p-4 rounded-[2rem] border border-slate-100 shadow-xl shadow-blue-900/5 group cursor-pointer"
-                    >
-                      <div className="aspect-[16/10] rounded-[1.5rem] overflow-hidden mb-4 relative">
-                        <img 
-                          src={item.img || item.image} 
-                          alt={item.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg text-[9px] font-black text-primary uppercase tracking-wider">
-                          {item.categoryId || item.category}
-                        </div>
-                      </div>
-                      <h4 className="font-bold text-slate-800 line-clamp-2 mb-3 px-1 group-hover:text-primary transition-colors">
-                        {item.title}
-                      </h4>
-                      <div className="flex items-center justify-between px-1 text-slate-400 text-[10px] font-bold">
-                        <span className="flex items-center gap-1"><Calendar size={14} /> {item.date}</span>
-                        <span className="text-primary flex items-center gap-1 font-black uppercase tracking-tighter">
-                          Baca <CaretRight weight="bold" />
-                        </span>
-                      </div>
-                    </motion.div>
-                  ))}
+                <div>
+                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Penulis</p>
+                  <p className="text-sm font-bold text-slate-700">{article.author || "Tim MomsCare"}</p>
                 </div>
               </div>
-            )}
-          </main>
+              <div className="space-y-3 pt-4 border-t border-slate-50">
+                <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500">
+                  <Calendar size={16} className="text-primary" /> {article.date || "Baru saja"}
+                </div>
+                <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500">
+                  <Clock size={16} className="text-primary" /> {article.readTime || "5 Menit Baca"}
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-secondary/5 p-6 rounded-[2.5rem] border border-secondary/10">
+              <p className="text-[10px] text-secondary font-black uppercase mb-2 tracking-widest">Tips Hari Ini</p>
+              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                Jangan lupa Moms, setiap anak unik. Tetap semangat memantau tumbuh kembang si kecil dengan sabar dan kasih sayang!
+              </p>
+            </div>
+          </aside>
         </div>
+
+        {/* --- 3. REKOMENDASI ARTIKEL --- */}
+        {relatedArticles.length > 0 && (
+          <div className="mt-20">
+            <div className="flex items-center justify-between mb-8 px-4">
+              <h3 className="text-2xl font-kids text-slate-800">Lainnya di {currentCategory}</h3>
+              <div className="h-1 flex-1 bg-slate-100 mx-6 rounded-full opacity-50" />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {relatedArticles.map((item) => (
+                <motion.div
+                  key={item.id}
+                  whileHover={{ y: -5 }}
+                  onClick={() => onArticleClick && onArticleClick(item)}
+                  className="bg-white p-4 rounded-[2rem] border border-slate-100 shadow-xl shadow-blue-900/5 group cursor-pointer"
+                >
+                  <div className="aspect-[16/10] rounded-[1.5rem] overflow-hidden mb-4 relative">
+                    <img 
+                      src={item.img || item.image} 
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg text-[9px] font-black text-primary uppercase tracking-wider">
+                      {item.categoryId || item.category}
+                    </div>
+                  </div>
+                  <h4 className="font-bold text-slate-800 line-clamp-2 mb-3 px-1 group-hover:text-primary transition-colors">
+                    {item.title}
+                  </h4>
+                  <div className="flex items-center justify-between px-1 text-slate-400 text-[10px] font-bold">
+                    <span className="flex items-center gap-1">
+                      <Calendar size={14} /> {item.date}
+                    </span>
+                    <span className="text-primary flex items-center gap-1 font-black uppercase tracking-tighter">
+                      Baca <CaretRight weight="bold" />
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </motion.div>
   );
