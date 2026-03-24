@@ -10,6 +10,8 @@ import AuthPage from './components/AuthPage';
 import FavoritePage from './components/FavoritePage'; 
 import GrowthTracker from './components/GrowthTracker';
 import ImmunizationTracker from './components/ImmunizationTracker'; 
+import AboutPage from './components/AboutPage'; 
+import ContactPage from './components/ContactPage'; 
 
 function AppContent() {
   // STATE: Navigasi & UI
@@ -18,10 +20,12 @@ function AppContent() {
   const [showFavorites, setShowFavorites] = useState(false); 
   const [showGrowthTracker, setShowGrowthTracker] = useState(false);
   const [showImmunization, setShowImmunization] = useState(false); 
+  const [showAbout, setShowAbout] = useState(false); 
+  const [showContact, setShowContact] = useState(false); 
   const [searchQuery, setSearchQuery] = useState(""); 
   const { user } = useAuth(); 
 
-  // --- STATE BARU: DATA ANAK (Pusat Informasi) ---
+  // --- STATE DATA ANAK ---
   const [childData, setChildData] = useState({
     name: "",
     age: 0,
@@ -29,19 +33,26 @@ function AppContent() {
     height: 0
   });
 
-  // REF: Untuk menandai lokasi bagian blog
   const blogSectionRef = useRef(null);
 
-  // FUNGSI: Kembali ke Beranda (Tampilan Utama)
+  // FUNGSI: Logika penentuan string activePage untuk Navbar
+  const getActivePage = () => {
+    if (showAbout) return 'about';
+    if (showContact) return 'contact';
+    return 'home';
+  };
+
+  // FUNGSI: Kembali ke Beranda (Reset semua state halaman)
   const handleGoHome = () => {
     setActiveArticle(null);    
     setShowFavorites(false);   
     setShowGrowthTracker(false);
     setShowImmunization(false); 
+    setShowAbout(false);
+    setShowContact(false);
     window.scrollTo({ top: 0, behavior: 'smooth' }); 
   };
 
-  // FUNGSI: Scroll ke bagian blog saat cari diklik/enter
   const handleSearchTrigger = (e) => {
     if (e) e.preventDefault();
     if (blogSectionRef.current) {
@@ -49,18 +60,18 @@ function AppContent() {
     }
   };
 
-  // FUNGSI PUSAT: Buka artikel (Dipakai di Home & Favorite)
   const handleOpenArticle = (article) => {
     setActiveArticle(article);   
     setShowFavorites(false);      
     setShowGrowthTracker(false);
     setShowImmunization(false);
+    setShowAbout(false);
+    setShowContact(false);
     window.scrollTo({ top: 0, behavior: 'smooth' }); 
   };
 
-  // FUNGSI: Menerima update data dari Growth Tracker
   const handleSaveGrowthData = (data) => {
-    setChildData(data); // Simpan data anak agar bisa dipakai di Imunisasi
+    setChildData(data);
   };
 
   return (
@@ -103,6 +114,7 @@ function AppContent() {
 
       {/* --- LAYER 1: NAVIGATION --- */}
       <Navbar 
+        activePage={getActivePage()}
         onOpenAuth={() => setShowAuth(true)} 
         onGoHome={handleGoHome} 
         onOpenFavorites={() => {
@@ -110,6 +122,26 @@ function AppContent() {
             setActiveArticle(null); 
             setShowGrowthTracker(false);
             setShowImmunization(false);
+            setShowAbout(false);
+            setShowContact(false);
+        }}
+        onOpenAbout={() => {
+          setShowAbout(true);
+          setShowContact(false);
+          setActiveArticle(null);
+          setShowFavorites(false);
+          setShowGrowthTracker(false);
+          setShowImmunization(false);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onOpenContact={() => {
+          setShowContact(true);
+          setShowAbout(false);
+          setActiveArticle(null);
+          setShowFavorites(false);
+          setShowGrowthTracker(false);
+          setShowImmunization(false);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         isFavoritePage={showFavorites}
       />
@@ -118,86 +150,52 @@ function AppContent() {
       <main className="relative z-10 min-h-screen pt-4 md:pt-10">
         <AnimatePresence mode="wait">
           
-          {/* TAMPILAN 1: HALAMAN FAVORITE */}
-          {showFavorites ? (
-            <motion.div
-              key="favorites-page"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3 }}
-            >
-              <FavoritePage 
-                onBack={() => setShowFavorites(false)} 
-                onArticleClick={handleOpenArticle} 
-              />
+          {/* HALAMAN TENTANG KAMI */}
+          {showAbout ? (
+            <motion.div key="about" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+              <AboutPage onBack={handleGoHome} />
+            </motion.div>
+          ) : 
+
+          /* HALAMAN KONTAK */
+          showContact ? (
+            <motion.div key="contact" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+              <ContactPage onBack={handleGoHome} />
+            </motion.div>
+          ) :
+
+          /* HALAMAN FAVORITE */
+          showFavorites ? (
+            <motion.div key="favorites-page" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}>
+              <FavoritePage onBack={handleGoHome} onArticleClick={handleOpenArticle} />
             </motion.div>
           ) : 
           
-          /* TAMPILAN 2: GROWTH TRACKER (TERHUBUNG) */
+          /* GROWTH TRACKER */
           showGrowthTracker ? (
-            <motion.div
-              key="growth-tracker"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4 }}
-            >
-              <GrowthTracker 
-                onBack={() => setShowGrowthTracker(false)} 
-                onSave={handleSaveGrowthData} // Hubungkan fungsi simpan
-                initialData={childData}       // Kirim data yang sudah ada
-              />
+            <motion.div key="growth-tracker" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <GrowthTracker onBack={handleGoHome} onSave={handleSaveGrowthData} initialData={childData} />
             </motion.div>
           ) :
 
-          /* TAMPILAN 3: IMMUNIZATION TRACKER (TERHUBUNG) */
+          /* IMMUNIZATION TRACKER */
           showImmunization ? (
-            <motion.div
-              key="immunization-tracker"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.4 }}
-            >
-              <ImmunizationTracker 
-                childData={childData}        // Kirim data dari Tracker ke sini
-                onBack={() => setShowImmunization(false)} 
-              />
+            <motion.div key="immunization-tracker" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}>
+              <ImmunizationTracker childData={childData} onBack={handleGoHome} />
             </motion.div>
           ) :
 
-          /* TAMPILAN 4: DETAIL ARTIKEL */
+          /* DETAIL ARTIKEL */
           activeArticle ? (
-            <motion.div 
-              key="detail"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            >
-              <BlogDetail 
-                article={activeArticle} 
-                onBack={() => setActiveArticle(null)} 
-              />
+            <motion.div key="detail" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} transition={{ type: "spring", damping: 25, stiffness: 200 }}>
+              <BlogDetail article={activeArticle} onBack={() => setActiveArticle(null)} />
             </motion.div>
           ) : (
             
-            /* TAMPILAN 5: HOME / BERANDA */
-            <motion.div 
-              key="home"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.4 }}
-            >
-              {/* Hero Section */}
+            /* HOME / BERANDA */
+            <motion.div key="home" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.4 }}>
               <section className="pt-16 pb-12 px-6 text-center">
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="max-w-4xl mx-auto"
-                >
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-4xl mx-auto">
                   <h1 className="text-4xl md:text-6xl text-slate-800 font-bold leading-[1.1] mb-6 font-kids">
                     MomsCare: Teman Setia <br/> 
                     <span className="text-primary italic">Ibu Rawat Si Kecil.</span>
@@ -207,10 +205,7 @@ function AppContent() {
                     <span className="text-primary font-bold italic">"Tumbuh Hebat Bersama Ibu"</span>
                   </p>
 
-                  <form 
-                    onSubmit={handleSearchTrigger}
-                    className="relative max-w-lg mx-auto group"
-                  >
+                  <form onSubmit={handleSearchTrigger} className="relative max-w-lg mx-auto group">
                     <input 
                       type="text" 
                       value={searchQuery}
@@ -218,10 +213,7 @@ function AppContent() {
                       placeholder="Cari: Imunisasi, MPASI, Gizi..."
                       className="w-full px-8 py-4 rounded-full border-2 border-white/50 bg-white/60 backdrop-blur-md focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-sm font-medium shadow-xl group-hover:shadow-2xl"
                     />
-                    <button 
-                      type="submit"
-                      className="absolute right-2 top-2 bg-primary p-2.5 rounded-full text-white px-7 font-bold text-sm hover:brightness-110 transition-all shadow-lg active:scale-95"
-                    >
+                    <button type="submit" className="absolute right-2 top-2 bg-primary p-2.5 rounded-full text-white px-7 font-bold text-sm hover:brightness-110 transition-all shadow-lg active:scale-95">
                       Cari
                     </button>
                   </form>
@@ -229,43 +221,42 @@ function AppContent() {
               </section>
 
               <div className="relative" ref={blogSectionRef}>
-                <CategoryBlogSystem 
-                  onArticleClick={handleOpenArticle} 
-                  searchQuery={searchQuery} 
-                />
+                <CategoryBlogSystem onArticleClick={handleOpenArticle} searchQuery={searchQuery} />
               </div>
 
               <section className="px-6 md:px-20 py-24 grid md:grid-cols-2 gap-8 max-w-7xl mx-auto">
                 {/* KARTU GROWTH TRACKER */}
                 <motion.div 
-                  onClick={() => {
-                    setShowGrowthTracker(true);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
+                  onClick={() => { setShowGrowthTracker(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                   whileHover={{ y: -8, scale: 1.02 }}
-                  className="bg-white/40 backdrop-blur-md p-10 rounded-[3rem] border-2 border-white flex items-center justify-between group cursor-pointer shadow-xl shadow-blue-900/5 transition-all"
+                  className="bg-white/40 backdrop-blur-md p-10 rounded-[3rem] border-2 border-white flex items-center justify-between group cursor-pointer shadow-xl shadow-blue-900/5 transition-all overflow-hidden relative"
                 >
-                  <div className="max-w-[70%]">
+                  <div className="max-w-[70%] z-10">
                     <h3 className="text-2xl text-slate-800 font-bold mb-2 font-kids">Cek Grafik Pertumbuhan</h3>
-                    <p className="text-slate-500 text-sm font-medium">Pantau berat & tinggi badan ideal si kecil sesuai standar WHO.</p>
+                    <p className="text-slate-500 text-sm font-medium mb-6 leading-relaxed">Pantau berat & tinggi badan ideal si kecil sesuai standar WHO.</p>
+                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="bg-[#FF7E5F] text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-lg shadow-orange-200">
+                      Mulai Cek Sekarang
+                    </motion.button>
                   </div>
-                  <div className="text-6xl group-hover:scale-110 transition-transform">📊</div>
+                  <div className="text-6xl group-hover:scale-110 transition-transform z-10">📊</div>
+                  <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-blue-100/50 rounded-full blur-3xl"></div>
                 </motion.div>
 
                 {/* KARTU REMINDER */}
                 <motion.div 
-                  onClick={() => {
-                    setShowImmunization(true);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
+                  onClick={() => { setShowImmunization(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                   whileHover={{ y: -8, scale: 1.02 }}
-                  className="bg-white/40 backdrop-blur-md p-10 rounded-[3rem] border-2 border-white flex items-center justify-between group cursor-pointer shadow-xl shadow-green-900/5 transition-all"
+                  className="bg-white/40 backdrop-blur-md p-10 rounded-[3rem] border-2 border-white flex items-center justify-between group cursor-pointer shadow-xl shadow-green-900/5 transition-all overflow-hidden relative"
                 >
-                  <div className="max-w-[70%]">
+                  <div className="max-w-[70%] z-10">
                     <h3 className="text-2xl text-slate-800 font-bold mb-2 font-kids">Reminder Imunisasi</h3>
-                    <p className="text-slate-500 text-sm font-medium">Jangan lewatkan jadwal vaksin. Kami ingatkan tepat waktu!</p>
+                    <p className="text-slate-500 text-sm font-medium mb-6 leading-relaxed">Jangan lewatkan jadwal vaksin. Kami ingatkan tepat waktu!</p>
+                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="bg-primary text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-lg shadow-blue-200">
+                      Daftar Sekarang
+                    </motion.button>
                   </div>
-                  <div className="text-6xl group-hover:rotate-12 transition-transform">🗓️</div>
+                  <div className="text-6xl group-hover:rotate-12 transition-transform z-10">🗓️</div>
+                  <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-green-100/50 rounded-full blur-3xl"></div>
                 </motion.div>
               </section>
             </motion.div>
@@ -281,39 +272,18 @@ function AppContent() {
       <AnimatePresence>
         {showAuth && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-              <motion.div 
-               initial={{ opacity: 0, scale: 0.9, y: 20 }}
-               animate={{ opacity: 1, scale: 1, y: 0 }}
-               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-               className="relative w-full max-w-5xl"
-              >
-                {/* TOMBOL X LUAR SUDAH DIHAPUS DARI SINI */}
-                <AuthPage 
-                  onSuccess={() => setShowAuth(false)} 
-                  onClose={() => setShowAuth(false)} 
-                />
+              <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="relative w-full max-w-5xl">
+                <AuthPage onSuccess={() => setShowAuth(false)} onClose={() => setShowAuth(false)} />
               </motion.div>
           </div>
         )}
       </AnimatePresence>
 
       {/* --- MASKOT FLOATING HELP --- */}
-      <motion.div 
-        animate={{ y: [0, -12, 0] }}
-        transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-        className="fixed bottom-8 right-8 w-20 h-20 hidden lg:block cursor-help z-50 group"
-      >
+      <motion.div animate={{ y: [0, -12, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="fixed bottom-8 right-8 w-20 h-20 hidden lg:block cursor-help z-50 group">
         <div className="relative">
-          <img 
-            src="https://api.dicebear.com/7.x/bottts/svg?seed=Panda&backgroundColor=7DA2C3" 
-            alt="Mascot" 
-            className="w-full h-full bg-white rounded-3xl p-2 border-4 border-white shadow-2xl transition-transform group-hover:scale-110" 
-          />
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            className="absolute -top-14 -left-32 bg-white px-5 py-3 rounded-2xl rounded-br-none text-[13px] font-bold shadow-2xl border border-slate-50 whitespace-nowrap text-slate-700 pointer-events-none"
-          >
+          <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Panda&backgroundColor=7DA2C3" alt="Mascot" className="w-full h-full bg-white rounded-3xl p-2 border-4 border-white shadow-2xl transition-transform group-hover:scale-110" />
+          <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} className="absolute -top-14 -left-32 bg-white px-5 py-3 rounded-2xl rounded-br-none text-[13px] font-bold shadow-2xl border border-slate-50 whitespace-nowrap text-slate-700 pointer-events-none">
             Halo Moms {user ? user.name : ''}! 👋
             <div className="absolute bottom-[-8px] right-0 w-4 h-4 bg-white rotate-45 border-r border-b border-slate-50"></div>
           </motion.div>

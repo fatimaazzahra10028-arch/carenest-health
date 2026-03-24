@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, UserPlus, ListChecks, ChatCircleDots, House, SquaresFour, UserCircle, SignOut, BookmarkSimple } from '@phosphor-icons/react';
+import { Heart, UserPlus, Info, PhoneCall, House, UserCircle, SignOut, BookmarkSimple } from '@phosphor-icons/react';
 import { useAuth } from '../context/AuthContext';
 
-const Navbar = ({ onOpenAuth, onOpenFavorites, onGoHome, isFavoritePage }) => {
+const Navbar = ({ 
+  onOpenAuth, 
+  onOpenFavorites, 
+  onGoHome, 
+  isFavoritePage, 
+  onOpenAbout, 
+  onOpenContact,
+  activePage = 'home' // Ini kunci utamanya, Moms!
+}) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showBadge, setShowBadge] = useState(false);
   const { user, logout } = useAuth();
@@ -33,7 +41,6 @@ const Navbar = ({ onOpenAuth, onOpenFavorites, onGoHome, isFavoritePage }) => {
     };
 
     checkNewFavorites();
-    
     const interval = setInterval(checkNewFavorites, 1000);
     window.addEventListener('storage', checkNewFavorites);
 
@@ -52,7 +59,7 @@ const Navbar = ({ onOpenAuth, onOpenFavorites, onGoHome, isFavoritePage }) => {
           ? 'py-3 bg-white/90 backdrop-blur-xl shadow-xl shadow-blue-100/30 border-b md:border border-primary/20 md:rounded-[2rem]' 
           : 'py-5 bg-white/70 backdrop-blur-lg border-b md:border border-white/40 md:rounded-[2rem]'}`}
     >
-      {/* Brand - Klik ini juga balik ke Beranda */}
+      {/* Brand - Klik balik ke Home */}
       <div 
         className="flex items-center gap-2 group cursor-pointer" 
         onClick={onGoHome}
@@ -63,26 +70,35 @@ const Navbar = ({ onOpenAuth, onOpenFavorites, onGoHome, isFavoritePage }) => {
         <span className="font-kids text-2xl text-slate-800 font-bold">Moms<span className="text-primary">Care</span></span>
       </div>
 
-      {/* Nav Links */}
+      {/* Nav Links - Logika Active Check */}
       <div className="hidden md:flex gap-8 items-center">
-        {/* Tombol Beranda diperbaiki dengan onClick */}
         <button onClick={onGoHome} className="focus:outline-none">
           <NavLink 
             icon={<House size={20} weight="duotone" />} 
             label="Beranda" 
-            active={!isFavoritePage} 
+            active={activePage === 'home' && !isFavoritePage} 
           />
         </button>
         
-        <NavLink icon={<SquaresFour size={20} weight="duotone" />} label="Kategori" />
-        <NavLink icon={<ListChecks size={20} weight="duotone" />} label="Checklist" />
-        <NavLink icon={<ChatCircleDots size={20} weight="duotone" />} label="Konsultasi" />
+        <button onClick={onOpenAbout} className="focus:outline-none">
+          <NavLink 
+            icon={<Info size={20} weight="duotone" />} 
+            label="Tentang Kami" 
+            active={activePage === 'about'} 
+          />
+        </button>
+
+        <button onClick={onOpenContact} className="focus:outline-none">
+          <NavLink 
+            icon={<PhoneCall size={20} weight="duotone" />} 
+            label="Kontak" 
+            active={activePage === 'contact'} 
+          />
+        </button>
       </div>
 
-      {/* Action Section (Favorite & Auth) */}
+      {/* Action Section */}
       <div className="flex items-center gap-2 md:gap-4">
-        
-        {/* Ikon Favorite */}
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -94,7 +110,6 @@ const Navbar = ({ onOpenAuth, onOpenFavorites, onGoHome, isFavoritePage }) => {
           title="Simpanan Saya"
         >
           <BookmarkSimple size={22} weight={isFavoritePage ? "fill" : "bold"} />
-          
           <AnimatePresence>
             {showBadge && (
               <motion.span 
@@ -107,7 +122,6 @@ const Navbar = ({ onOpenAuth, onOpenFavorites, onGoHome, isFavoritePage }) => {
           </AnimatePresence>
         </motion.button>
 
-        {/* Auth Section */}
         <div className="flex items-center">
           <AnimatePresence mode="wait">
             {!user ? (
@@ -152,10 +166,23 @@ const Navbar = ({ onOpenAuth, onOpenFavorites, onGoHome, isFavoritePage }) => {
   );
 };
 
-// NavLink diubah sedikit agar props active bekerja maksimal
+// NavLink Helper dengan Garis Bawah Otomatis
 const NavLink = ({ icon, label, active = false }) => (
-  <div className={`flex items-center gap-1.5 text-sm font-bold transition-all hover:text-primary cursor-pointer ${active ? 'text-primary' : 'text-slate-500'}`}>
-    {icon} <span>{label}</span>
+  <div className={`relative flex flex-col items-center gap-1 text-sm font-bold transition-all duration-300 cursor-pointer 
+    ${active ? 'text-primary' : 'text-slate-500 hover:text-primary'}`}>
+    
+    <div className="flex items-center gap-1.5">
+      {icon} <span>{label}</span>
+    </div>
+
+    {/* Indikator Garis Bawah Aktif */}
+    {active && (
+      <motion.div 
+        layoutId="activeUnderline"
+        className="absolute -bottom-2 h-0.5 bg-primary rounded-full w-full"
+        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+      />
+    )}
   </div>
 );
 
