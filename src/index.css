@@ -1,26 +1,66 @@
-/* Import Google Fonts di baris paling atas */
+/* 1. Import Google Fonts - Quicksand (Kids) & Outfit (Body) */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Quicksand:wght@500;600;700&display=swap');
 
 @import "tailwindcss";
 
 @theme {
+  /* Palette Warna MomsCare: Pastel & Trustworthy */
   --color-primary: #7DA2C3;
   --color-secondary: #A8E6CF;
   --color-accent: #FFD3B6;
   --color-bg: #F8FAFC;
   
-  /* Daftarkan font ke dalam theme Tailwind v4 */
+  /* Definisi Font untuk Tailwind v4 */
   --font-outfit: "Outfit", sans-serif;
   --font-kids: "Quicksand", sans-serif;
+
+  /* Custom Border Radius untuk Efek "Extra Rounded" */
+  --radius-4xl: 2rem;
+  --radius-5xl: 3.5rem;
 }
 
-body {
-  font-family: var(--font-outfit);
-  background-color: var(--color-bg);
-  @apply text-slate-700 antialiased;
+/* 2. Global Base Styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-outfit);
+    background-color: var(--color-bg);
+    color: #334155; /* slate-700 */
+    /* Smooth Font Rendering (Sangat Penting untuk Lomba) */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Typography Rules */
+  h1, h2, h3, .font-kids {
+    font-family: var(--font-kids);
+    @apply font-bold tracking-tight;
+  }
+
+  /* Custom Selection Color agar senada dengan brand */
+  ::selection {
+    background-color: var(--color-primary);
+    color: white;
+  }
 }
 
-h1, h2, h3, .font-kids {
-  font-family: var(--font-kids);
-  @apply font-bold;
+/* 3. Custom Utilities (Rahasia Desain Premium) */
+@layer utilities {
+  .glass-card {
+    @apply bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60;
+  }
+
+  /* Efek bayangan yang lebih lembut untuk komponen melayang */
+  .shadow-soft {
+    shadow-color: rgba(125, 162, 195, 0.08);
+    box-shadow: 0 20px 40px -15px var(--shadow-color);
+  }
 }

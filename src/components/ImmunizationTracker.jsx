@@ -1,29 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, Syringe, CheckCircle, Clock, 
-  Info, BellRinging, CalendarCheck, 
-  CaretRight, MapPin, X, NavigationArrow
+  BellRinging, CalendarCheck, 
+  CaretRight, MapPin, X, NavigationArrow, Sparkle
 } from '@phosphor-icons/react';
 
 const ImmunizationTracker = ({ childData, onBack }) => {
   const childAge = parseInt(childData?.age) || 0;
   const childName = childData?.name || 'Si Kecil';
 
-  // --- 1. STATE & STORAGE PERSISTENCE ---
+  const initialVaxData = useMemo(() => [
+    { id: 1, age: 0, name: "Hepatitis B 1", desc: "Perlindungan Hati", detail: "Mencegah infeksi virus Hepatitis B yang dapat menyebabkan kerusakan hati kronis. Wajib 24 jam setelah lahir.", completed: childAge > 0 },
+    { id: 2, age: 1, name: "BCG & Polio 1", desc: "Cegah TBC & Lumpuh", detail: "BCG melindungi paru-paru dari bakteri Tuberkulosis, Polio mencegah kelumpuhan permanen.", completed: childAge > 1 },
+    { id: 3, age: 2, name: "DPT-HB-Hib 1", desc: "Vaksin Pentavalen", detail: "Melindungi dari 5 penyakit: Difteri, Tetanus, Pertusis, Hepatitis B, dan Pneumonia/Meningitis (Hib).", completed: false },
+    { id: 4, age: 3, name: "DPT-HB-Hib 2", desc: "Booster Kekebalan", detail: "Dosis kedua untuk memperkuat memori sistem imun terhadap kuman difteri dan tetanus.", completed: false },
+    { id: 5, age: 4, name: "Polio IPV 2", desc: "Proteksi Maksimal", detail: "Vaksin suntik (IPV) memberikan perlindungan lebih kuat dibanding hanya polio tetes.", completed: false },
+    { id: 6, age: 9, name: "Campak / MR", desc: "Cegah Ruam & Radang", detail: "Sangat penting untuk mencegah komplikasi campak seperti radang otak dan kebutaan.", completed: false },
+  ], [childAge]);
+
   const [vaccines, setVaccines] = useState(() => {
     const saved = localStorage.getItem(`vax_data_${childName}`);
-    if (saved) return JSON.parse(saved);
-    
-    return [
-      { id: 1, age: 0, name: "Hepatitis B 1", desc: "Mencegah infeksi hati & kuning.", detail: "Diberikan dalam 24 jam setelah lahir.", completed: childAge > 0 },
-      { id: 2, age: 0, name: "BCG & Polio 0", desc: "Mencegah TBC & Kelumpuhan.", detail: "BCG memberikan perlindungan terhadap TBC berat.", completed: childAge > 0 },
-      { id: 3, age: 2, name: "DPT-HB-Hib 1", desc: "Difteri, Pertusis, Tetanus.", detail: "Mencegah 5 penyakit sekaligus dalam satu suntikan.", completed: false },
-      { id: 4, age: 2, name: "PCV 1", desc: "Mencegah Radang Paru (Pneumonia).", detail: "Sangat penting untuk mencegah infeksi bakteri pneumokokus.", completed: false },
-      { id: 5, age: 3, name: "DPT-HB-Hib 2", desc: "Dosis lanjutan kekebalan.", detail: "Memperkuat antibodi dari dosis pertama.", completed: false },
-      { id: 6, age: 4, name: "Polio IPV 2", desc: "Vaksin polio suntik.", detail: "Melengkapi perlindungan polio tetes.", completed: false },
-      { id: 7, age: 9, name: "Campak / MR 1", desc: "Mencegah Campak & Rubella.", detail: "Diberikan saat anak berusia 9 bulan.", completed: false },
-    ];
+    return saved ? JSON.parse(saved) : initialVaxData;
   });
 
   const [selectedVax, setSelectedVax] = useState(null);
@@ -33,233 +31,178 @@ const ImmunizationTracker = ({ childData, onBack }) => {
     localStorage.setItem(`vax_data_${childName}`, JSON.stringify(vaccines));
   }, [vaccines, childName]);
 
-  // --- 2. PROFESIONAL NOTIFICATION SYSTEM ---
-  const requestNotification = () => {
-    if (!("Notification" in window)) {
-      alert("Browser Moms tidak mendukung notifikasi.");
-      return;
-    }
-
-    Notification.requestPermission().then(permission => {
-      if (permission === "granted") {
-        new Notification("MomsCare Aktif!", {
-          body: `Jadwal imunisasi ${childName} akan kami ingatkan tepat waktu.`,
-          icon: "https://cdn-icons-png.flaticon.com/512/3063/3063176.png"
-        });
-      }
-    });
-  };
-
-  // --- 3. GEOLOCATION SYSTEM (CEK LOKASI NYATA) ---
-  const findHospital = () => {
-    setLocationLoading(true);
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          // Membuka Google Maps dengan query RS/Puskesmas terdekat dari posisi user
-          window.open(`https://www.google.com/maps/search/Rumah+Sakit+atau+Puskesmas/@${lat},${lng},15z`, '_blank');
-          setLocationLoading(false);
-        },
-        () => {
-          // Fallback jika GPS dimatikan
-          window.open(`https://www.google.com/maps/search/Rumah+Sakit+atau+Puskesmas+terdekat`, '_blank');
-          setLocationLoading(false);
-        }
-      );
-    }
-  };
-
   const toggleComplete = (id) => {
-    setVaccines(vaccines.map(v => 
-      v.id === id ? { ...v, completed: !v.completed } : v
-    ));
+    setVaccines(prev => prev.map(v => v.id === id ? { ...v, completed: !v.completed } : v));
   };
 
-  const completedCount = vaccines.filter(v => v.completed).length;
-  const progressPercent = (completedCount / vaccines.length) * 100;
+  const stats = useMemo(() => {
+    const completed = vaccines.filter(v => v.completed).length;
+    return { count: completed, percent: Math.round((completed / vaccines.length) * 100) };
+  }, [vaccines]);
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10">
-      {/* --- HEADER --- */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-        <div className="flex items-center gap-5">
+    <div className="max-w-6xl mx-auto px-6 py-10 font-outfit">
+      {/* HEADER SECTION */}
+      <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-16">
+        <div className="flex items-center gap-6">
           <motion.button 
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.1, x: -5 }}
             onClick={onBack}
-            className="p-3.5 bg-white rounded-2xl shadow-sm text-slate-400 border border-slate-100 transition-all hover:text-primary"
+            className="p-4 bg-white rounded-[1.5rem] shadow-sm text-slate-400 border border-slate-100 hover:text-primary transition-all"
           >
-            <ArrowLeft size={22} weight="bold" />
+            <ArrowLeft size={24} weight="bold" />
           </motion.button>
           <div>
-            <h2 className="text-3xl font-kids text-slate-800 font-bold tracking-tight">Jadwal Imunisasi</h2>
-            <p className="text-slate-500 text-sm flex items-center gap-1.5 mt-1">
-              <CalendarCheck size={18} className="text-primary" weight="fill" />
-              Rencana kesehatan untuk <b>{childName}</b>
-            </p>
+            <h2 className="text-4xl font-kids text-slate-800 leading-tight">Jadwal Imunisasi</h2>
+            <div className="flex items-center gap-2 mt-2">
+              <div className="px-3 py-1 bg-primary/10 rounded-full flex items-center gap-2">
+                <Sparkle size={14} weight="fill" className="text-primary" />
+                <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{childName} • {childAge} Bulan</span>
+              </div>
+            </div>
           </div>
         </div>
-        
+
         <motion.button
-          onClick={requestNotification}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex items-center justify-center gap-2 bg-primary/10 text-primary px-6 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider border border-primary/20 transition-all hover:bg-primary hover:text-white shadow-lg shadow-primary/5"
+          whileHover={{ y: -3, shadow: "0 20px 25px -5px rgb(125 162 195 / 0.2)" }}
+          className="flex items-center gap-3 bg-white text-primary px-8 py-4 rounded-[2rem] font-bold text-xs uppercase tracking-widest border-2 border-primary/10 transition-all shadow-xl shadow-primary/5"
         >
-          <BellRinging size={20} weight="fill" />
-          Aktifkan Pengingat
+          <BellRinging size={20} weight="duotone" /> Pengingat Otomatis
         </motion.button>
-      </div>
+      </header>
 
-      <div className="grid lg:grid-cols-3 gap-8 items-start">
-        {/* --- LEFT: SUMMARY CARD --- */}
-        <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
-          <div className="bg-gradient-to-br from-primary to-blue-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
+      <div className="grid lg:grid-cols-12 gap-12">
+        {/* LEFT: PROGRESS DASHBOARD */}
+        <aside className="lg:col-span-4 space-y-8">
+          <div className="bg-slate-900 rounded-[3.5rem] p-10 text-white relative overflow-hidden shadow-3xl">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-primary/20 rounded-full blur-[80px] -mr-20 -mt-20" />
+            
             <div className="relative z-10">
-              <p className="text-white/70 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Usia {childName}</p>
-              <h3 className="text-4xl font-black mb-2">{childAge} <span className="text-lg font-medium text-white/80">Bulan</span></h3>
-              
-              <div className="h-2.5 bg-white/20 rounded-full mt-8 mb-3 overflow-hidden">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progressPercent}%` }}
-                  className="h-full bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]" 
-                />
+              <h4 className="text-sm font-bold opacity-60 uppercase tracking-widest mb-2 font-outfit">Total Vaksinasi</h4>
+              <div className="flex items-baseline gap-2 mb-8">
+                <span className="text-6xl font-black">{stats.percent}</span>
+                <span className="text-2xl font-bold text-secondary">%</span>
               </div>
-              <div className="flex justify-between items-center">
-                <p className="text-[11px] font-bold text-white/90 uppercase tracking-wide">{completedCount} Selesai</p>
-                <p className="text-[11px] font-black text-white">{Math.round(progressPercent)}%</p>
+
+              <div className="space-y-4">
+                <div className="h-4 bg-white/10 rounded-full overflow-hidden p-1">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${stats.percent}%` }}
+                    className="h-full bg-gradient-to-r from-primary to-secondary rounded-full shadow-[0_0_15px_rgba(168,230,207,0.5)]" 
+                  />
+                </div>
+                <p className="text-[11px] font-medium text-white/50 text-center tracking-wide uppercase">
+                   {stats.count} dari {vaccines.length} imunisasi selesai
+                </p>
               </div>
             </div>
-            <Syringe size={140} weight="duotone" className="absolute -bottom-10 -right-10 opacity-20 rotate-12" />
           </div>
 
-          <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform">
-              <Info size={40} weight="fill" className="text-amber-500" />
+          <div className="bg-white/50 backdrop-blur-md p-8 rounded-[3rem] border border-white flex flex-col items-center text-center shadow-sm group">
+            <div className="w-16 h-16 bg-accent/20 rounded-[1.5rem] flex items-center justify-center text-amber-600 mb-4 transition-transform group-hover:scale-110">
+              <MapPin size={32} weight="duotone" />
             </div>
-            <h4 className="font-bold text-slate-800 mb-2 flex items-center gap-2">Tips Sehat</h4>
-            <p className="text-[13px] text-slate-500 leading-relaxed font-medium">
-              Pastikan {childName} sedang dalam kondisi fit (tidak demam tinggi) sebelum berangkat ke fasilitas kesehatan ya, Moms.
-            </p>
+            <h4 className="font-bold text-slate-800 mb-2 font-kids">Lokasi Terdekat</h4>
+            <p className="text-xs text-slate-500 leading-relaxed mb-6">Cari Rumah Sakit atau Puskesmas penyedia vaksinasi di sekitarmu.</p>
+            <button className="w-full py-3 bg-slate-800 text-white rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-colors">Cek Maps</button>
           </div>
-        </div>
+        </aside>
 
-        {/* --- RIGHT: TIMELINE LIST --- */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center justify-between px-2 mb-4">
-            <h4 className="font-black text-slate-400 text-[11px] uppercase tracking-widest">Garis Waktu Imunisasi</h4>
-            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">IDAI Standard 2026</span>
+        {/* RIGHT: INTERACTIVE TIMELINE */}
+        <main className="lg:col-span-8 space-y-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-kids text-slate-800 px-4">Timeline Kesehatan</h3>
+            <span className="text-[10px] font-black text-slate-400 uppercase border-b-2 border-primary/20 pb-1">Standar IDAI 2026</span>
           </div>
 
-          <div className="space-y-4 relative before:absolute before:inset-0 before:left-[27px] before:w-0.5 before:bg-slate-100 before:z-0">
+          <div className="grid gap-5">
             {vaccines.map((vax, idx) => {
               const isDue = childAge === vax.age && !vax.completed;
               const isLocked = childAge < vax.age;
               
               return (
                 <motion.div 
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                  key={vax.id} 
-                  className={`relative z-10 flex items-center gap-5 p-5 rounded-[2rem] border transition-all duration-300 ${
-                    vax.completed ? 'bg-emerald-50/60 border-emerald-100' : 
-                    isDue ? 'bg-white border-primary shadow-lg shadow-primary/5 scale-[1.02]' : 
-                    'bg-white border-slate-100 shadow-sm'
-                  } ${isLocked ? 'opacity-50 grayscale-[0.5]' : 'opacity-100'}`}
+                  key={vax.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className={`group relative flex items-center gap-6 p-6 rounded-[2.5rem] border-2 transition-all duration-500 ${
+                    vax.completed ? 'bg-secondary/5 border-secondary/10' : 
+                    isDue ? 'bg-white border-primary shadow-2xl shadow-primary/10 ring-8 ring-primary/5' : 
+                    'bg-white border-slate-50 shadow-sm'
+                  } ${isLocked ? 'grayscale opacity-60' : ''}`}
                 >
-                  <button 
+                  <motion.button 
+                    whileTap={{ scale: 0.8 }}
                     disabled={isLocked}
                     onClick={() => toggleComplete(vax.id)}
-                    className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-all ${
-                      vax.completed ? 'bg-emerald-500 text-white shadow-emerald-200 shadow-lg' : 
-                      isDue ? 'bg-primary text-white shadow-primary/30 shadow-lg animate-pulse' : 'bg-slate-100 text-slate-400'
+                    className={`w-16 h-16 rounded-[1.8rem] flex items-center justify-center shrink-0 transition-all duration-500 ${
+                      vax.completed ? 'bg-secondary text-white rotate-[360deg]' : 
+                      isDue ? 'bg-primary text-white animate-pulse shadow-lg shadow-primary/30' : 'bg-slate-100 text-slate-300'
                     }`}
                   >
-                    {vax.completed ? <CheckCircle size={28} weight="fill" /> : <Clock size={28} weight="bold" />}
-                  </button>
+                    {vax.completed ? <CheckCircle size={32} weight="fill" /> : <Syringe size={32} weight="duotone" />}
+                  </motion.button>
 
-                  <div className="flex-1 cursor-pointer" onClick={() => setSelectedVax(vax)}>
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className={`text-[10px] font-black uppercase tracking-tighter ${vax.completed ? 'text-emerald-500' : 'text-slate-400'}`}>
-                        Usia {vax.age} Bulan
+                  <div className="flex-1 cursor-pointer" onClick={() => !isLocked && setSelectedVax(vax)}>
+                    <div className="flex items-center gap-2 mb-1">
+                       <span className={`text-[10px] font-bold uppercase tracking-tighter ${vax.completed ? 'text-secondary' : 'text-slate-400'}`}>
+                        Bulan ke-{vax.age}
                       </span>
-                      {isDue && <span className="text-[9px] font-bold bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full">Jadwal Sekarang</span>}
+                      {isDue && <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />}
                     </div>
-                    <h5 className="font-bold text-slate-800 text-base leading-none mb-1">{vax.name}</h5>
-                    <p className="text-xs text-slate-400 font-medium truncate max-w-[180px] md:max-w-none">{vax.desc}</p>
+                    <h5 className="text-lg font-bold text-slate-800 font-kids">{vax.name}</h5>
+                    <p className="text-xs text-slate-400 font-medium">{vax.desc}</p>
                   </div>
 
-                  <motion.button 
-                    whileHover={{ x: 5 }}
-                    onClick={() => setSelectedVax(vax)}
-                    className={`p-2 rounded-xl transition-colors ${vax.completed ? 'text-emerald-200' : 'text-slate-300 hover:bg-slate-50'}`}
-                  >
-                    <CaretRight size={20} weight="bold" />
-                  </motion.button>
+                  {!isLocked && (
+                    <button onClick={() => setSelectedVax(vax)} className="p-3 bg-slate-50 rounded-2xl text-slate-300 group-hover:text-primary group-hover:bg-primary/5 transition-all">
+                      <CaretRight size={20} weight="bold" />
+                    </button>
+                  )}
                 </motion.div>
               );
             })}
           </div>
-
-          {/* CEK LOKASI BUTTON */}
-          <motion.button 
-            onClick={findHospital}
-            whileHover={{ y: -3, backgroundColor: 'rgba(59, 130, 246, 0.05)' }}
-            disabled={locationLoading}
-            className="w-full mt-6 py-5 border-2 border-dashed border-slate-200 rounded-[2rem] text-slate-400 font-bold text-sm hover:border-primary/30 hover:text-primary transition-all flex items-center justify-center gap-2 group"
-          >
-            {locationLoading ? (
-              <div className="flex items-center gap-2 animate-pulse">
-                <NavigationArrow size={20} weight="fill" className="animate-spin" />
-                Mencari Lokasi...
-              </div>
-            ) : (
-              <>
-                <MapPin size={20} weight="fill" className="group-hover:animate-bounce text-rose-500" />
-                Cari RS / Puskesmas Terdekat
-              </>
-            )}
-          </motion.button>
-        </div>
+        </main>
       </div>
 
-      {/* --- DETAIL MODAL --- */}
+      {/* MODAL INFORMATION (Glassmorphism) */}
       <AnimatePresence>
         {selectedVax && (
-          <div className="fixed inset-0 z-[300] flex items-end md:items-center justify-center p-4">
+          <div className="fixed inset-0 z-[500] flex items-center justify-center p-6">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setSelectedVax(null)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" 
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-xl" 
             />
             <motion.div 
-              initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }}
-              className="relative bg-white w-full max-w-md p-8 rounded-[2.5rem] shadow-2xl overflow-hidden"
+              initial={{ scale: 0.9, y: 20, opacity: 0 }} 
+              animate={{ scale: 1, y: 0, opacity: 1 }} 
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              className="relative bg-white w-full max-w-md p-10 rounded-[4rem] shadow-3xl overflow-hidden"
             >
-              <button onClick={() => setSelectedVax(null)} className="absolute top-6 right-6 p-2 hover:bg-slate-50 rounded-full transition-colors">
-                <X size={20} weight="bold" className="text-slate-400" />
+              <div className="absolute top-0 left-0 w-full h-2 bg-primary" />
+              <button onClick={() => setSelectedVax(null)} className="absolute top-8 right-8 p-2 rounded-full bg-slate-50 text-slate-400 hover:text-slate-800 transition-colors">
+                <X size={20} weight="bold" />
               </button>
               
-              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
-                <Syringe size={32} weight="fill" />
+              <div className="w-20 h-20 bg-primary/5 rounded-[2rem] flex items-center justify-center text-primary mb-8 border border-primary/10">
+                <Syringe size={40} weight="duotone" />
               </div>
               
-              <p className="text-[11px] font-black text-primary uppercase tracking-widest mb-2">Informasi Vaksin</p>
-              <h4 className="text-2xl font-bold text-slate-800 mb-4">{selectedVax.name}</h4>
-              <p className="text-slate-500 leading-relaxed font-medium mb-8">
-                {selectedVax.detail} <br/><br/>
-                <span className="italic text-slate-400 text-xs">Manfaat: {selectedVax.desc}</span>
+              <h4 className="text-3xl font-kids text-slate-800 mb-4">{selectedVax.name}</h4>
+              <p className="text-slate-500 leading-relaxed mb-10 font-medium">
+                {selectedVax.detail}
               </p>
               
               <button 
                 onClick={() => setSelectedVax(null)}
-                className="w-full py-4 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
+                className="w-full py-5 bg-primary text-white font-bold rounded-[2rem] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all font-outfit uppercase tracking-widest text-xs"
               >
-                Mengerti, Terima Kasih
+                Pahami & Tutup
               </button>
             </motion.div>
           </div>
