@@ -81,12 +81,11 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
 
   const displayImage = article.img || article.image || "";
 
-  // Helper for rendering structured content if available
   const renderContent = () => {
     if (article.content && Array.isArray(article.content)) {
       return article.content.map((block, idx) => {
-        if (block.type === 'subtitle') return <h3 key={idx} className="text-2xl font-kids text-slate-800 mt-10 mb-4">{block.text}</h3>;
-        return <p key={idx} className="text-slate-600 leading-relaxed mb-6 text-lg">{block.text}</p>;
+        if (block.type === 'subtitle') return <h3 key={idx} className="text-2xl font-kids text-text-main mt-10 mb-4 transition-colors">{block.text}</h3>;
+        return <p key={idx} className="text-text-muted leading-relaxed mb-6 text-lg transition-colors">{block.text}</p>;
       });
     }
     return null;
@@ -97,7 +96,7 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen pb-20 bg-[#fbfdff] relative font-outfit"
+      className="min-h-screen pb-20 bg-bg relative font-outfit transition-colors duration-500"
     >
       {/* Toast Notification */}
       <AnimatePresence>
@@ -106,7 +105,7 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
             initial={{ opacity: 0, y: 50, x: "-50%" }}
             animate={{ opacity: 1, y: 0, x: "-50%" }}
             exit={{ opacity: 0, y: 20, x: "-50%" }}
-            className="fixed bottom-10 left-1/2 z-[100] bg-slate-800 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-bold whitespace-nowrap"
+            className="fixed bottom-10 left-1/2 z-[100] bg-slate-800 dark:bg-primary text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-bold whitespace-nowrap"
           >
             <CheckCircle size={20} weight="fill" className="text-secondary" />
             {toastMessage}
@@ -128,7 +127,8 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
                <span className="text-[100px] opacity-20">{displayImage || "🍼"}</span>
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#fbfdff] via-transparent to-transparent" />
+          {/* Gradient Overlay menyesuaikan warna background dark mode */}
+          <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent transition-colors duration-500" />
         </div>
 
         <div className="relative z-30 max-w-6xl mx-auto px-6 pt-8 flex justify-between items-center">
@@ -136,7 +136,7 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
             whileHover={{ x: -4 }}
             whileTap={{ scale: 0.95 }}
             onClick={onBack}
-            className="flex items-center gap-2 bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl shadow-lg text-primary font-bold border border-white"
+            className="flex items-center gap-2 bg-card/90 backdrop-blur-md px-4 py-2 rounded-xl shadow-lg text-primary font-bold border border-border-soft transition-all"
           >
             <ArrowLeft size={18} weight="bold" />
             <span className="font-kids text-xs">Kembali</span>
@@ -152,47 +152,48 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
       <div className="max-w-6xl mx-auto px-6 -mt-10 relative z-40">
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           
-          {/* SISI KIRI (72%): Konten Utama */}
+          {/* SISI KIRI: Konten Utama */}
           <main className="lg:w-[72%] w-full">
-            <div className="bg-white rounded-[3rem] p-8 md:p-14 shadow-2xl shadow-blue-900/5 border border-slate-50">
+            <div className="bg-card rounded-[3rem] p-8 md:p-14 shadow-2xl shadow-black/5 border border-border-soft transition-all duration-500">
               
-              <h1 className="text-3xl md:text-5xl font-kids text-slate-800 leading-[1.2] mb-10">
+              <h1 className="text-3xl md:text-5xl font-kids text-text-main leading-[1.2] mb-10 transition-colors">
                 {article.title}
               </h1>
 
               {/* Kutipan Deskripsi */}
-              <div className="relative mb-14 p-8 bg-slate-50 rounded-[2rem] border-l-4 border-secondary/30">
-                <Quotes size={40} weight="fill" className="text-primary/5 absolute top-4 right-6" />
-                <p className="text-slate-600 text-base md:text-lg italic leading-relaxed relative z-10">
+              <div className="relative mb-14 p-8 bg-bg rounded-[2rem] border-l-4 border-secondary/30 transition-colors">
+                <Quotes size={40} weight="fill" className="text-primary/10 absolute top-4 right-6" />
+                <p className="text-text-muted text-base md:text-lg italic leading-relaxed relative z-10 transition-colors">
                   {article.desc || article.excerpt}
                 </p>
               </div>
 
-              {/* Extended Content (If Any) */}
+              {/* Content render */}
               <div className="mb-12">
                 {renderContent()}
               </div>
 
               {/* Langkah Praktis */}
               <div className="space-y-12">
-                <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
+                <div className="flex items-center gap-3 pb-4 border-b border-border-soft transition-colors">
                   <span className="p-2 bg-secondary/10 rounded-lg text-secondary">
                     <Sparkle size={24} weight="fill" />
                   </span>
-                  <h3 className="text-2xl font-kids text-slate-800">Langkah Penting</h3>
+                  <h3 className="text-2xl font-kids text-text-main transition-colors">Langkah Penting</h3>
                 </div>
 
                 <div className="grid gap-12">
                   {(article.steps || ["Langkah-langkah detail sedang dimuat..."]).map((step, index) => (
                     <div key={index} className="relative group">
-                      <span className="absolute -top-10 -left-4 text-8xl font-black text-slate-50 group-hover:text-primary/5 transition-colors select-none -z-10">
+                      {/* Nomor besar di background dibuat redup saat dark mode */}
+                      <span className="absolute -top-10 -left-4 text-8xl font-black text-text-main opacity-[0.03] group-hover:text-primary/10 transition-colors select-none -z-10">
                         {index + 1}
                       </span>
                       <div className="relative z-10 pl-2 flex gap-5 items-start">
                         <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0 font-bold text-sm shadow-lg shadow-primary/20 mt-1">
                           {index + 1}
                         </div>
-                        <p className="text-slate-700 font-medium text-base md:text-xl leading-relaxed">
+                        <p className="text-text-main font-medium text-base md:text-xl leading-relaxed transition-colors">
                           {step}
                         </p>
                       </div>
@@ -202,7 +203,7 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
               </div>
 
               {/* Footer Artikel */}
-              <footer className="mt-20 pt-10 border-t border-slate-100 flex flex-col md:flex-row gap-6 items-center justify-between">
+              <footer className="mt-20 pt-10 border-t border-border-soft flex flex-col md:flex-row gap-6 items-center justify-between">
                 <div className="flex gap-4">
                   <motion.button 
                     whileTap={{ scale: 0.9 }}
@@ -210,7 +211,7 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
                     className={`p-4 rounded-2xl transition-all shadow-sm flex items-center gap-2 font-bold text-xs
                       ${isSaved 
                         ? 'bg-primary text-white shadow-primary/20' 
-                        : 'bg-slate-50 text-slate-400 hover:text-primary'}`}
+                        : 'bg-bg text-text-muted hover:text-primary'}`}
                   >
                     <BookmarkSimple size={24} weight={isSaved ? "fill" : "bold"} />
                     {isSaved ? "Tersimpan" : "Simpan"}
@@ -218,7 +219,7 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
                   
                   <button 
                     onClick={handleShare}
-                    className="p-4 bg-slate-50 rounded-2xl text-slate-400 hover:text-primary transition-all shadow-sm active:scale-90"
+                    className="p-4 bg-bg rounded-2xl text-text-muted hover:text-primary transition-all shadow-sm active:scale-90"
                   >
                     <ShareNetwork size={24} weight="bold" />
                   </button>
@@ -236,31 +237,31 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
             </div>
           </main>
 
-          {/* SISI KANAN (28%): Sidebar Sticky */}
+          {/* SISI KANAN: Sidebar Sticky */}
           <aside className="lg:w-[28%] w-full lg:sticky lg:top-10 h-fit space-y-6">
-            <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-blue-900/5">
+            <div className="bg-card p-6 rounded-[2.5rem] border border-border-soft shadow-xl shadow-black/5 transition-all">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
                   <User size={24} weight="duotone" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Penulis</p>
-                  <p className="text-sm font-bold text-slate-700">{article.author || "Tim MomsCare"}</p>
+                  <p className="text-[10px] text-text-muted font-black uppercase tracking-widest transition-colors">Penulis</p>
+                  <p className="text-sm font-bold text-text-main transition-colors">{article.author || "Tim MomsCare"}</p>
                 </div>
               </div>
-              <div className="space-y-3 pt-4 border-t border-slate-50">
-                <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500">
+              <div className="space-y-3 pt-4 border-t border-border-soft transition-colors">
+                <div className="flex items-center gap-2 text-[11px] font-bold text-text-muted transition-colors">
                   <Calendar size={16} className="text-primary" /> {article.date || "Baru saja"}
                 </div>
-                <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500">
+                <div className="flex items-center gap-2 text-[11px] font-bold text-text-muted transition-colors">
                   <Clock size={16} className="text-primary" /> {article.readTime || "5 Menit Baca"}
                 </div>
               </div>
             </div>
 
-            <div className="bg-secondary/5 p-6 rounded-[2.5rem] border border-secondary/10">
+            <div className="bg-secondary/5 p-6 rounded-[2.5rem] border border-secondary/10 transition-colors">
               <p className="text-[10px] text-secondary font-black uppercase mb-2 tracking-widest">Tips Hari Ini</p>
-              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+              <p className="text-xs text-text-muted leading-relaxed font-medium transition-colors">
                 Jangan lupa Moms, setiap anak unik. Tetap semangat memantau tumbuh kembang si kecil dengan sabar dan kasih sayang!
               </p>
             </div>
@@ -271,8 +272,8 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
         {relatedArticles.length > 0 && (
           <div className="mt-20">
             <div className="flex items-center justify-between mb-8 px-4">
-              <h3 className="text-2xl font-kids text-slate-800">Lainnya di {currentCategory}</h3>
-              <div className="h-1 flex-1 bg-slate-100 mx-6 rounded-full opacity-50" />
+              <h3 className="text-2xl font-kids text-text-main transition-colors">Lainnya di {currentCategory}</h3>
+              <div className="h-1 flex-1 bg-border-soft mx-6 rounded-full opacity-50" />
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -281,7 +282,7 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
                   key={item.id}
                   whileHover={{ y: -5 }}
                   onClick={() => onArticleClick && onArticleClick(item)}
-                  className="bg-white p-4 rounded-[2rem] border border-slate-100 shadow-xl shadow-blue-900/5 group cursor-pointer"
+                  className="bg-card p-4 rounded-[2rem] border border-border-soft shadow-xl shadow-black/5 group cursor-pointer transition-all duration-500"
                 >
                   <div className="aspect-[16/10] rounded-[1.5rem] overflow-hidden mb-4 relative">
                     <img 
@@ -289,14 +290,14 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
-                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg text-[9px] font-black text-primary uppercase tracking-wider">
+                    <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-sm px-3 py-1 rounded-lg text-[9px] font-black text-primary uppercase tracking-wider">
                       {item.categoryId || item.category}
                     </div>
                   </div>
-                  <h4 className="font-bold text-slate-800 line-clamp-2 mb-3 px-1 group-hover:text-primary transition-colors">
+                  <h4 className="font-bold text-text-main line-clamp-2 mb-3 px-1 group-hover:text-primary transition-colors">
                     {item.title}
                   </h4>
-                  <div className="flex items-center justify-between px-1 text-slate-400 text-[10px] font-bold">
+                  <div className="flex items-center justify-between px-1 text-text-muted text-[10px] font-bold transition-colors">
                     <span className="flex items-center gap-1">
                       <Calendar size={14} /> {item.date}
                     </span>

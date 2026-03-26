@@ -29,7 +29,7 @@ const FavoritePage = ({ onBack, onArticleClick }) => {
   };
 
   return (
-    <div className="min-h-screen pb-20 px-6 max-w-7xl mx-auto">
+    <div className="min-h-screen pb-20 px-6 max-w-7xl mx-auto bg-bg transition-colors duration-500 font-outfit">
       {/* Header Halaman */}
       <header className="pt-10 pb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
@@ -37,13 +37,15 @@ const FavoritePage = ({ onBack, onArticleClick }) => {
             whileHover={{ x: -5 }}
             whileTap={{ scale: 0.9 }}
             onClick={onBack}
-            className="p-3 bg-white rounded-2xl shadow-sm text-slate-400 hover:text-primary transition-colors border border-slate-50"
+            className="p-3 bg-card rounded-2xl shadow-sm text-text-muted hover:text-primary transition-all border border-border-soft"
           >
             <ArrowLeft size={24} weight="bold" />
           </motion.button>
           <div>
-            <h1 className="text-3xl font-kids text-slate-800 font-bold">Simpanan <span className="text-primary">Moms</span></h1>
-            <p className="text-slate-500 text-sm font-medium">Artikel yang Moms sukai ada di sini.</p>
+            <h1 className="text-3xl font-kids text-text-main font-bold transition-colors">
+              Simpanan <span className="text-primary">Moms</span>
+            </h1>
+            <p className="text-text-muted text-sm font-medium transition-colors">Artikel yang Moms sukai ada di sini.</p>
           </div>
         </div>
 
@@ -60,7 +62,7 @@ const FavoritePage = ({ onBack, onArticleClick }) => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={clearAllFavorites}
-              className="flex items-center gap-2 bg-red-50 text-red-500 px-5 py-2.5 rounded-2xl font-bold text-xs hover:bg-red-500 hover:text-white transition-all border border-red-100"
+              className="flex items-center gap-2 bg-red-500/10 text-red-500 px-5 py-2.5 rounded-2xl font-bold text-xs hover:bg-red-500 hover:text-white transition-all border border-red-500/20"
             >
               <TrashSimple size={18} weight="bold" />
               Hapus Semua
@@ -86,26 +88,26 @@ const FavoritePage = ({ onBack, onArticleClick }) => {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
                 whileHover={{ y: -8 }}
-                className="bg-white/60 backdrop-blur-md rounded-[2.5rem] p-5 border-2 border-white shadow-xl shadow-blue-900/5 group relative flex flex-col h-full"
+                className="bg-card/60 backdrop-blur-md rounded-[2.5rem] p-5 border-2 border-border-soft shadow-xl shadow-black/5 group relative flex flex-col h-full transition-all duration-500"
               >
                 {/* Thumbnail */}
-                <div className="aspect-video rounded-[1.8rem] overflow-hidden mb-4 bg-slate-100 relative">
+                <div className="aspect-video rounded-[1.8rem] overflow-hidden mb-4 bg-bg relative">
                   <img 
                     src={article.image || `https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&q=80&w=400`} 
                     alt={article.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold text-primary uppercase shadow-sm">
+                  <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold text-primary uppercase shadow-sm">
                     {article.category}
                   </div>
                 </div>
 
                 {/* Info Artikel */}
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-slate-800 line-clamp-2 mb-2 leading-snug group-hover:text-primary transition-colors">
+                  <h3 className="text-lg font-bold text-text-main line-clamp-2 mb-2 leading-snug group-hover:text-primary transition-colors">
                     {article.title}
                   </h3>
-                  <p className="text-slate-500 text-xs line-clamp-2 mb-6 font-medium leading-relaxed">
+                  <p className="text-text-muted text-xs line-clamp-2 mb-6 font-medium leading-relaxed transition-colors">
                     {article.excerpt || "Klik baca sekarang untuk melihat informasi lengkap kesehatan si kecil..."}
                   </p>
                 </div>
@@ -121,7 +123,7 @@ const FavoritePage = ({ onBack, onArticleClick }) => {
                   </button>
                   <button 
                     onClick={() => removeFavorite(article.id)}
-                    className="p-3.5 bg-white text-red-400 border border-red-50 rounded-2xl hover:bg-red-50 transition-colors shadow-sm"
+                    className="p-3.5 bg-card text-red-500 border border-border-soft rounded-2xl hover:bg-red-500/10 transition-colors shadow-sm"
                     title="Hapus"
                   >
                     <Trash size={18} weight="bold" />
@@ -137,19 +139,19 @@ const FavoritePage = ({ onBack, onArticleClick }) => {
             animate={{ opacity: 1, scale: 1 }}
             className="py-32 flex flex-col items-center text-center"
           >
-            <div className="w-44 h-44 bg-white/50 rounded-full flex items-center justify-center mb-8 border-4 border-white shadow-xl relative">
+            <div className="w-44 h-44 bg-card rounded-full flex items-center justify-center mb-8 border-4 border-border-soft shadow-xl relative transition-all duration-500">
                <motion.div
                 animate={{ rotate: [0, -10, 10, 0] }}
                 transition={{ repeat: Infinity, duration: 3 }}
                >
-                 <HeartBreak size={85} weight="duotone" className="text-slate-300" />
+                 <HeartBreak size={85} weight="duotone" className="text-text-muted/30" />
                </motion.div>
-               <div className="absolute -bottom-2 -right-2 bg-white p-2 rounded-full shadow-md text-primary">
+               <div className="absolute -bottom-2 -right-2 bg-card p-2 rounded-full shadow-md text-primary border border-border-soft">
                  <BookmarkSimple size={24} weight="bold" />
                </div>
             </div>
-            <h2 className="text-2xl font-kids text-slate-800 font-bold mb-3">Belum ada favorit nih, Moms.</h2>
-            <p className="text-slate-400 text-sm max-w-xs mb-10 font-medium">Jelajahi artikel kesehatan dan klik ikon simpan untuk membacanya nanti.</p>
+            <h2 className="text-2xl font-kids text-text-main font-bold mb-3 transition-colors">Belum ada favorit nih, Moms.</h2>
+            <p className="text-text-muted text-sm max-w-xs mb-10 font-medium transition-colors">Jelajahi artikel kesehatan dan klik ikon simpan untuk membacanya nanti.</p>
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

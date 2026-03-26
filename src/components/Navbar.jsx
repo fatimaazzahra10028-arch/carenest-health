@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, UserPlus, Info, PhoneCall, House, UserCircle, SignOut, BookmarkSimple } from '@phosphor-icons/react';
+import { 
+  Heart, UserPlus, Info, PhoneCall, House, 
+  UserCircle, SignOut, BookmarkSimple, Moon, Sun 
+} from '@phosphor-icons/react';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = ({ 
@@ -10,11 +13,27 @@ const Navbar = ({
   isFavoritePage, 
   onOpenAbout, 
   onOpenContact,
-  activePage = 'home' // Ini kunci utamanya, Moms!
+  activePage = 'home'
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showBadge, setShowBadge] = useState(false);
   const { user, logout } = useAuth();
+
+  // --- LOGIKA DARK MODE ---
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('momscare_theme') === 'dark';
+  });
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (isDarkMode) {
+      root.classList.add('dark');
+      localStorage.setItem('momscare_theme', 'dark');
+    } else {
+      root.classList.remove('dark');
+      localStorage.setItem('momscare_theme', 'light');
+    }
+  }, [isDarkMode]);
 
   // 1. Logika Scroll
   useEffect(() => {
@@ -43,7 +62,6 @@ const Navbar = ({
     checkNewFavorites();
     const interval = setInterval(checkNewFavorites, 1000);
     window.addEventListener('storage', checkNewFavorites);
-
     return () => {
       clearInterval(interval);
       window.removeEventListener('storage', checkNewFavorites);
@@ -56,10 +74,10 @@ const Navbar = ({
       animate={{ y: 0 }}
       className={`sticky top-0 md:top-4 z-[100] transition-all duration-300 mx-0 md:mx-12 flex justify-between items-center px-6
         ${isScrolled 
-          ? 'py-3 bg-white/90 backdrop-blur-xl shadow-xl shadow-blue-100/30 border-b md:border border-primary/20 md:rounded-[2rem]' 
-          : 'py-5 bg-white/70 backdrop-blur-lg border-b md:border border-white/40 md:rounded-[2rem]'}`}
+          ? 'py-3 bg-card/90 backdrop-blur-xl shadow-xl border-b md:border border-primary/20 md:rounded-[2rem]' 
+          : 'py-5 bg-card/70 backdrop-blur-lg border-b md:border border-border-soft md:rounded-[2rem]'}`}
     >
-      {/* Brand - Klik balik ke Home */}
+      {/* Brand */}
       <div 
         className="flex items-center gap-2 group cursor-pointer" 
         onClick={onGoHome}
@@ -67,10 +85,10 @@ const Navbar = ({
         <div className="bg-primary/10 p-2 rounded-xl group-hover:rotate-12 transition-transform">
           <Heart size={28} weight="fill" className="text-primary" />
         </div>
-        <span className="font-kids text-2xl text-slate-800 font-bold">Moms<span className="text-primary">Care</span></span>
+        <span className="font-kids text-2xl text-text-main font-bold">Moms<span className="text-primary">Care</span></span>
       </div>
 
-      {/* Nav Links - Logika Active Check */}
+      {/* Nav Links */}
       <div className="hidden md:flex gap-8 items-center">
         <button onClick={onGoHome} className="focus:outline-none">
           <NavLink 
@@ -99,6 +117,18 @@ const Navbar = ({
 
       {/* Action Section */}
       <div className="flex items-center gap-2 md:gap-4">
+        
+        {/* Tombol Dark Mode */}
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setIsDarkMode(!isDarkMode)}
+          className="p-2.5 rounded-full bg-bg text-text-muted hover:text-primary border border-border-soft transition-all shadow-sm"
+          title={isDarkMode ? "Mode Terang" : "Mode Malam"}
+        >
+          {isDarkMode ? <Sun size={22} weight="fill" className="text-amber-400" /> : <Moon size={22} weight="bold" />}
+        </motion.button>
+
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -106,7 +136,7 @@ const Navbar = ({
           className={`relative p-2.5 rounded-full transition-all shadow-sm group border
             ${isFavoritePage 
               ? 'bg-primary text-white border-primary' 
-              : 'bg-white border-slate-100 text-slate-400 hover:text-primary hover:border-primary/30'}`}
+              : 'bg-card border-border-soft text-text-muted hover:text-primary hover:border-primary/30'}`}
           title="Simpanan Saya"
         >
           <BookmarkSimple size={22} weight={isFavoritePage ? "fill" : "bold"} />
@@ -116,7 +146,7 @@ const Navbar = ({
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}
-                className="absolute top-2 right-2.5 w-2.5 h-2.5 bg-secondary rounded-full border-2 border-white shadow-sm"
+                className="absolute top-2 right-2.5 w-2.5 h-2.5 bg-secondary rounded-full border-2 border-card shadow-sm"
               ></motion.span>
             )}
           </AnimatePresence>
@@ -141,18 +171,18 @@ const Navbar = ({
                 key="user-profile"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="flex items-center gap-3 bg-white/80 p-1.5 pr-4 rounded-full border border-primary/20 shadow-sm"
+                className="flex items-center gap-3 bg-bg p-1.5 pr-4 rounded-full border border-primary/20 shadow-sm"
               >
                 <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
                   <UserCircle size={24} weight="fill" />
                 </div>
                 <div className="hidden lg:block text-left">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Halo, Moms!</p>
-                  <p className="text-xs font-bold text-slate-700 leading-none">{user.name}</p>
+                  <p className="text-[10px] text-text-muted font-bold uppercase tracking-wider leading-none mb-1">Halo, Moms!</p>
+                  <p className="text-xs font-bold text-text-main leading-none">{user.name}</p>
                 </div>
                 <button 
                   onClick={logout}
-                  className="ml-2 p-1.5 hover:bg-red-50 rounded-full text-red-400 transition-colors"
+                  className="ml-2 p-1.5 hover:bg-red-500/10 rounded-full text-red-400 transition-colors"
                   title="Keluar"
                 >
                   <SignOut size={18} weight="bold" />
@@ -166,16 +196,14 @@ const Navbar = ({
   );
 };
 
-// NavLink Helper dengan Garis Bawah Otomatis
 const NavLink = ({ icon, label, active = false }) => (
   <div className={`relative flex flex-col items-center gap-1 text-sm font-bold transition-all duration-300 cursor-pointer 
-    ${active ? 'text-primary' : 'text-slate-500 hover:text-primary'}`}>
+    ${active ? 'text-primary' : 'text-text-muted hover:text-primary'}`}>
     
     <div className="flex items-center gap-1.5">
       {icon} <span>{label}</span>
     </div>
 
-    {/* Indikator Garis Bawah Aktif */}
     {active && (
       <motion.div 
         layoutId="activeUnderline"

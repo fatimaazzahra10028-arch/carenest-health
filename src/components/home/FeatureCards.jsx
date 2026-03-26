@@ -8,22 +8,21 @@ const FeatureCards = ({ onGrowthClick, onImmunizationClick }) => {
     {
       title: "Cek Grafik Pertumbuhan",
       desc: "Pantau berat & tinggi badan ideal si kecil sesuai standar WHO.",
-      // Ganti emoji dengan komponen Icon
+      // Icon tetap menggunakan warna primary agar tetap kontras di kedua mode
       icon: <ChartLineUp size={64} weight="duotone" className="text-primary" />,
       btnText: "Mulai Cek Sekarang",
-      btnColor: "bg-primary", // Menggunakan warna primary
-      shadowColor: "shadow-blue-200",
-      decorColor: "bg-primary/10", // Dekorasi soft dari warna primary
+      btnColor: "bg-primary", 
+      shadowColor: "shadow-primary/20",
+      decorColor: "bg-primary/10", 
       onClick: onGrowthClick,
     },
     {
       title: "Reminder Imunisasi",
       desc: "Jangan lewatkan jadwal vaksin. Kami ingatkan tepat waktu!",
-      // Ganti emoji dengan komponen Icon
       icon: <CalendarCheck size={64} weight="duotone" className="text-primary" />,
       btnText: "Daftar Sekarang",
-      btnColor: "bg-primary", // Menggunakan warna primary
-      shadowColor: "shadow-blue-200",
+      btnColor: "bg-primary", 
+      shadowColor: "shadow-primary/20",
       decorColor: "bg-primary/10",
       onClick: onImmunizationClick,
     },
@@ -39,14 +38,17 @@ const FeatureCards = ({ onGrowthClick, onImmunizationClick }) => {
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
           whileHover={{ y: -8, scale: 1.02 }}
-          className="bg-white/40 backdrop-blur-md p-10 rounded-[3rem] border-2 border-white flex items-center justify-between group cursor-pointer shadow-xl shadow-slate-900/5 transition-all overflow-hidden relative"
+          /* Ganti bg-white/40 ke bg-card/40 dan border-white ke border-border-soft */
+          className="bg-card/40 backdrop-blur-md p-10 rounded-[3rem] border-2 border-border-soft flex items-center justify-between group cursor-pointer shadow-xl shadow-black/5 transition-all duration-500 overflow-hidden relative"
         >
           {/* Konten Teks */}
           <div className="max-w-[70%] z-10">
-            <h3 className="text-2xl text-slate-800 font-bold mb-2 font-kids">
+            {/* Teks slate-800 ganti ke text-text-main agar otomatis putih di dark mode */}
+            <h3 className="text-2xl text-text-main font-bold mb-2 font-kids transition-colors">
               {card.title}
             </h3>
-            <p className="text-slate-500 text-sm font-medium mb-6 leading-relaxed">
+            {/* Teks slate-500 ganti ke text-text-muted */}
+            <p className="text-text-muted text-sm font-medium mb-6 leading-relaxed transition-colors">
               {card.desc}
             </p>
             <motion.button
@@ -58,12 +60,12 @@ const FeatureCards = ({ onGrowthClick, onImmunizationClick }) => {
             </motion.button>
           </div>
 
-          {/* Icon dari Phosphor Icons */}
-          <div className="group-hover:rotate-12 group-hover:scale-110 transition-transform z-10 p-4 bg-white/50 rounded-3xl shadow-inner">
+          {/* Icon Box: bg-white/50 ganti ke bg-bg/50 agar menyesuaikan background */}
+          <div className="group-hover:rotate-12 group-hover:scale-110 transition-transform z-10 p-4 bg-bg/50 rounded-3xl shadow-inner border border-border-soft">
             {card.icon}
           </div>
 
-          {/* Dekorasi Background Bulat (Blur) menggunakan warna Primary */}
+          {/* Dekorasi Background Bulat (Blur) */}
           <div className={`absolute -right-10 -bottom-10 w-40 h-40 ${card.decorColor} rounded-full blur-3xl`}></div>
         </motion.div>
       ))}

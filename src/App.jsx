@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 // Context & Components
 import { AuthProvider, useAuth } from "./context/AuthContext";
-import CustomCursor from "./components/CustomCursor";
 import Navbar from "./components/Navbar";
 import HeroSection from "./components/home/HeroSection";
 import AIChatModal from "./components/ai/AiChatModal";
@@ -48,7 +47,6 @@ function AppContent() {
     weight: 0,
     height: 0,
   });
-
   const blogSectionRef = useRef(null);
 
   // FUNGSI: Logika penentuan string activePage untuk Navbar
