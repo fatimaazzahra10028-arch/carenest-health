@@ -1,75 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Printer, ArrowLeft, Calendar, 
   ShoppingCart, Clock, AppleLogo, 
   Heartbeat, Info, Basket, CheckCircle,
-  Fire, MagicWand, CookingPot, Star, Leaf, Baby
+  Fire, MagicWand, CookingPot, Star, Leaf, Baby,
+  ArrowsClockwise // Icon baru untuk refresh
 } from '@phosphor-icons/react';
 
 const MPASIPage = ({ onBack }) => {
   const [selectedDay, setSelectedDay] = useState("Senin");
   const [completedMeals, setCompletedMeals] = useState({});
   const [isChefMode, setIsChefMode] = useState(false);
-  const [ageFilter, setAgeFilter] = useState("6-8"); // Default 6-8 bulan
+  const [ageFilter, setAgeFilter] = useState("6-8");
+  const [isRefreshing, setIsRefreshing] = useState(false); // State untuk animasi loading
 
-  // Mapping tekstur berdasarkan usia
+  // DATA MENTAH (Pool Menu) untuk di-shuffle
+  const initialMenuData = {
+    Senin: { theme: "Boster berat badan", pagi: "Hati ayam dan wortel", siang: "Puree alpukat mentega dan chia", malam: "Labu parang dan daging giling", ingredients: ["Hati ayam", "Labu parang", "Alpukat", "Beras putih", "Daging sapi giling"] },
+    Selasa: { theme: "Nutrisi kecerdasan otak", pagi: "Oatmeal dan kuning telur", siang: "Smoothie buah naga dan asi", malam: "Ikan salmon dan bayam jepang", ingredients: ["Salmon fillet", "Bayam", "Kuning telur", "Oatmeal", "Buah naga"] },
+    Rabu: { theme: "Zat besi tinggi", pagi: "Jagung dan daging sapi", siang: "Puree pepaya california dan jeruk baby", malam: "Tahu dan telur puyuh creamy", ingredients: ["Daging sapi", "Jagung manis", "Pepaya", "Telur puyuh", "Tahu sutra"] },
+    Kamis: { theme: "Kesehatan pencernaan", pagi: "Beras merah ikan kembung", siang: "Mashed banana dan cinnamon", malam: "Telur bebek dan tomat ungu", ingredients: ["Ikan kembung", "Beras merah", "Pisang ambon", "Telur bebek", "Tomat"] },
+    Jumat: { theme: "Penguat imun tubuh", pagi: "Mashed potato dan ayam kampung", siang: "Puree mangga gadung arumanis", malam: "Brokoli dan hati sapi", ingredients: ["Kentang", "Ayam kampung", "Mangga", "Hati sapi", "Brokoli"] },
+    Sabtu: { theme: "Spesial anti gtm", pagi: "Schotel nasi keju", siang: "Puree pir hijau dan mint", malam: "Gurame dan labu siam", ingredients: ["Ikan gurame", "Beras putih", "Pir hijau", "Labu siam", "Keju belcube"] },
+    Minggu: { theme: "Pesta akhir pekan", pagi: "Creamy chicken rice soup", siang: "Jeruk peras baby puree", malam: "Telur wortel", ingredients: ["Daging ayam", "Wortel", "Jeruk baby", "Beras", "Bawang putih"] },
+  };
+
+  // State utama menu yang bisa berubah
+  const [weeklyMenu, setWeeklyMenu] = useState(initialMenuData);
+
+  // FUNGSI REFRESH: Mengacak posisi menu antar hari
+  const handleRefreshMenu = () => {
+    setIsRefreshing(true);
+    
+    setTimeout(() => {
+      const days = Object.keys(initialMenuData);
+      const shuffledValues = [...days].sort(() => Math.random() - 0.5);
+      
+      const newMenu = {};
+      days.forEach((day, index) => {
+        newMenu[day] = initialMenuData[shuffledValues[index]];
+      });
+
+      setWeeklyMenu(newMenu);
+      setCompletedMeals({}); // Reset progres jika menu berubah
+      setIsRefreshing(false);
+    }, 800); // Simulasi loading singkat
+  };
+
   const textureMap = {
     "6-8": { label: "bubur halus / lumat", suffix: "lumat halus" },
     "9-11": { label: "bubur kasar / cincang", suffix: "cincang kasar" },
     "12+": { label: "nasi tim / menu keluarga", suffix: "padat sehat" }
-  };
-
-  const weeklyMenu = {
-    Senin: { 
-      theme: "Boster berat badan",
-      pagi: { name: "Hati ayam dan wortel", time: "20m" },
-      siang: { name: "Puree alpukat mentega dan chia", time: "5m" },
-      malam: { name: "Labu parang dan daging giling", time: "25m" },
-      ingredients: ["Hati ayam", "Labu parang", "Alpukat", "Beras putih", "Daging sapi giling"] 
-    },
-    Selasa: { 
-      theme: "Nutrisi kecerdasan otak",
-      pagi: { name: "Oatmeal dan kuning telur", time: "15m" },
-      siang: { name: "Smoothie buah naga dan asi", time: "5m" },
-      malam: { name: "Ikan salmon dan bayam jepang", time: "20m" },
-      ingredients: ["Salmon fillet", "Bayam", "Kuning telur", "Oatmeal", "Buah naga"] 
-    },
-    Rabu: { 
-      theme: "Zat besi tinggi",
-      pagi: { name: "Jagung dan daging sapi", time: "30m" },
-      siang: { name: "Puree pepaya california dan jeruk baby", time: "5m" },
-      malam: { name: "Tahu dan telur puyuh creamy", time: "15m" },
-      ingredients: ["Daging sapi", "Jagung manis", "Pepaya", "Telur puyuh", "Tahu sutra"] 
-    },
-    Kamis: { 
-      theme: "Kesehatan pencernaan",
-      pagi: { name: "Beras merah ikan kembung", time: "25m" },
-      siang: { name: "Mashed banana dan cinnamon", time: "5m" },
-      malam: { name: "Telur bebek dan tomat ungu", time: "15m" },
-      ingredients: ["Ikan kembung", "Beras merah", "Pisang ambon", "Telur bebek", "Tomat"] 
-    },
-    Jumat: { 
-      theme: "Penguat imun tubuh",
-      pagi: { name: "Mashed potato dan ayam kampung", time: "25m" },
-      siang: { name: "Puree mangga gadung arumanis", time: "5m" },
-      malam: { name: "Brokoli dan hati sapi", time: "20m" },
-      ingredients: ["Kentang", "Ayam kampung", "Mangga", "Hati sapi", "Brokoli"] 
-    },
-    Sabtu: { 
-      theme: "Spesial anti gtm",
-      pagi: { name: "Schotel nasi keju", time: "35m" },
-      siang: { name: "Puree pir hijau dan mint", time: "10m" },
-      malam: { name: "Gurame dan labu siam", time: "25m" },
-      ingredients: ["Ikan gurame", "Beras putih", "Pir hijau", "Labu siam", "Keju belcube"] 
-    },
-    Minggu: { 
-      theme: "Pesta akhir pekan",
-      pagi: { name: "Creamy chicken rice soup", time: "30m" },
-      siang: { name: "Jeruk peras baby puree", time: "5m" },
-      malam: { name: "Telur wortel", time: "20m" },
-      ingredients: ["Daging ayam", "Wortel", "Jeruk baby", "Beras", "Bawang putih"] 
-    },
   };
 
   const toggleMeal = (mealKey) => {
@@ -79,9 +61,8 @@ const MPASIPage = ({ onBack }) => {
     }));
   };
 
-  // Fungsi helper untuk nama menu dinamis
   const getDynamicName = (baseName, mealTime) => {
-    if (mealTime === 'siang') return baseName; // Snack biasanya teksturnya tetap puree/buah
+    if (mealTime === 'siang') return baseName;
     return `${baseName} ${textureMap[ageFilter].suffix}`;
   };
 
@@ -116,6 +97,16 @@ const MPASIPage = ({ onBack }) => {
           </div>
 
           <div className="flex gap-3">
+            {/* TOMBOL REFRESH BARU */}
+            <button 
+              onClick={handleRefreshMenu}
+              disabled={isRefreshing}
+              className="flex items-center gap-2 px-6 py-4 rounded-4xl font-bold text-sm bg-card border border-border-soft text-primary shadow-soft hover:bg-primary/5 transition-all disabled:opacity-50"
+            >
+              <ArrowsClockwise size={20} className={isRefreshing ? "animate-spin" : ""} /> 
+              {isRefreshing ? "Mengacak..." : "Acak Menu"}
+            </button>
+
             <button 
               onClick={() => setIsChefMode(!isChefMode)}
               className={`flex items-center gap-2 px-6 py-4 rounded-4xl font-bold text-sm shadow-soft transition-all ${isChefMode ? 'bg-primary text-white' : 'bg-card text-text-muted border border-border-soft'}`}
@@ -131,7 +122,7 @@ const MPASIPage = ({ onBack }) => {
           </div>
         </header>
 
-        {/* Usia Filter Tab - FITUR BARU */}
+        {/* Usia Filter Tab */}
         <div className="mb-8 flex flex-wrap gap-4 items-center p-2 bg-card rounded-4xl border border-border-soft shadow-soft max-w-fit">
           <div className="px-4 py-2 text-xs font-bold text-text-muted flex items-center gap-2">
             <Baby size={20} className="text-primary" /> Filter usia:
@@ -171,7 +162,7 @@ const MPASIPage = ({ onBack }) => {
                     }`}
                   >
                     <span>{day}</span>
-                    <span className="text-[10px] opacity-70 font-normal">{weeklyMenu[day].theme}</span>
+                    <span className="text-[10px] opacity-70 font-normal truncate ml-2">{weeklyMenu[day].theme}</span>
                   </button>
                 ))}
               </div>
@@ -197,7 +188,7 @@ const MPASIPage = ({ onBack }) => {
           <div className="lg:col-span-8 menu-container">
             <AnimatePresence mode="wait">
               <motion.div 
-                key={`${selectedDay}-${ageFilter}`}
+                key={`${selectedDay}-${ageFilter}-${weeklyMenu[selectedDay].pagi}`} // Key diubah agar animasi trigger saat menu ganti
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
@@ -223,7 +214,7 @@ const MPASIPage = ({ onBack }) => {
                 {/* Cards */}
                 <div className="space-y-4">
                   {['pagi', 'siang', 'malam'].map((mealTime) => {
-                    const meal = weeklyMenu[selectedDay][mealTime];
+                    const mealName = weeklyMenu[selectedDay][mealTime];
                     const isDone = completedMeals[`${selectedDay}-${mealTime}`];
                     return (
                       <motion.div
@@ -247,13 +238,13 @@ const MPASIPage = ({ onBack }) => {
                               {mealTime === 'siang' ? 'Selingan snack' : 'Makan utama'} • {mealTime === 'pagi' ? '08:00' : mealTime === 'siang' ? '11:00' : '17:00'}
                             </p>
                             <h4 className={`text-lg font-bold ${isDone ? 'text-text-muted line-through opacity-60' : 'text-text-main'}`}>
-                              {getDynamicName(meal.name, mealTime)}
+                              {getDynamicName(mealName, mealTime)}
                             </h4>
                           </div>
                         </div>
                         {isChefMode && (
                           <div className="flex items-center gap-1 text-[10px] font-bold bg-accent/20 text-text-main px-3 py-1 rounded-full">
-                            <Fire size={12} /> {meal.time}
+                            <Fire size={12} /> {mealTime === 'pagi' ? '20m' : mealTime === 'siang' ? '5m' : '25m'}
                           </div>
                         )}
                       </motion.div>
@@ -281,7 +272,7 @@ const MPASIPage = ({ onBack }) => {
         </div>
       </div>
 
-      {/* Area Cetak (Print) - Otomatis menyesuaikan filter */}
+      {/* Area Cetak */}
       <div id="print-area" className="hidden">
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <h1 style={{ fontSize: '32px', margin: 0 }}>Momscare mpasi planner</h1>
@@ -300,9 +291,9 @@ const MPASIPage = ({ onBack }) => {
             {Object.entries(weeklyMenu).map(([day, data]) => (
               <tr key={day}>
                 <td style={{ border: '1px solid black', padding: '10px', fontWeight: 'bold' }}>{day}</td>
-                <td style={{ border: '1px solid black', padding: '10px' }}>{getDynamicName(data.pagi.name, 'pagi')}</td>
-                <td style={{ border: '1px solid black', padding: '10px' }}>{data.siang.name}</td>
-                <td style={{ border: '1px solid black', padding: '10px' }}>{getDynamicName(data.malam.name, 'malam')}</td>
+                <td style={{ border: '1px solid black', padding: '10px' }}>{getDynamicName(data.pagi, 'pagi')}</td>
+                <td style={{ border: '1px solid black', padding: '10px' }}>{data.siang}</td>
+                <td style={{ border: '1px solid black', padding: '10px' }}>{getDynamicName(data.malam, 'malam')}</td>
               </tr>
             ))}
           </tbody>

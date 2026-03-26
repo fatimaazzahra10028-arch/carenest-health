@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookmarkSimple, Trash, BookOpen, HeartBreak, ArrowLeft, TrashSimple, Calendar, Clock, Sparkle } from '@phosphor-icons/react';
+import { 
+  BookmarkSimple, Trash, BookOpen, HeartBreak, 
+  ArrowLeft, TrashSimple, Calendar, Clock, 
+  Sparkle, ShootingStar, Bookmark
+} from '@phosphor-icons/react';
 
 const FavoritePage = ({ onBack, onArticleClick }) => {
   const [favorites, setFavorites] = useState([]);
@@ -29,84 +33,115 @@ const FavoritePage = ({ onBack, onArticleClick }) => {
   };
 
   return (
-    <div className="min-h-screen pb-20 px-6 max-w-7xl mx-auto bg-bg transition-colors duration-500 font-outfit">
-      <header className="pt-10 pb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
+    <div className="min-h-screen pb-24 px-4 md:px-8 max-w-7xl mx-auto bg-bg transition-colors duration-500 font-outfit">
+      {/* Header Premium */}
+      <header className="pt-12 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border-soft mb-12">
+        <div className="flex flex-col gap-6">
           <motion.button 
-            whileHover={{ x: -5 }}
+            whileHover={{ x: -8 }}
+            whileTap={{ scale: 0.95 }}
             onClick={onBack}
-            className="p-3 bg-card rounded-2xl shadow-sm text-text-muted hover:text-primary transition-all border border-border-soft"
+            className="w-fit flex items-center gap-2 text-text-muted hover:text-primary font-bold text-sm transition-all group"
           >
-            <ArrowLeft size={24} weight="bold" />
+            <div className="p-2.5 bg-card rounded-xl shadow-sm border border-border-soft group-hover:bg-primary group-hover:text-white transition-all">
+              <ArrowLeft size={20} weight="bold" />
+            </div>
+            Kembali
           </motion.button>
+          
           <div>
-            <h1 className="text-3xl font-kids text-text-main font-bold">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                <Bookmark size={24} weight="fill" />
+              </div>
+              <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Koleksi Pribadi</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-kids text-text-main font-bold">
               Simpanan <span className="text-primary">Moms</span>
             </h1>
-            <p className="text-text-muted text-sm font-medium">Lanjutkan membaca artikel favorit Moms.</p>
           </div>
         </div>
 
         {favorites.length > 0 && (
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={clearAllFavorites}
-            className="flex items-center gap-2 bg-red-500/10 text-red-500 px-5 py-2.5 rounded-2xl font-bold text-xs hover:bg-red-500 hover:text-white transition-all border border-red-500/10"
+            className="flex items-center gap-2 text-red-500 px-6 py-3.5 rounded-2xl font-bold text-xs hover:bg-red-50 transition-all border border-red-100 bg-white shadow-sm"
           >
-            <TrashSimple size={18} /> Hapus Semua
-          </button>
+            <TrashSimple size={18} weight="bold" /> Bersihkan Koleksi
+          </motion.button>
         )}
       </header>
 
       <AnimatePresence mode="popLayout">
         {favorites.length > 0 ? (
-          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {favorites.map((article) => (
+          <motion.div 
+            layout 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12"
+          >
+            {favorites.map((article, index) => (
               <motion.div
                 key={article.id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                className="bg-card rounded-[2.5rem] p-5 border border-border-soft shadow-xl group flex flex-col h-full relative"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ delay: index * 0.05 }}
+                className="group relative flex flex-col"
               >
-                {/* Badge Indikator Data Lengkap */}
-                <div className="absolute top-8 right-8 z-20 bg-green-500 text-white p-1.5 rounded-full shadow-lg">
-                  <Sparkle size={12} weight="fill" />
-                </div>
-
-                <div className="aspect-[16/10] rounded-[1.8rem] overflow-hidden mb-5 bg-slate-100 relative">
+                {/* Image Container with Floating Badge */}
+                <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden mb-6 shadow-2xl shadow-primary/5 border border-border-soft">
                   <img 
                     src={article.img || article.image} 
                     alt={article.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                   />
-                  <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-xl text-[10px] font-black text-primary uppercase tracking-wider shadow-sm">
+                  
+                  {/* Overlay Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  {/* Floating Action Button - Quick Delete */}
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); removeFavorite(article.id); }}
+                    className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-md text-red-500 rounded-full shadow-xl opacity-0 translate-y-[-10px] group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:bg-red-500 hover:text-white"
+                  >
+                    <Trash size={18} weight="fill" />
+                  </button>
+
+                  <div className="absolute bottom-4 left-4 bg-primary/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-wider">
                     {article.categoryId || article.category}
                   </div>
                 </div>
 
-                <div className="flex-1 px-1">
-                  <div className="flex items-center gap-4 text-[10px] font-bold text-text-muted mb-3 uppercase">
-                    <div className="flex items-center gap-1"><Calendar size={14} className="text-primary" /> {article.date || "Terbaru"}</div>
-                    <div className="flex items-center gap-1"><Clock size={14} className="text-primary" /> {article.readTime || "5 mnt"}</div>
+                {/* Content */}
+                <div className="flex-1 px-2">
+                  <div className="flex items-center gap-4 text-[10px] font-bold text-text-muted mb-3 uppercase tracking-widest">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar size={14} className="text-primary" weight="duotone" /> 
+                      {article.date || "Terbaru"}
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Clock size={14} className="text-primary" weight="duotone" /> 
+                      {article.readTime || "5 mnt"}
+                    </div>
                   </div>
-                  <h3 className="text-lg font-bold text-text-main line-clamp-2 mb-3 font-kids group-hover:text-primary transition-colors">
+
+                  <h3 className="text-xl font-bold text-text-main line-clamp-2 mb-4 font-kids leading-snug group-hover:text-primary transition-colors cursor-pointer" onClick={() => onArticleClick(article)}>
                     {article.title}
                   </h3>
                 </div>
 
-                <div className="flex items-center gap-3 mt-6">
+                {/* Bottom Action */}
+                <div className="px-2 mt-2">
                   <button 
-                    onClick={() => onArticleClick(article)} // Mengirim SELURUH data article
-                    className="flex-1 bg-primary text-white py-4 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all active:scale-95"
+                    onClick={() => onArticleClick(article)}
+                    className="w-full group/btn relative overflow-hidden bg-card border border-border-soft py-4 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 hover:border-primary transition-all active:scale-95"
                   >
-                    <BookOpen size={20} weight="fill" /> Baca Lengkap
-                  </button>
-                  <button 
-                    onClick={() => removeFavorite(article.id)}
-                    className="p-4 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-sm border border-red-100"
-                  >
-                    <Trash size={20} weight="bold" />
+                    <div className="absolute inset-0 bg-primary translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
+                    <span className="relative z-10 group-hover/btn:text-white flex items-center gap-2 transition-colors">
+                      BACA SEKARANG <BookOpen size={18} weight="fill" />
+                    </span>
                   </button>
                 </div>
               </motion.div>
@@ -121,14 +156,40 @@ const FavoritePage = ({ onBack, onArticleClick }) => {
 };
 
 const EmptyState = ({ onBack }) => (
-  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-32 flex flex-col items-center text-center">
-    <div className="w-48 h-48 bg-card rounded-full flex items-center justify-center mb-8 border border-border-soft shadow-2xl relative">
-      <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 2.5 }}>
-        <HeartBreak size={100} weight="duotone" className="text-primary/20" />
-      </motion.div>
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }} 
+    animate={{ opacity: 1, y: 0 }} 
+    className="py-32 flex flex-col items-center text-center max-w-md mx-auto"
+  >
+    <div className="relative mb-10">
+      <div className="w-48 h-48 bg-card rounded-[3rem] rotate-12 absolute inset-0 border border-border-soft" />
+      <div className="w-48 h-48 bg-primary/5 rounded-[3rem] -rotate-6 absolute inset-0" />
+      <div className="w-48 h-48 bg-card rounded-[3rem] flex items-center justify-center border border-border-soft shadow-xl relative z-10">
+        <motion.div 
+          animate={{ 
+            scale: [1, 1.1, 1],
+            rotate: [0, 5, -5, 0]
+          }} 
+          transition={{ repeat: Infinity, duration: 4 }}
+        >
+          <ShootingStar size={80} weight="duotone" className="text-primary/30" />
+        </motion.div>
+      </div>
     </div>
-    <h2 className="text-2xl font-kids text-text-main font-bold mb-3">Belum ada simpanan</h2>
-    <button onClick={onBack} className="bg-primary text-white px-12 py-4 rounded-2xl font-bold text-sm shadow-xl">Cari Artikel</button>
+    
+    <h2 className="text-3xl font-kids text-text-main font-bold mb-4">Koleksi Masih Kosong</h2>
+    <p className="text-text-muted mb-10 leading-relaxed font-medium">
+      Moms belum menyimpan artikel apapun. Yuk, jelajahi ribuan tips menarik untuk si kecil!
+    </p>
+    
+    <motion.button 
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={onBack} 
+      className="bg-primary text-white px-10 py-4 rounded-2xl font-black text-sm shadow-xl shadow-primary/20 tracking-widest uppercase"
+    >
+      Mulai Menjelajah
+    </motion.button>
   </motion.div>
 );
 
