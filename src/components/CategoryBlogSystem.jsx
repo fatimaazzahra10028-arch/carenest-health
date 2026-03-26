@@ -1,33 +1,34 @@
 // src/components/CategoryBlogSystem.jsx
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, LayoutGroup } from 'framer-motion'; // Tambah LayoutGroup
+import React, { useState } from 'react';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+// HAPUS import useNavigate karena Moms tidak pakai Router
 import { 
   Clock, 
-  ArrowRight, 
   Baby, 
   Stethoscope, 
   Flask, 
   AppleLogo, 
   Brain, 
   FirstAid,
-  Article 
+  Article,
+  CaretRight 
 } from '@phosphor-icons/react';
 import { categories, allArticles } from '../data/blogData';
 
-const CategoryBlogSystem = ({ onArticleClick, searchQuery = "", onArticlesLoaded }) => {
+// TAMBAHKAN prop onViewAll agar tombol "Lihat Selengkapnya" bisa berfungsi
+const CategoryBlogSystem = ({ onArticleClick, searchQuery = "", onViewAll }) => {
   const [selectedCategory, setSelectedCategory] = useState('neonatal');
   
-  useEffect(() => {
-    if (onArticlesLoaded && allArticles) {
-      onArticlesLoaded(allArticles);
-    }
-  }, [onArticlesLoaded]);
-
+  // 1. Logika Filter & Limit
   const filteredArticles = allArticles.filter(art => {
     const matchesCategory = art.categoryId === selectedCategory;
     const matchesSearch = art.title.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  // Batasi hanya 6 artikel untuk tampilan "Preview" di Home
+  const displayArticles = filteredArticles.slice(0, 6);
+  const hasMore = filteredArticles.length > 6;
 
   const getArticleIcon = (categoryId) => {
     switch (categoryId) {
@@ -84,17 +85,27 @@ const CategoryBlogSystem = ({ onArticleClick, searchQuery = "", onArticlesLoaded
               Topik <span className="text-primary">{selectedCategory}</span>
             </h2>
             <div className="h-[2px] flex-grow mx-6 bg-primary/20 rounded-full hidden md:block" />
+            
+            {/* Tombol Lihat Selengkapnya - Menggunakan Prop onViewAll */}
+            {hasMore && (
+              <motion.button
+                whileHover={{ x: 5 }}
+                onClick={() => onViewAll && onViewAll(selectedCategory)}
+                className="flex items-center gap-2 text-primary font-bold text-sm hover:underline"
+              >
+                Lihat Selengkapnya <CaretRight weight="bold" />
+              </motion.button>
+            )}
           </div>
 
-          {/* LayoutGroup membungkus grid agar transisi posisi antar elemen lancar */}
           <LayoutGroup>
             <motion.div 
               layout 
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
             >
               <AnimatePresence mode="popLayout" initial={false}>
-                {filteredArticles.length > 0 ? (
-                  filteredArticles.map((article) => (
+                {displayArticles.length > 0 ? (
+                  displayArticles.map((article) => (
                     <motion.div
                       key={article.id}
                       layout
@@ -106,7 +117,7 @@ const CategoryBlogSystem = ({ onArticleClick, searchQuery = "", onArticlesLoaded
                       className="bg-card p-5 rounded-[2rem] shadow-sm flex gap-4 border border-border-soft hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 transition-shadow group cursor-pointer h-full"
                     >
                       <div className="w-20 h-20 bg-bg rounded-2xl flex items-center justify-center shrink-0 overflow-hidden shadow-inner border border-border-soft">
-                        {article.img && typeof article.img === 'string' && article.img.startsWith('http') ? (
+                        {article.img ? (
                           <img src={article.img} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                         ) : (
                           <div className="group-hover:scale-110 transition-transform duration-500">
@@ -134,7 +145,6 @@ const CategoryBlogSystem = ({ onArticleClick, searchQuery = "", onArticlesLoaded
                     layout
                     initial={{ opacity: 0 }} 
                     animate={{ opacity: 1 }} 
-                    exit={{ opacity: 0 }}
                     className="col-span-full py-20 text-center"
                   >
                     <div className="flex justify-center mb-4">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, Calendar, User, ShareNetwork, 
@@ -16,7 +16,13 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voices, setVoices] = useState([]);
 
-  // 1. Inisialisasi daftar suara (PENTING: Agar suara Indo ketemu)
+  // DEBUGGING: Cek apakah data artikel masuk ke komponen ini
+  useEffect(() => {
+    console.log("Detail Artikel Aktif:", article);
+    console.log("Total Database Artikel:", allArticles.length);
+  }, [article, allArticles]);
+
+  // 1. Inisialisasi daftar suara
   useEffect(() => {
     const loadVoices = () => {
       const availableVoices = window.speechSynthesis.getVoices();
@@ -45,7 +51,28 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
     };
   }, [article]);
 
-  // 2. Fungsi Audio yang sudah diperbaiki logatnya
+  // 2. Logika Related Articles yang diperbaiki (Paling Krusial)
+  const relatedArticles = useMemo(() => {
+    if (!allArticles || !article) return [];
+
+    const currentCategory = article.categoryId || article.category;
+
+    return allArticles.filter(item => {
+      if (!item) return false;
+      
+      // Jangan tampilkan artikel yang sama dengan yang sedang dibaca
+      const isDifferentId = item.id !== article.id;
+      
+      // Perbandingan Fleksibel (Longgar/Loose Comparison '==')
+      // Supaya string "1" cocok dengan number 1
+      const itemCategory = item.categoryId || item.category;
+      const isSameCategory = itemCategory == currentCategory;
+
+      return isDifferentId && isSameCategory;
+    }).slice(0, 4);
+  }, [allArticles, article]);
+
+  // 3. Fungsi Audio
   const handleSpeech = () => {
     if (!article) return;
 
@@ -60,17 +87,13 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
     const fullText = `${article.title}. ${article.desc || ""}. ${contentText}. ${stepsText}`;
     
     const utterance = new SpeechSynthesisUtterance(fullText);
-    
-    // Cari suara Indonesia (ID) yang paling bagus
     const idVoice = voices.find(v => v.lang.startsWith('id') || v.name.includes('Indonesia'));
     
-    if (idVoice) {
-      utterance.voice = idVoice;
-    }
+    if (idVoice) utterance.voice = idVoice;
     
     utterance.lang = 'id-ID';
-    utterance.rate = 0.95; // Kecepatan sedikit diperlambat agar artikulasi jelas
-    utterance.pitch = 1.0; // Nada normal manusia
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
     
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
@@ -100,12 +123,13 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
     } catch (e) { console.error(e); }
   };
 
-  if (!article) return <div className="min-h-screen flex items-center justify-center bg-bg"><Clock size={48} className="animate-spin text-primary opacity-40" /></div>;
+  if (!article) return (
+    <div className="min-h-screen flex items-center justify-center bg-bg">
+      <Clock size={48} className="animate-spin text-primary opacity-40" />
+    </div>
+  );
 
-  const currentCategory = article.categoryId || article.category;
-  const relatedArticles = Array.isArray(allArticles) 
-    ? allArticles.filter(item => item && item.id !== article.id && (item.categoryId === currentCategory)).slice(0, 4)
-    : [];
+  const currentCategoryDisplay = article.categoryId || article.category;
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-screen pb-20 bg-bg font-outfit">
@@ -126,8 +150,12 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
           <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/20 to-transparent" />
         </div>
         <div className="relative z-30 max-w-7xl mx-auto px-6 pt-8 flex justify-between items-center">
-          <button onClick={onBack} className="flex items-center gap-2 bg-white/90 backdrop-blur-md px-5 py-2.5 rounded-2xl shadow-xl text-primary font-bold border border-white/50 hover:scale-105 transition-transform"><ArrowLeft size={20} weight="bold" /> <span className="text-sm">Kembali</span></button>
-          <div className="bg-primary/90 backdrop-blur-md text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">{currentCategory}</div>
+          <button onClick={onBack} className="flex items-center gap-2 bg-white/90 backdrop-blur-md px-5 py-2.5 rounded-2xl shadow-xl text-primary font-bold border border-white/50 hover:scale-105 transition-transform">
+            <ArrowLeft size={20} weight="bold" /> <span className="text-sm">Kembali</span>
+          </button>
+          <div className="bg-primary/90 backdrop-blur-md text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">
+            {currentCategoryDisplay}
+          </div>
         </div>
       </div>
 
@@ -138,7 +166,7 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
             <div className="bg-white dark:bg-card rounded-[3.5rem] p-8 md:p-14 shadow-2xl shadow-black/5 border border-border-soft">
               <h1 className="text-3xl md:text-5xl font-kids text-text-main leading-tight mb-8">{article.title}</h1>
 
-              {/* AUDIO PLAYER - SEKARANG LEBIH JELAS */}
+              {/* AUDIO PLAYER */}
               <div className="flex items-center gap-5 p-5 bg-primary/5 rounded-[2rem] mb-10 border border-primary/10">
                 <button onClick={handleSpeech} className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg ${isSpeaking ? 'bg-red-500 text-white animate-pulse' : 'bg-primary text-white hover:scale-105 active:scale-95'}`}>
                   {isSpeaking ? <StopCircle size={32} weight="fill" /> : <PlayCircle size={32} weight="fill" />}
@@ -210,19 +238,29 @@ const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsu
               </div>
             </div>
 
-            {/* Topics Card */}
+            {/* Related Topics Card (PERBAIKAN LOGIKA DISINI) */}
             <div className="space-y-5">
-              <h3 className="text-xl font-kids text-text-main flex items-center gap-3 px-2"><Heartbeat size={28} weight="duotone" className="text-red-500" /> Topik Serupa</h3>
+              <h3 className="text-xl font-kids text-text-main flex items-center gap-3 px-2">
+                <Heartbeat size={28} weight="duotone" className="text-red-500" /> Topik Serupa
+              </h3>
               <div className="grid gap-4">
-                {relatedArticles.map((item) => (
-                  <motion.div key={item.id} whileHover={{ x: 8 }} onClick={() => onArticleClick(item)} className="bg-white dark:bg-card p-3 rounded-3xl border border-border-soft flex gap-4 cursor-pointer group shadow-sm hover:shadow-lg transition-all">
-                    <div className="w-24 h-24 rounded-[1.5rem] overflow-hidden shrink-0"><img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" /></div>
-                    <div className="flex flex-col justify-center py-1">
-                      <h4 className="text-sm font-bold text-text-main line-clamp-2 group-hover:text-primary transition-colors mb-2">{item.title}</h4>
-                      <div className="flex items-center gap-1 text-primary text-[10px] font-black uppercase">Baca <CaretRight weight="bold" /></div>
-                    </div>
-                  </motion.div>
-                ))}
+                {relatedArticles.length > 0 ? (
+                  relatedArticles.map((item) => (
+                    <motion.div key={item.id} whileHover={{ x: 8 }} onClick={() => onArticleClick(item)} className="bg-white dark:bg-card p-3 rounded-3xl border border-border-soft flex gap-4 cursor-pointer group shadow-sm hover:shadow-lg transition-all">
+                      <div className="w-24 h-24 rounded-[1.5rem] overflow-hidden shrink-0">
+                        <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                      </div>
+                      <div className="flex flex-col justify-center py-1">
+                        <h4 className="text-sm font-bold text-text-main line-clamp-2 group-hover:text-primary transition-colors mb-2">{item.title}</h4>
+                        <div className="flex items-center gap-1 text-primary text-[10px] font-black uppercase">Baca <CaretRight weight="bold" /></div>
+                      </div>
+                    </motion.div>
+                  ))
+                ) : (
+                  <div className="p-10 text-center bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200">
+                    <p className="text-xs text-slate-400 font-bold">Belum ada topik serupa</p>
+                  </div>
+                )}
               </div>
             </div>
           </aside>

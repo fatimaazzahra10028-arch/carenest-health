@@ -20,7 +20,7 @@ const FloatingMascot = ({ startAIScreening }) => (
         />
 
         {/* Lencana Stetoskop - Atribut Dokter */}
-        <div className="absolute -bottom-1 -right-1 bg-primary text-white p-2 rounded-xl shadow-lg border-2 border-card transition-all duration-500 group-hover:bg-blue-600">
+        <div className="absolute -bottom-1 -right-1 bg-primary text-white p-2 rounded-xl shadow-lg border-2 border-card transition-all duration-500 group-hover:bg-charcoal">
           <Stethoscope size={20} weight="fill" />
         </div>
       </div>

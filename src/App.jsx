@@ -7,6 +7,7 @@ import HeroSection from "./components/home/HeroSection";
 import AIChatModal from "./components/ai/AiChatModal";
 import BackgroundDecor from "./components/layout/BackgroundDecor";
 import CategoryBlogSystem from "./components/CategoryBlogSystem";
+import TopicPage from "./components/pages/TopicPage";
 import BlogDetail from "./components/BlogDetail";
 import AuthPage from "./components/AuthPage";
 import FavoritePage from "./components/FavoritePage";
@@ -28,6 +29,7 @@ function AppContent() {
   const [showMPASI, setShowMPASI] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showContact, setShowContact] = useState(false);
+  const [showTopicPage, setShowTopicPage] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [allArticles, setAllArticles] = useState([]);
   const { user } = useAuth();
@@ -64,6 +66,7 @@ function AppContent() {
     setShowFavorites(false);
     setShowGrowthTracker(false);
     setShowImmunization(false);
+    setShowTopicPage(null);
     setShowMPASI(false);
     setShowAbout(false);
     setShowContact(false);
@@ -78,6 +81,11 @@ function AppContent() {
         block: "start",
       });
     }
+  };
+
+  const handleOpenTopic = (categoryId) => {
+    handleGoHome(); // Bersihkan state lain
+    setShowTopicPage(categoryId); // Set kategori yang ingin dilihat
   };
 
   const handleOpenArticle = (article) => {
@@ -117,7 +125,6 @@ function AppContent() {
     <div className="min-h-screen bg-[#f0f7ff] relative font-outfit selection:bg-primary/20">
       {/* --- LAYER 0: BACKGROUND ILLUSTRATIONS --- */}
       <BackgroundDecor />
-      {/* <CustomCursor /> */}
 
       {/* --- LAYER 1: NAVIGATION --- */}
       <Navbar
@@ -237,6 +244,20 @@ function AppContent() {
                 onConsultClick={startAIScreening} // Integrasi tombol konsultasi di detail artikel
               />
             </motion.div>
+          ) : showTopicPage ? ( // TAMBAHKAN LOGIKA INI
+            <motion.div
+              key="topic-page"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <TopicPage
+                categoryId={showTopicPage}
+                allArticles={allArticles}
+                onBack={handleGoHome}
+                onArticleClick={handleOpenArticle}
+              />
+            </motion.div>
           ) : (
             <motion.div
               key="home"
@@ -258,10 +279,25 @@ function AppContent() {
                   onArticleClick={handleOpenArticle}
                   searchQuery={searchQuery}
                   onArticlesLoaded={(articles) => setAllArticles(articles)}
+                  onViewAll={(categoryId) => {
+                    // 1. Reset semua view lain
+                    setActiveArticle(null);
+                    setShowFavorites(false);
+                    setShowGrowthTracker(false);
+                    setShowImmunization(false);
+                    setShowAbout(false);
+                    setShowContact(false);
+
+                    // 2. Set state untuk menampilkan halaman topik
+                    setShowTopicPage(categoryId); // Pastikan Moms sudah buat [showTopicPage, setShowTopicPage] = useState(null) di atas
+
+                    // 3. Scroll ke atas
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
                 />
               </div>
               <FeatureCards
-onMPASIClick={handleOpenMPASI}
+                onMPASIClick={handleOpenMPASI}
                 onGrowthClick={() => setShowGrowthTracker(true)}
                 onImmunizationClick={() => setShowImmunization(true)}
               />

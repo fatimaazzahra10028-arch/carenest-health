@@ -1,239 +1,222 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Fuse from "fuse.js";
 import { 
-  Robot, X, Sparkle, Target, 
-  Hourglass, ThermometerHot, 
-  FirstAid, FileText, WhatsappLogo,
-  CaretRight, Brain
+  Robot, X, WhatsappLogo, CaretRight, 
+  PaperPlaneRight, Smiley, Stethoscope,
+  BookOpenText, DotsThreeOutline, CaretLeft,
+  Lightbulb
 } from "@phosphor-icons/react";
 
 const AIChatModal = ({ isOpen, onClose, user }) => {
-  const [chatStep, setChatStep] = useState(1);
-  const [chatData, setChatData] = useState({
-    age: "",
-    symptom: "",
-    duration: "",
+  const [view, setView] = useState("chat"); 
+  const [messages, setMessages] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const scrollRef = useRef(null);
+
+  const [consultData, setConsultData] = useState({ age: "", symptom: "", duration: "" });
+
+  // Pertanyaan yang direkomendasikan
+  const quickQuestions = [
+    "Cara rawat tali pusar?",
+    "Tanda bayi kuning?",
+    "Tips MPASI 6 bulan",
+    "Anak susah makan",
+    "Posisi gendong M-Shape"
+  ];
+
+  const articleDb = [
+    { 
+      id: 1, 
+      tags: ["tali pusar", "pusar", "newborn", "infeksi", "puser"], 
+      title: "perawatan tali pusar bayi baru lahir", 
+      link: "/blog/1",
+      proAnswer: "untuk perawatan tali pusar, kuncinya adalah 'dry care'. biarkan area pusar kering secara alami, jangan gunakan alkohol atau bedak. pastikan popok dilipat di bawah pusar agar tidak lembap terkena urin."
+    },
+    { 
+      id: 13, 
+      tags: ["kuning", "ikterus", "bayi kuning", "bilirubin", "jemur"], 
+      title: "mengenali tanda bayi kuning (ikterus)", 
+      link: "/blog/13",
+      proAnswer: "bayi kuning atau ikterus wajar terjadi di minggu pertama. namun, moms perlu waspada jika kuningnya sudah mencapai perut atau kaki. pastikan si kecil menyusu 8-12 kali sehari untuk membuang bilirubin lewat urin."
+    },
+    { 
+      id: 2, 
+      tags: ["gendong", "m-shape", "mshape", "panggul", "gendongan"], 
+      title: "teknik menggendong m-shape yang aman", 
+      link: "/blog/2",
+      proAnswer: "posisi m-shape sangat baik untuk pertumbuhan tulang panggul. pastikan lutut bayi lebih tinggi dari bokong dan punggungnya membentuk kurva huruf c yang alami."
+    },
+    { 
+      id: 3, 
+      tags: ["mpasi", "makan", "6 bulan", "menu 4 bintang", "gizi"], 
+      title: "jadwal mpasi pertama: menu 4 bintang", 
+      link: "/blog/3",
+      proAnswer: "saat mulai mpasi di usia 6 bulan, moms bisa gunakan menu 4 bintang: karbohidrat, protein hewani (utama), protein nabati, dan sedikit sayur sebagai perkenalan serat."
+    },
+    { 
+      id: 5, 
+      tags: ["pilih makanan", "picky eater", "susah makan", "batita"], 
+      title: "anak pilih-pilih makanan? ini solusinya", 
+      link: "/blog/5",
+      proAnswer: "fase picky eater itu normal pada batita. tipsnya: jangan paksa anak makan, sajikan dalam porsi kecil yang menarik, dan ajak si kecil makan bersama keluarga."
+    }
+  ];
+
+  const fuse = new Fuse(articleDb, {
+    keys: ["tags", "title"],
+    threshold: 0.4
   });
 
-  const handleChatNext = (update) => {
-    setChatData((prev) => ({ ...prev, ...update }));
-    setChatStep((prev) => prev + 1);
-  };
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    }
+  }, [messages, isTyping]);
 
   useEffect(() => {
-    if (chatStep === 5) {
-      const timer = setTimeout(() => setChatStep(6), 2500);
-      return () => clearTimeout(timer);
+    if (!isOpen) {
+      setMessages([]);
+      setSuggestions([]);
+      setView("chat");
+    } else {
+      setMessages([{ 
+        role: "bot", 
+        content: `halo moms ${user?.name || "putri"}! ✨ ada yang ingin ditanyakan seputar kesehatan si kecil hari ini?` 
+      }]);
     }
-  }, [chatStep]);
+  }, [isOpen, user]);
+
+  const processChat = (text) => {
+    setMessages((prev) => [...prev, { role: "user", content: text }]);
+    setIsTyping(true);
+    setSuggestions([]);
+
+    setTimeout(() => {
+      const searchResults = fuse.search(text.toLowerCase());
+      if (searchResults.length > 0) {
+        const bestMatch = searchResults[0].item;
+        setMessages((prev) => [...prev, { role: "bot", content: bestMatch.proAnswer }]);
+        setSuggestions(searchResults.map(r => r.item));
+      } else {
+        setMessages((prev) => [...prev, { 
+          role: "bot", 
+          content: "mohon maaf moms, saya belum menemukan jawaban spesifik. tapi moms bisa coba konsultasi langsung dengan dokter spesialis kami." 
+        }]);
+      }
+      setIsTyping(false);
+    }, 1200);
+  };
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (!inputValue.trim()) return;
+    processChat(inputValue);
+    setInputValue("");
+  };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 font-outfit">
+    <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-900/10 backdrop-blur-md p-4 font-outfit">
       <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 40 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 40 }}
-        /* bg-white ganti ke bg-card, border-white ganti ke border-border-soft */
-        className="bg-card w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden border border-border-soft relative transition-colors duration-500"
+        initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+        className="bg-white w-full max-w-lg h-[85vh] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col border border-white"
       >
-        {/* Header Modal - Tetap Gelap/Slate agar Kontras */}
-        <div className="bg-slate-900 p-7 text-white flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-white border border-white/10">
-              <Robot size={28} weight="duotone" />
+        {/* Header */}
+        <div className="p-5 flex justify-between items-center border-b border-slate-50">
+          <div className="flex items-center gap-3">
+            {view === "form" && <CaretLeft size={24} onClick={() => setView("chat")} className="cursor-pointer" />}
+            <div className="w-10 h-10 bg-[#8da8c3]/10 rounded-xl flex items-center justify-center text-[#8da8c3]">
+              <Robot size={24} weight="duotone" />
             </div>
             <div>
-              <h3 className="font-kids text-xl leading-tight">MomsBot AI</h3>
-              <p className="text-[10px] opacity-60 uppercase tracking-[0.2em] font-bold">
-                Diagnostic Assistant
-              </p>
+              <h3 className="font-semibold text-slate-800">momsbot expert</h3>
+              <p className="text-[10px] text-green-500 font-bold uppercase tracking-widest">● online</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 transition-colors text-white/50 hover:text-white"
-          >
-            <X size={24} weight="bold" />
-          </button>
+          <X size={24} className="text-slate-300 cursor-pointer" onClick={onClose} />
         </div>
 
-        {/* Chat Content */}
-        <div className="p-10 max-h-[75vh] overflow-y-auto custom-scrollbar flex flex-col items-center">
-          
-          {/* STEP 1: WELCOME */}
-          {chatStep === 1 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center"
-            >
-              <div className="w-20 h-20 bg-primary/10 rounded-[2rem] flex items-center justify-center text-primary mx-auto mb-6">
-                <Sparkle size={40} weight="fill" />
-              </div>
-              <h4 className="text-3xl font-kids text-text-main mb-3 transition-colors">
-                Halo Moms {user?.name || ""}!
-              </h4>
-              <p className="text-text-muted text-sm mb-10 leading-relaxed font-medium transition-colors">
-                Saya asisten pintar MomsCare. Mari lakukan pengecekan gejala
-                awal si kecil sebelum berkonsultasi dengan dokter.
-              </p>
-              <button
-                onClick={() => handleChatNext({})}
-                className="bg-primary text-white w-full py-5 rounded-[2rem] font-bold shadow-xl shadow-primary/20 hover:brightness-110 transition-all flex items-center justify-center gap-3 uppercase text-xs tracking-widest"
-              >
-                Mulai Screening <CaretRight size={18} weight="bold" />
-              </button>
-            </motion.div>
-          )}
-
-          {/* STEP 2: USIA */}
-          {chatStep === 2 && (
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="w-full">
-              <div className="flex items-center gap-2 mb-6 justify-center">
-                <Target size={20} className="text-primary" weight="bold" />
-                <p className="font-kids text-xl text-text-main transition-colors">Berapa usia si kecil?</p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                {["0-6 Bulan", "6-12 Bulan", "1-3 Tahun", "3 Tahun+"].map((age) => (
-                  <button
-                    key={age}
-                    onClick={() => handleChatNext({ age })}
-                    /* bg-slate-50 ganti ke bg-bg, border-slate-50 ganti ke border-border-soft */
-                    className="p-5 border-2 border-border-soft bg-bg rounded-3xl hover:border-primary hover:bg-primary/5 transition-all font-bold text-text-main text-sm shadow-sm"
-                  >
-                    {age}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* STEP 3: GEJALA */}
-          {chatStep === 3 && (
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="w-full">
-              <div className="flex items-center gap-2 mb-6 justify-center">
-                <ThermometerHot size={24} className="text-primary" weight="bold" />
-                <p className="font-kids text-xl text-text-main text-center transition-colors">Apa keluhan utamanya?</p>
-              </div>
-              <div className="flex flex-col gap-3">
-                {["Demam / Panas", "Batuk & Pilek", "Masalah Pencernaan", "Bintik Merah / Alergi"].map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => handleChatNext({ symptom: s })}
-                    className="p-5 border-2 border-border-soft bg-bg rounded-2xl hover:border-primary hover:bg-primary/5 transition-all font-bold text-text-main text-left flex items-center justify-between group shadow-sm"
-                  >
-                    <span className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-border-soft group-hover:bg-primary transition-colors" />
-                      {s}
-                    </span>
-                    <CaretRight size={16} className="text-text-muted/40" weight="bold" />
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* STEP 4: DURASI */}
-          {chatStep === 4 && (
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="w-full">
-              <div className="flex items-center gap-2 mb-6 justify-center">
-                <Hourglass size={24} className="text-primary" weight="bold" />
-                <p className="font-kids text-xl text-text-main transition-colors">Berapa lama gejala ini?</p>
-              </div>
-              <div className="flex flex-col gap-3">
-                {["Baru hari ini", "1 - 2 Hari", "Lebih dari 3 hari"].map((d) => (
-                  <button
-                    key={d}
-                    onClick={() => handleChatNext({ duration: d })}
-                    className="p-5 border-2 border-border-soft bg-bg rounded-2xl hover:border-primary hover:bg-primary/5 transition-all font-bold text-text-main shadow-sm"
-                  >
-                    {d}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* STEP 5: ANALYZING */}
-          {chatStep === 5 && (
-            <div className="py-10 text-center">
-              <div className="relative w-24 h-24 mx-auto mb-8">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                  className="w-full h-full border-4 border-primary/20 border-t-primary rounded-full"
-                />
-                <div className="absolute inset-0 flex items-center justify-center text-primary">
-                  <Brain size={40} weight="duotone" className="animate-pulse" />
-                </div>
-              </div>
-              <p className="text-text-main font-kids text-2xl mb-2 transition-colors">Menganalisis Gejala...</p>
-              <p className="text-[10px] text-text-muted font-black uppercase tracking-[0.2em] transition-colors">
-                Database Medis Standar IDAI
-              </p>
-            </div>
-          )}
-
-          {/* STEP 6: RESULT */}
-          {chatStep === 6 && (
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full">
-              
-              {/* Summary Card */}
-              <div className="bg-bg p-6 rounded-[2rem] border border-border-soft mb-5 relative overflow-hidden transition-colors">
-                <div className="flex items-center gap-3 text-text-main font-kids text-lg mb-4">
-                  <FileText size={24} weight="duotone" className="text-primary" /> Ringkasan Laporan
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { label: "Usia", val: chatData.age },
-                    { label: "Keluhan", val: chatData.symptom },
-                    { label: "Durasi", val: chatData.duration }
-                  ].map((item, i) => (
-                    <div key={i} className="flex justify-between items-center bg-card p-2 px-4 rounded-xl border border-border-soft transition-colors">
-                      <span className="text-[11px] font-black text-text-muted uppercase tracking-tighter">{item.label}</span>
-                      <span className="text-sm font-bold text-text-main">{item.val}</span>
+        {/* Chat Area */}
+        <div className="flex-grow p-6 overflow-y-auto bg-[#fcfdfe] space-y-6" ref={scrollRef}>
+          <AnimatePresence>
+            {view === "chat" ? (
+              <>
+                {messages.map((msg, i) => (
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} key={i} className={`flex ${msg.role === "bot" ? "justify-start" : "justify-end"}`}>
+                    <div className={`max-w-[85%] px-5 py-3 text-sm leading-relaxed shadow-sm ${msg.role === "bot" ? "bg-white rounded-2xl rounded-bl-none text-slate-600 border border-slate-100" : "bg-[#8da8c3] text-white rounded-2xl rounded-br-none"}`}>
+                      {msg.content}
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </motion.div>
+                ))}
 
-              {/* Action Card */}
-              <div className="bg-secondary/10 p-7 rounded-[2.5rem] border border-secondary/20 mb-8 transition-colors">
-                <div className="flex items-center gap-3 text-secondary font-kids text-lg mb-4">
-                  <FirstAid size={24} weight="fill" /> Tindakan Awal
-                </div>
-                <ul className="space-y-3 text-[13px] text-text-main font-medium opacity-90">
-                  <li className="flex gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-secondary mt-1.5 shrink-0" />
-                    Berikan ASI/Cairan lebih sering untuk mencegah dehidrasi.
-                  </li>
-                  <li className="flex gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-secondary mt-1.5 shrink-0" />
-                    Pastikan suhu ruangan sejuk dan si kecil menggunakan pakaian tipis.
-                  </li>
-                </ul>
-              </div>
+                {/* Quick Questions (Hanya muncul jika baru mulai chat) */}
+                {messages.length === 1 && (
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {quickQuestions.map((q, i) => (
+                      <button 
+                        key={i} 
+                        onClick={() => processChat(q)}
+                        className="text-[11px] font-medium bg-white border border-slate-200 text-slate-500 px-4 py-2 rounded-full hover:border-[#8da8c3] hover:text-[#8da8c3] transition-all flex items-center gap-1.5 shadow-sm"
+                      >
+                        <Lightbulb size={14} weight="fill" className="text-amber-400" />
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
-              {/* Buttons */}
-              <div className="flex flex-col gap-4">
-                <a
-                  href={`https://wa.me/628123456789?text=Halo Dokter, saya Moms ${user?.name || ""}. Anak saya (${chatData.age}) mengalami ${chatData.symptom} selama ${chatData.duration}.`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="bg-primary text-white py-5 rounded-[1.8rem] font-bold text-center shadow-xl shadow-primary/20 hover:brightness-110 transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-widest"
-                >
-                  <WhatsappLogo size={22} weight="fill" /> Kirim ke Dokter
-                </a>
-                <button
-                  onClick={onClose}
-                  className="py-2 text-text-muted font-bold text-xs uppercase tracking-widest hover:text-text-main transition-colors"
-                >
-                  Tutup Diagnosa
-                </button>
+                {isTyping && <div className="text-xs text-slate-400 animate-pulse ml-2 italic">momsbot sedang mengetik...</div>}
+
+                {/* Referensi Artikel */}
+                {suggestions.length > 0 && (
+                  <div className="pt-4 space-y-2">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">rekomendasi artikel:</p>
+                    {suggestions.map((art, i) => (
+                      <a key={i} href={art.link} className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl hover:shadow-md transition-all">
+                        <span className="text-xs font-semibold text-slate-700">{art.title}</span>
+                        <CaretRight size={14} />
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              /* View Form Konsultasi (Sama seperti sebelumnya) */
+              <div className="p-2 text-center">
+                 <Stethoscope size={48} weight="duotone" className="mx-auto text-[#8da8c3] mb-4" />
+                 <h4 className="font-bold">konsultasi langsung</h4>
+                 <p className="text-xs text-slate-400 mb-6">lengkapi data untuk dokter</p>
+                 <input type="text" placeholder="Usia si kecil" className="w-full p-4 bg-slate-50 rounded-2xl mb-3 outline-none border-none text-sm" onChange={(e) => setConsultData({...consultData, age: e.target.value})} />
+                 <input type="text" placeholder="Keluhan utama" className="w-full p-4 bg-slate-50 rounded-2xl mb-3 outline-none border-none text-sm" onChange={(e) => setConsultData({...consultData, symptom: e.target.value})} />
+                 <button onClick={() => window.open(`https://wa.me/628123456789?text=Halo dokter...`, "_blank")} className="w-full bg-green-500 text-white p-4 rounded-2xl font-bold flex items-center justify-center gap-2">
+                   <WhatsappLogo size={20} weight="fill" /> kirim ke whatsapp
+                 </button>
               </div>
-            </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Footer Input */}
+        <div className="p-6 bg-white border-t border-slate-50">
+          <form onSubmit={handleSendMessage} className="flex gap-2">
+            <input 
+              value={inputValue} 
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Tanya Momsbot..." 
+              className="flex-grow p-4 bg-slate-50 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-[#8da8c3]/20 transition-all"
+            />
+            <button type="submit" className="bg-[#8da8c3] p-4 rounded-2xl text-white">
+              <PaperPlaneRight size={22} weight="fill" />
+            </button>
+          </form>
+          {view === "chat" && (
+            <button onClick={() => setView("form")} className="w-full mt-3 text-[11px] font-bold text-slate-400 flex items-center justify-center gap-2">
+              <Stethoscope size={16} /> butuh bantuan dokter? klik di sini
+            </button>
           )}
         </div>
       </motion.div>
