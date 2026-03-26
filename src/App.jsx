@@ -11,6 +11,7 @@ import BlogDetail from "./components/BlogDetail";
 import AuthPage from "./components/AuthPage";
 import FavoritePage from "./components/FavoritePage";
 import GrowthTracker from "./components/GrowthTracker";
+import MPASIPage from "./components/MPASIPage";
 import ImmunizationTracker from "./components/ImmunizationTracker";
 import AboutPage from "./components/AboutPage";
 import ContactPage from "./components/ContactPage";
@@ -24,6 +25,7 @@ function AppContent() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [showGrowthTracker, setShowGrowthTracker] = useState(false);
   const [showImmunization, setShowImmunization] = useState(false);
+  const [showMPASI, setShowMPASI] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -62,6 +64,7 @@ function AppContent() {
     setShowFavorites(false);
     setShowGrowthTracker(false);
     setShowImmunization(false);
+    setShowMPASI(false);
     setShowAbout(false);
     setShowContact(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -89,6 +92,11 @@ function AppContent() {
 
   const handleSaveGrowthData = (data) => {
     setChildData(data);
+  };
+
+  const handleOpenMPASI = () => {
+    handleGoHome(); // Bersihkan halaman lain dulu
+    setShowMPASI(true);
   };
 
   // --- NEW FUNCTIONS: AI SCREENING LOGIC ---
@@ -203,6 +211,16 @@ function AppContent() {
                 onBack={handleGoHome}
               />
             </motion.div>
+          ) : showMPASI ? (
+            <motion.div
+              key="mpasi-planner"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+            >
+              {/* Pastikan sudah import MPASIPage di atas ya Moms */}
+              <MPASIPage onBack={handleGoHome} />
+            </motion.div>
           ) : activeArticle ? (
             <motion.div
               key="detail"
@@ -242,10 +260,11 @@ function AppContent() {
                   onArticlesLoaded={(articles) => setAllArticles(articles)}
                 />
               </div>
-<FeatureCards 
-  onGrowthClick={() => setShowGrowthTracker(true)} 
-  onImmunizationClick={() => setShowImmunization(true)} 
-/>
+              <FeatureCards
+onMPASIClick={handleOpenMPASI}
+                onGrowthClick={() => setShowGrowthTracker(true)}
+                onImmunizationClick={() => setShowImmunization(true)}
+              />
             </motion.div>
           )}
         </AnimatePresence>
@@ -278,8 +297,11 @@ function AppContent() {
       {/* --- LAYER 4: AI POCKET CONSULTANT MODAL (NEW) --- */}
       <AnimatePresence>
         {showAIChat && (
-            <AIChatModal isOpen={showAIChat} onClose={() => setShowAIChat(false)} user={user} />
-
+          <AIChatModal
+            isOpen={showAIChat}
+            onClose={() => setShowAIChat(false)}
+            user={user}
+          />
         )}
       </AnimatePresence>
 

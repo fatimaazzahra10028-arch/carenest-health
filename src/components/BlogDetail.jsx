@@ -1,315 +1,232 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, Calendar, User, ShareNetwork, 
   BookmarkSimple, Clock, ChatCircleDots, 
-  Quotes, Sparkle, CheckCircle, CaretRight
+  Quotes, Sparkle, CheckCircle, CaretRight,
+  SpeakerHigh, StopCircle, PlayCircle,
+  Newspaper, Lightbulb, Heartbeat,
+  ShieldCheck
 } from '@phosphor-icons/react';
 
 const BlogDetail = ({ article, onBack, allArticles = [], onArticleClick, onConsultClick }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voices, setVoices] = useState([]);
 
+  // 1. Inisialisasi daftar suara (PENTING: Agar suara Indo ketemu)
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    if (article) {
-      const favorites = JSON.parse(localStorage.getItem('momscare_favorites') || '[]');
-      const exist = favorites.some(fav => fav.id === article.id);
-      setIsSaved(exist);
-    }
-  }, [article]);
-
-  const toggleFavorite = () => {
-    const favorites = JSON.parse(localStorage.getItem('momscare_favorites') || '[]');
-    
-    if (isSaved) {
-      const updated = favorites.filter(fav => fav.id !== article.id);
-      localStorage.setItem('momscare_favorites', JSON.stringify(updated));
-      setIsSaved(false);
-      setToastMessage("Dihapus dari Favorite");
-    } else {
-      const newFavorite = {
-        id: article.id,
-        title: article.title,
-        image: article.img || article.image, 
-        category: article.categoryId || article.category,
-        excerpt: article.desc || article.excerpt,
-        author: article.author,
-        date: article.date
-      };
-      favorites.push(newFavorite);
-      localStorage.setItem('momscare_favorites', JSON.stringify(favorites));
-      setIsSaved(true);
-      setToastMessage("Berhasil disimpan ke Favorite!");
-    }
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
-  };
-
-  const handleShare = async () => {
-    const shareData = {
-      title: article.title,
-      text: article.desc || article.excerpt,
-      url: window.location.href,
+    const loadVoices = () => {
+      const availableVoices = window.speechSynthesis.getVoices();
+      setVoices(availableVoices);
     };
 
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        setToastMessage("Link berhasil disalin!");
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 2000);
-      }
-    } catch (err) {
-      console.log("Error sharing:", err);
+    loadVoices();
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
     }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (article?.id) {
+      try {
+        const savedData = localStorage.getItem('momscare_favorites');
+        const favorites = savedData ? JSON.parse(savedData) : [];
+        if (Array.isArray(favorites)) {
+          setIsSaved(favorites.some(fav => fav.id === article.id));
+        }
+      } catch (e) { console.error(e); }
+    }
+
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, [article]);
+
+  // 2. Fungsi Audio yang sudah diperbaiki logatnya
+  const handleSpeech = () => {
+    if (!article) return;
+
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    const contentText = article.content?.map(c => c.text).join('. ') || "";
+    const stepsText = article.steps ? "Langkah-langkah: " + article.steps.join('. ') : "";
+    const fullText = `${article.title}. ${article.desc || ""}. ${contentText}. ${stepsText}`;
+    
+    const utterance = new SpeechSynthesisUtterance(fullText);
+    
+    // Cari suara Indonesia (ID) yang paling bagus
+    const idVoice = voices.find(v => v.lang.startsWith('id') || v.name.includes('Indonesia'));
+    
+    if (idVoice) {
+      utterance.voice = idVoice;
+    }
+    
+    utterance.lang = 'id-ID';
+    utterance.rate = 0.95; // Kecepatan sedikit diperlambat agar artikulasi jelas
+    utterance.pitch = 1.0; // Nada normal manusia
+    
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    
+    window.speechSynthesis.speak(utterance);
   };
 
-  if (!article) return null;
+  const toggleFavorite = () => {
+    try {
+      const savedData = localStorage.getItem('momscare_favorites');
+      let favorites = savedData ? JSON.parse(savedData) : [];
+      if (!Array.isArray(favorites)) favorites = [];
+      
+      if (isSaved) {
+        favorites = favorites.filter(fav => fav.id !== article.id);
+        setToastMessage("Dihapus dari koleksi");
+        setIsSaved(false);
+      } else {
+        favorites.push({ ...article, savedAt: new Date().toISOString() });
+        setToastMessage("Berhasil disimpan!");
+        setIsSaved(true);
+      }
+      localStorage.setItem('momscare_favorites', JSON.stringify(favorites));
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+    } catch (e) { console.error(e); }
+  };
+
+  if (!article) return <div className="min-h-screen flex items-center justify-center bg-bg"><Clock size={48} className="animate-spin text-primary opacity-40" /></div>;
 
   const currentCategory = article.categoryId || article.category;
-  const relatedArticles = allArticles
-    .filter(item => 
-      (item.categoryId === currentCategory || item.category === currentCategory) && 
-      item.id !== article.id
-    )
-    .slice(0, 3);
-
-  const displayImage = article.img || article.image || "";
-
-  const renderContent = () => {
-    if (article.content && Array.isArray(article.content)) {
-      return article.content.map((block, idx) => {
-        if (block.type === 'subtitle') return <h3 key={idx} className="text-2xl font-kids text-text-main mt-10 mb-4 transition-colors">{block.text}</h3>;
-        return <p key={idx} className="text-text-muted leading-relaxed mb-6 text-lg transition-colors">{block.text}</p>;
-      });
-    }
-    return null;
-  };
+  const relatedArticles = Array.isArray(allArticles) 
+    ? allArticles.filter(item => item && item.id !== article.id && (item.categoryId === currentCategory)).slice(0, 4)
+    : [];
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="min-h-screen pb-20 bg-bg relative font-outfit transition-colors duration-500"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-screen pb-20 bg-bg font-outfit">
+      
       {/* Toast Notification */}
       <AnimatePresence>
         {showToast && (
-          <motion.div 
-            initial={{ opacity: 0, y: 50, x: "-50%" }}
-            animate={{ opacity: 1, y: 0, x: "-50%" }}
-            exit={{ opacity: 0, y: 20, x: "-50%" }}
-            className="fixed bottom-10 left-1/2 z-[100] bg-slate-800 dark:bg-primary text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-bold whitespace-nowrap"
-          >
-            <CheckCircle size={20} weight="fill" className="text-secondary" />
-            {toastMessage}
+          <motion.div initial={{ opacity: 0, y: 50, x: "-50%" }} animate={{ opacity: 1, y: 0, x: "-50%" }} exit={{ opacity: 0, y: 20, x: "-50%" }} className="fixed bottom-10 left-1/2 z-[100] bg-slate-900 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-bold">
+            <CheckCircle size={22} weight="fill" className="text-green-400" /> {toastMessage}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* --- 1. HERO SECTION --- */}
-      <div className="relative h-[45vh] md:h-[55vh] w-full overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          {displayImage && typeof displayImage === 'string' && (displayImage.startsWith('http') || displayImage.startsWith('/')) ? (
-            <img 
-              src={displayImage} 
-              alt={article.title} 
-              className="w-full h-full object-cover brightness-[0.9]" 
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-               <span className="text-[100px] opacity-20">{displayImage || "🍼"}</span>
-            </div>
-          )}
-          {/* Gradient Overlay menyesuaikan warna background dark mode */}
-          <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent transition-colors duration-500" />
+      {/* Hero Section */}
+      <div className="relative h-[40vh] md:h-[50vh] w-full">
+        <div className="absolute inset-0 overflow-hidden">
+          {article.img ? <img src={article.img} alt={article.title} className="w-full h-full object-cover brightness-90" /> : <div className="w-full h-full bg-slate-200 flex items-center justify-center"><Newspaper size={64} opacity={0.2} /></div>}
+          <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/20 to-transparent" />
         </div>
-
-        <div className="relative z-30 max-w-6xl mx-auto px-6 pt-8 flex justify-between items-center">
-          <motion.button 
-            whileHover={{ x: -4 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onBack}
-            className="flex items-center gap-2 bg-card/90 backdrop-blur-md px-4 py-2 rounded-xl shadow-lg text-primary font-bold border border-border-soft transition-all"
-          >
-            <ArrowLeft size={18} weight="bold" />
-            <span className="font-kids text-xs">Kembali</span>
-          </motion.button>
-          
-          <span className="bg-primary text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20">
-            {currentCategory}
-          </span>
+        <div className="relative z-30 max-w-7xl mx-auto px-6 pt-8 flex justify-between items-center">
+          <button onClick={onBack} className="flex items-center gap-2 bg-white/90 backdrop-blur-md px-5 py-2.5 rounded-2xl shadow-xl text-primary font-bold border border-white/50 hover:scale-105 transition-transform"><ArrowLeft size={20} weight="bold" /> <span className="text-sm">Kembali</span></button>
+          <div className="bg-primary/90 backdrop-blur-md text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">{currentCategory}</div>
         </div>
       </div>
 
-      {/* --- 2. MAIN CONTENT AREA --- */}
-      <div className="max-w-6xl mx-auto px-6 -mt-10 relative z-40">
+      <div className="max-w-7xl mx-auto px-6 -mt-20 relative z-40">
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           
-          {/* SISI KIRI: Konten Utama */}
-          <main className="lg:w-[72%] w-full">
-            <div className="bg-card rounded-[3rem] p-8 md:p-14 shadow-2xl shadow-black/5 border border-border-soft transition-all duration-500">
-              
-              <h1 className="text-3xl md:text-5xl font-kids text-text-main leading-[1.2] mb-10 transition-colors">
-                {article.title}
-              </h1>
+          <main className="lg:w-[66%] w-full">
+            <div className="bg-white dark:bg-card rounded-[3.5rem] p-8 md:p-14 shadow-2xl shadow-black/5 border border-border-soft">
+              <h1 className="text-3xl md:text-5xl font-kids text-text-main leading-tight mb-8">{article.title}</h1>
 
-              {/* Kutipan Deskripsi */}
-              <div className="relative mb-14 p-8 bg-bg rounded-[2rem] border-l-4 border-secondary/30 transition-colors">
-                <Quotes size={40} weight="fill" className="text-primary/10 absolute top-4 right-6" />
-                <p className="text-text-muted text-base md:text-lg italic leading-relaxed relative z-10 transition-colors">
-                  {article.desc || article.excerpt}
-                </p>
-              </div>
-
-              {/* Content render */}
-              <div className="mb-12">
-                {renderContent()}
-              </div>
-
-              {/* Langkah Praktis */}
-              <div className="space-y-12">
-                <div className="flex items-center gap-3 pb-4 border-b border-border-soft transition-colors">
-                  <span className="p-2 bg-secondary/10 rounded-lg text-secondary">
-                    <Sparkle size={24} weight="fill" />
-                  </span>
-                  <h3 className="text-2xl font-kids text-text-main transition-colors">Langkah Penting</h3>
+              {/* AUDIO PLAYER - SEKARANG LEBIH JELAS */}
+              <div className="flex items-center gap-5 p-5 bg-primary/5 rounded-[2rem] mb-10 border border-primary/10">
+                <button onClick={handleSpeech} className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg ${isSpeaking ? 'bg-red-500 text-white animate-pulse' : 'bg-primary text-white hover:scale-105 active:scale-95'}`}>
+                  {isSpeaking ? <StopCircle size={32} weight="fill" /> : <PlayCircle size={32} weight="fill" />}
+                </button>
+                <div className="flex-1">
+                  <h4 className="text-xs font-black uppercase text-primary tracking-widest mb-1">MomsCare Audio</h4>
+                  <p className="text-sm text-text-muted font-medium">{isSpeaking ? "Membacakan dalam Bahasa Indonesia..." : "Dengarkan artikel dengan suara jernih"}</p>
                 </div>
+                {!isSpeaking && <SpeakerHigh size={24} className="text-primary/30 mr-2" />}
+              </div>
 
-                <div className="grid gap-12">
-                  {(article.steps || ["Langkah-langkah detail sedang dimuat..."]).map((step, index) => (
-                    <div key={index} className="relative group">
-                      {/* Nomor besar di background dibuat redup saat dark mode */}
-                      <span className="absolute -top-10 -left-4 text-8xl font-black text-text-main opacity-[0.03] group-hover:text-primary/10 transition-colors select-none -z-10">
-                        {index + 1}
-                      </span>
-                      <div className="relative z-10 pl-2 flex gap-5 items-start">
-                        <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0 font-bold text-sm shadow-lg shadow-primary/20 mt-1">
-                          {index + 1}
-                        </div>
-                        <p className="text-text-main font-medium text-base md:text-xl leading-relaxed transition-colors">
-                          {step}
-                        </p>
+              <div className="relative mb-12 p-8 bg-slate-50 dark:bg-bg/40 rounded-3xl italic text-text-muted text-lg leading-relaxed border-l-8 border-primary/20">
+                <Quotes size={40} weight="fill" className="text-primary/5 absolute top-4 right-6" />
+                {article.desc}
+              </div>
+
+              <div className="space-y-6 text-text-muted text-lg leading-relaxed">
+                {Array.isArray(article.content) && article.content.map((block, idx) => (
+                  block.type === 'subtitle' ? <h2 key={idx} className="text-2xl font-kids text-text-main pt-6 pb-2">{block.text}</h2> : <p key={idx}>{block.text}</p>
+                ))}
+              </div>
+
+              {article.steps && (
+                <div className="mt-14 p-8 md:p-10 bg-secondary/5 rounded-[3rem] border border-secondary/10">
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="p-3 bg-secondary/20 rounded-2xl text-secondary"><Sparkle size={28} weight="fill" /></div>
+                    <h3 className="text-2xl font-kids text-text-main">Langkah Penting Moms</h3>
+                  </div>
+                  <div className="grid gap-6">
+                    {article.steps.map((step, i) => (
+                      <div key={i} className="flex gap-5 items-start group">
+                        <div className="w-10 h-10 rounded-xl bg-white dark:bg-card shadow-md flex items-center justify-center shrink-0 text-primary font-black group-hover:bg-primary group-hover:text-white transition-all border border-border-soft">{i + 1}</div>
+                        <p className="text-text-main font-semibold pt-1.5 leading-relaxed">{step}</p>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* Footer Artikel */}
-              <footer className="mt-20 pt-10 border-t border-border-soft flex flex-col md:flex-row gap-6 items-center justify-between">
-                <div className="flex gap-4">
-                  <motion.button 
-                    whileTap={{ scale: 0.9 }}
-                    onClick={toggleFavorite}
-                    className={`p-4 rounded-2xl transition-all shadow-sm flex items-center gap-2 font-bold text-xs
-                      ${isSaved 
-                        ? 'bg-primary text-white shadow-primary/20' 
-                        : 'bg-bg text-text-muted hover:text-primary'}`}
-                  >
-                    <BookmarkSimple size={24} weight={isSaved ? "fill" : "bold"} />
-                    {isSaved ? "Tersimpan" : "Simpan"}
-                  </motion.button>
-                  
-                  <button 
-                    onClick={handleShare}
-                    className="p-4 bg-bg rounded-2xl text-text-muted hover:text-primary transition-all shadow-sm active:scale-90"
-                  >
-                    <ShareNetwork size={24} weight="bold" />
+              <div className="mt-16 pt-10 border-t border-border-soft flex flex-wrap gap-4 items-center justify-between">
+                <div className="flex gap-3">
+                  <button onClick={toggleFavorite} className={`relative flex items-center gap-3 px-8 py-4 rounded-2xl font-bold transition-all shadow-lg ${isSaved ? 'bg-primary text-white' : 'bg-slate-100 text-text-muted'}`}>
+                    {isSaved && <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-2 right-2 w-2 h-2 bg-green-400 rounded-full border border-primary shadow-[0_0_5px_rgba(74,222,128,0.8)]" />}
+                    <BookmarkSimple size={24} weight={isSaved ? "fill" : "bold"} /> {isSaved ? "Tersimpan" : "Simpan"}
                   </button>
+                  <button onClick={() => window.print()} className="p-4 bg-slate-100 rounded-2xl text-text-muted hover:text-primary transition-all"><ShareNetwork size={24} /></button>
                 </div>
-                
-                <motion.button 
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={onConsultClick}
-                  className="w-full md:w-auto bg-primary text-white px-10 py-4 rounded-2xl font-bold text-sm shadow-xl shadow-primary/20 transition-all flex items-center justify-center gap-3"
-                >
-                  <ChatCircleDots size={24} weight="fill" /> Konsultasi Sekarang
-                </motion.button>
-              </footer>
+                <button onClick={onConsultClick} className="w-full md:w-auto bg-secondary hover:bg-secondary/90 text-white px-10 py-4 rounded-2xl font-bold shadow-xl flex items-center justify-center gap-3 transition-transform active:scale-95">
+                  <ChatCircleDots size={26} weight="fill" /> Konsultasi Sekarang
+                </button>
+              </div>
             </div>
           </main>
 
-          {/* SISI KANAN: Sidebar Sticky */}
-          <aside className="lg:w-[28%] w-full lg:sticky lg:top-10 h-fit space-y-6">
-            <div className="bg-card p-6 rounded-[2.5rem] border border-border-soft shadow-xl shadow-black/5 transition-all">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                  <User size={24} weight="duotone" />
-                </div>
+          <aside className="lg:w-[34%] w-full space-y-8 lg:sticky lg:top-10">
+            {/* Meta Card */}
+            <div className="bg-white dark:bg-card p-8 rounded-[3rem] border border-border-soft shadow-xl shadow-black/5">
+              <div className="flex items-center gap-4 mb-6 pb-6 border-b border-border-soft">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary"><User size={28} weight="duotone" /></div>
                 <div>
-                  <p className="text-[10px] text-text-muted font-black uppercase tracking-widest transition-colors">Penulis</p>
-                  <p className="text-sm font-bold text-text-main transition-colors">{article.author || "Tim MomsCare"}</p>
+                  <p className="text-[10px] text-text-muted font-black uppercase tracking-widest">Ditinjau Oleh</p>
+                  <p className="text-base font-bold text-text-main">{article.author || "Tim Ahli MomsCare"}</p>
                 </div>
               </div>
-              <div className="space-y-3 pt-4 border-t border-border-soft transition-colors">
-                <div className="flex items-center gap-2 text-[11px] font-bold text-text-muted transition-colors">
-                  <Calendar size={16} className="text-primary" /> {article.date || "Baru saja"}
-                </div>
-                <div className="flex items-center gap-2 text-[11px] font-bold text-text-muted transition-colors">
-                  <Clock size={16} className="text-primary" /> {article.readTime || "5 Menit Baca"}
-                </div>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 text-sm font-bold text-text-muted"><Calendar size={20} className="text-primary" /> {article.date}</div>
+                <div className="flex items-center gap-3 text-sm font-bold text-text-muted"><Clock size={20} className="text-primary" /> {article.readTime || "5 Menit Baca"}</div>
+                <div className="flex items-center gap-3 text-sm font-bold text-green-500"><ShieldCheck size={20} weight="fill" /> Terverifikasi Medis</div>
               </div>
             </div>
 
-            <div className="bg-secondary/5 p-6 rounded-[2.5rem] border border-secondary/10 transition-colors">
-              <p className="text-[10px] text-secondary font-black uppercase mb-2 tracking-widest">Tips Hari Ini</p>
-              <p className="text-xs text-text-muted leading-relaxed font-medium transition-colors">
-                Jangan lupa Moms, setiap anak unik. Tetap semangat memantau tumbuh kembang si kecil dengan sabar dan kasih sayang!
-              </p>
+            {/* Topics Card */}
+            <div className="space-y-5">
+              <h3 className="text-xl font-kids text-text-main flex items-center gap-3 px-2"><Heartbeat size={28} weight="duotone" className="text-red-500" /> Topik Serupa</h3>
+              <div className="grid gap-4">
+                {relatedArticles.map((item) => (
+                  <motion.div key={item.id} whileHover={{ x: 8 }} onClick={() => onArticleClick(item)} className="bg-white dark:bg-card p-3 rounded-3xl border border-border-soft flex gap-4 cursor-pointer group shadow-sm hover:shadow-lg transition-all">
+                    <div className="w-24 h-24 rounded-[1.5rem] overflow-hidden shrink-0"><img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" /></div>
+                    <div className="flex flex-col justify-center py-1">
+                      <h4 className="text-sm font-bold text-text-main line-clamp-2 group-hover:text-primary transition-colors mb-2">{item.title}</h4>
+                      <div className="flex items-center gap-1 text-primary text-[10px] font-black uppercase">Baca <CaretRight weight="bold" /></div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </aside>
         </div>
-
-        {/* --- 3. REKOMENDASI ARTIKEL --- */}
-        {relatedArticles.length > 0 && (
-          <div className="mt-20">
-            <div className="flex items-center justify-between mb-8 px-4">
-              <h3 className="text-2xl font-kids text-text-main transition-colors">Lainnya di {currentCategory}</h3>
-              <div className="h-1 flex-1 bg-border-soft mx-6 rounded-full opacity-50" />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {relatedArticles.map((item) => (
-                <motion.div
-                  key={item.id}
-                  whileHover={{ y: -5 }}
-                  onClick={() => onArticleClick && onArticleClick(item)}
-                  className="bg-card p-4 rounded-[2rem] border border-border-soft shadow-xl shadow-black/5 group cursor-pointer transition-all duration-500"
-                >
-                  <div className="aspect-[16/10] rounded-[1.5rem] overflow-hidden mb-4 relative">
-                    <img 
-                      src={item.img || item.image} 
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-sm px-3 py-1 rounded-lg text-[9px] font-black text-primary uppercase tracking-wider">
-                      {item.categoryId || item.category}
-                    </div>
-                  </div>
-                  <h4 className="font-bold text-text-main line-clamp-2 mb-3 px-1 group-hover:text-primary transition-colors">
-                    {item.title}
-                  </h4>
-                  <div className="flex items-center justify-between px-1 text-text-muted text-[10px] font-bold transition-colors">
-                    <span className="flex items-center gap-1">
-                      <Calendar size={14} /> {item.date}
-                    </span>
-                    <span className="text-primary flex items-center gap-1 font-black uppercase tracking-tighter">
-                      Baca <CaretRight weight="bold" />
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </motion.div>
   );
