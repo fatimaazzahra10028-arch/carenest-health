@@ -1,16 +1,53 @@
-# React + Vite
+# 🌟 MOMSCARE: Partner Cerdas Perjalanan Parenting Moms
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+MomsCare adalah platform edukasi digital modern yang dirancang untuk mendampingi setiap fase perkembangan buah hati, mulai dari Neonatal hingga usia sekolah. Dengan integrasi teknologi AI, MomsCare memberikan akses informasi kesehatan dan parenting yang valid, interaktif, dan mudah diakses.
 
-Currently, two official plugins are available:
+## 🏛️ Institusi
+**SMK NEGERI 1 TENGARAN**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 👥 Anggota Tim
+- **Ketua:** FATIMA AZZAHRA
+- **Anggota 1:** PUTRI YULIANA RAHMAWATI
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📝 Deskripsi Karya
+Website ini lahir dari pemahaman bahwa masa *Golden Age* anak adalah fondasi masa depan. Banyak orang tua baru merasa kewalahan mencari informasi yang valid di tengah arus informasi digital yang tidak teratur. 
 
-## Expanding the ESLint configuration
+**MomsCare hadir dengan solusi:**
+* **Kurasi Artikel Berbasis Usia:** Konten yang disesuaikan secara spesifik (Neonatal, Batita, Balita, hingga Sekolah).
+* **MomsBot AI:** Fitur konsultasi interaktif berbasis kecerdasan buatan untuk menjawab pertanyaan parenting secara instan.
+* **Simpanan Moms:** Fitur personalisasi untuk menyimpan artikel favorit agar mudah dibaca kembali.
+* **Aksesibilitas Tinggi:** Fitur *MomsCare Reader* (Voice synthesis) agar Moms bisa mendengarkan artikel sambil menjaga si kecil.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Website ini menggunakan **React.js** dan **Tailwind CSS** untuk antarmuka yang responsif, serta **Framer Motion** untuk pengalaman pengguna yang halus dan menyenangkan.
+
+---
+
+## ✨ Fitur Utama
+| Fitur | Deskripsi |
+| --- | --- |
+| 🧠 **MomsBot AI** | Chatbot pintar untuk konsultasi parenting 24/7. |
+| 📑 **Smart Library** | Puluhan artikel terverifikasi medis dengan kategori usia. |
+| 🎙️ **Audio Reader** | Dengarkan konten artikel secara otomatis. |
+| 🌙 **Dark/Light Mode** | Tampilan adaptif yang nyaman di mata Moms dalam kondisi apapun. |
+| 💾 **Favorites** | Manajemen koleksi artikel penting pilihan Moms. |
+
+---
+
+## 🚀 Link Website
+Moms bisa mengunjungi hasil deploy kami di sini:
+👉 **[https://link-Website-hasil-deploy](https://link-Website-hasil-deploy)**
+
+---
+
+## 🛠️ Teknologi yang Digunakan
+* **Frontend:** React.js (Vite)
+* **Styling:** Tailwind CSS
+* **Icons:** Phosphor Icons
+* **Animation:** Framer Motion
+* **Deployment:** Vercel
+
+---
+
+© 2026 MomsCare Team - Dibuat dengan ❤️ untuk seluruh Moms di Indonesia.

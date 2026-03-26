@@ -134,11 +134,7 @@ const AIChatModal = ({ isOpen, onClose, user }) => {
             </div>
             <div>
               <h3 className="font-bold text-text-main text-lg leading-none">
-                MomsBot Expert
               </h3>
-              <p className="text-[10px] text-green-500 font-black uppercase tracking-widest mt-1">
-                ● Online
-              </p>
             </div>
           </div>
           <button
@@ -149,7 +145,6 @@ const AIChatModal = ({ isOpen, onClose, user }) => {
           </button>
         </div>
 
-        {/* Chat Area - Menggunakan bg-bg untuk kontras chat bubble */}
         <div
           className="flex-grow p-6 overflow-y-auto bg-bg/50 space-y-6 scrollbar-hide"
           ref={scrollRef}

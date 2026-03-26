@@ -7,6 +7,7 @@ import {
   CaretLeft,
   Sparkle,
   Quotes,
+  Info // Tambahkan icon Info untuk disclaimer
 } from "@phosphor-icons/react";
 
 const AboutPage = ({ onBack }) => {
@@ -57,7 +58,6 @@ const AboutPage = ({ onBack }) => {
             terarah.
           </p>
 
-          {/* Mini Stats/Quote Card */}
           <div className="p-5 bg-card rounded-3xl border border-border-soft shadow-sm flex items-start gap-4 max-w-sm transition-all duration-500">
             <Quotes
               size={32}
@@ -105,6 +105,7 @@ const AboutPage = ({ onBack }) => {
         </div>
       </div>
 
+      {/* Core Values Section */}
       <div className="grid md:grid-cols-3 gap-6 mt-20">
         {values.map((item, index) => (
           <motion.div
@@ -124,6 +125,39 @@ const AboutPage = ({ onBack }) => {
           </motion.div>
         ))}
       </div>
+
+      {/* --- BAGIAN DISCLAIMER TAMBAHAN --- */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        className="mt-20 p-8 glass-card rounded-4xl border border-border-soft transition-all duration-500"
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <Info size={24} weight="duotone" className="text-primary" />
+          <h4 className="text-xs font-black uppercase tracking-[0.2em] text-text-main">
+            Penting untuk Dipahami
+          </h4>
+        </div>
+        
+        <div className="space-y-4 text-sm leading-relaxed text-text-muted font-medium">
+          <p>
+            Seluruh informasi di <span className="text-text-main font-bold">MomsCare.id</span>, termasuk panduan perkembangan anak dan saran dari <span className="text-primary font-bold italic">MomsBot AI</span>, disediakan hanya untuk tujuan edukasi dan informasi umum.
+          </p>
+          <p>
+            Materi ini <strong>bukan merupakan pengganti saran medis profesional</strong>, diagnosis, atau perawatan dari tenaga medis. Setiap anak memiliki kondisi kesehatan yang unik. Kami sangat menyarankan Moms untuk selalu berkonsultasi dengan <strong>dokter spesialis anak</strong> sebelum mengambil keputusan medis atau perubahan pola asuh yang signifikan.
+          </p>
+          <p className="text-primary/70 italic text-xs border-l-2 border-primary/20 pl-4">
+            "Keamanan buah hati adalah prioritas utama. Teknologi membantu kita belajar, namun dokter membantu kita bertindak."
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Simple Footer Copyright */}
+      <footer className="mt-12 py-8 text-center border-t border-border-soft">
+        <p className="text-[10px] font-black text-slate-400 tracking-[0.3em] uppercase">
+          © 2026 MomsCare Indonesia • Crafted with Heart
+        </p>
+      </footer>
     </div>
   );
 };
