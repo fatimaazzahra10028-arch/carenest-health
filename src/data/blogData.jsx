@@ -1,6 +1,4 @@
-// src/data/blogData.jsx
 import React from "react";
-// Import ikon yang konsisten dengan kategori
 import {
   Baby,
   OrangeSlice,
@@ -118,7 +116,7 @@ export const allArticles = [
     title: "Pentingnya Kolostrum Bagi Kekebalan Tubuh",
     author: "dr. Sari",
     date: "2 hari lalu",
-    img: "https://images.unsplash.com/photo-1544126592-807daf21565c?auto=format&fit=crop&q=80&w=800",
+    img: "https://plus.unsplash.com/premium_photo-1663075965366-04dcd80cd29f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8QkFZSXxlbnwwfHwwfHx8MA%3D%3D",
     desc: "Tetesan pertama ASI mengandung nutrisi emas yang tidak boleh dilewatkan oleh bayi baru lahir.",
     steps: [
       "Lakukan IMD setelah lahir",
@@ -148,7 +146,7 @@ export const allArticles = [
     title: "Skincare Aman untuk Kulit Sensitif Bayi",
     author: "dr. Sari",
     date: "4 jam lalu",
-    img: "https://images.unsplash.com/photo-1600880292089-90a7e086f0ed?auto=format&fit=crop&q=80&w=800",
+    img: "https://plus.unsplash.com/premium_photo-1661402003864-f15e3c7f29ae?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8U0tJTkNBUkUlMjBCQUJZfGVufDB8fDB8fHww",
     desc: "Kulit bayi baru lahir sangat tipis. Hindari produk berbahan parfum dan alkohol keras.",
     steps: [
       "Pilih label hypoallergenic",
@@ -163,7 +161,7 @@ export const allArticles = [
     title: "Tips Menyusui Nyaman untuk Ibu Baru",
     author: "dr. Siska",
     date: "3 jam lalu",
-    img: "https://images.unsplash.com/photo-1546198632-9ef6368bef12?auto=format&fit=crop&q=80&w=800",
+    img: "https://media.istockphoto.com/id/2170589518/photo/morning-routine-with-baby.webp?a=1&b=1&s=612x612&w=0&k=20&c=FjGUau7jSg-gLEElQCct4rBGZftZ1dWwJqt3yCcoGq8=",
     desc: "Kenyamanan ibu adalah kunci keberhasilan ASI eksklusif. Temukan posisi terbaikmu.",
     steps: [
       "Gunakan bantal menyusui",
@@ -317,7 +315,7 @@ export const allArticles = [
     title: "Manfaat Bermain Sensory Bin",
     author: "dr. Sari",
     date: "1 minggu lalu",
-    img: "https://images.unsplash.com/photo-1513159419869-16d4219614c1?auto=format&fit=crop&q=80&w=800",
+    img: "https://media.istockphoto.com/id/1489464702/photo/masseur-massaging-the-tummy-of-the-baby-during-colic-mother-massaging-infant-belly-kid.webp?a=1&b=1&s=612x612&w=0&k=20&c=QqBBN6iVvcnhpw1xFT80C9Hs1XCnZJ3gXuz4kKvDws0=",
     desc: "Bermain beras, kacang, atau air membantu motorik halus dan konsentrasi anak.",
     steps: [
       "Siapkan wadah besar",
@@ -364,7 +362,7 @@ export const allArticles = [
     title: "Aktivitas Motorik Kasar di Rumah",
     author: "dr. Sari",
     date: "6 hari lalu",
-    img: "https://images.unsplash.com/photo-1516627144065-aba326eeecdf?auto=format&fit=crop&q=80&w=800",
+    img: "https://plus.unsplash.com/premium_photo-1661609280716-7100e188f24e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8QkFZSXxlbnwwfHwwfHx8MA%3D%3D",
     desc: "Melatih motorik kasar membantu balita mengontrol gerakan tubuh dan keseimbangan.",
     steps: [
       "Bermain jalur selotip",
@@ -426,7 +424,7 @@ export const allArticles = [
     title: "Cara Menyiapkan Mental Anak Masuk TK",
     author: "dr. Siska",
     date: "1 minggu lalu",
-    img: "https://images.unsplash.com/photo-1503676260728-1c00da096a0b?auto=format&fit=crop&q=80&w=800",
+    img: "https://plus.unsplash.com/premium_photo-1701984401385-4e46c91b24a8?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8S0lEUyUyMFBMQVlJTkd8ZW58MHx8MHx8fDA%3D",
     desc: "Sekolah pertama adalah langkah besar. Bantu si kecil agar tidak merasa cemas.",
     steps: [
       "Ceritakan hal seru di sekolah",
@@ -525,6 +523,212 @@ export const allArticles = [
       "Ajarkan public speaking",
       "Dukung hobi non-akademik",
       "Jadilah pendengar setia",
+    ],
+  },
+
+  // --- TAMBAHAN NEONATAL ---
+  {
+    id: 101,
+    categoryId: "neonatal",
+    title: "Mengapa Bayi Baru Lahir Sering Menggeliat?",
+    author: "dr. Siska",
+    date: "1 jam lalu",
+    img: "https://media.istockphoto.com/id/1957362057/photo/family-enjoys-washing-their-faces-together.webp?a=1&b=1&s=612x612&w=0&k=20&c=5JTRch_zk0ui9reJVXyF_B2Lr_Y2dszJRQiysM-Gme8=",
+    desc: "Menggeliat adalah cara bayi beradaptasi dengan sistem pencernaannya yang baru. Jangan panik dulu ya Moms.",
+    steps: [
+      "Sendawakan setelah menyusu",
+      "Pijat perut lembut (ILU)",
+      "Pastikan suhu ruangan pas",
+      "Cek popok secara berkala",
+    ],
+  },
+  {
+    id: 102,
+    categoryId: "neonatal",
+    title: "Manfaat Skin-to-Skin untuk Bonding Ayah",
+    author: "dr. Budi",
+    date: "4 jam lalu",
+    img: "https://images.unsplash.com/photo-1559734840-f9509ee5677f?auto=format&fit=crop&q=80&w=800",
+    desc: "Bukan hanya Moms, Ayah juga perlu melakukan metode kangguru untuk kedekatan emosional.",
+    steps: [
+      "Cari posisi duduk nyaman",
+      "Dekap bayi di dada telanjang",
+      "Lakukan selama 15-30 menit",
+      "Ajak bayi bicara pelan",
+    ],
+  },
+
+  {
+    id: 201,
+    categoryId: "bayi",
+    title: "Mainan Edukasi untuk Bayi 6-9 Bulan",
+    author: "dr. Sari",
+    date: "12 jam lalu",
+    img: "https://images.unsplash.com/photo-1515488764276-beab7607c1e6?auto=format&fit=crop&q=80&w=800",
+    desc: "Di usia ini, bayi mulai bereksplorasi dengan tangannya. Pilih mainan yang menstimulasi motorik halus.",
+    steps: [
+      "Buku berbahan kain (soft book)",
+      "Mainan tumpuk (stacking rings)",
+      "Bola bertekstur",
+      "Mainan yang berbunyi lembut",
+    ],
+  },
+  {
+    id: 202,
+    categoryId: "bayi",
+    title: "Resep Puree Jagung Manis & Bayam",
+    author: "Akil Girtzi, S.Gz",
+    date: "1 hari lalu",
+    img: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&q=80&w=800",
+    desc: "Menu MPASI selingan yang kaya vitamin A dan serat untuk kesehatan mata si kecil.",
+    steps: [
+      "Pipil jagung manis segar",
+      "Kukus bersama daun bayam",
+      "Blender hingga sangat halus",
+      "Saring untuk tekstur sempurna",
+    ],
+  },
+  {
+    id: 203,
+    categoryId: "bayi",
+    title: "Mengatasi Bayi Rewel Saat Tumbuh Gigi",
+    author: "dr. Siska",
+    date: "2 hari lalu",
+    img: "https://images.unsplash.com/photo-1543330091-27228394c7dc?auto=format&fit=crop&q=80&w=800",
+    desc: "Gusi gatal membuat bayi sering menangis. Teether dingin bisa menjadi penyelamat.",
+    steps: [
+      "Berikan teether yang aman",
+      "Pijat gusi dengan jari bersih",
+      "Usap air liur agar tidak ruam",
+      "Berikan pelukan ekstra",
+    ],
+  },
+
+  // --- BATITA ---
+  {
+    id: 301,
+    categoryId: "batita",
+    title: "Mengenalkan Warna Melalui Finger Painting",
+    author: "dr. Sari",
+    date: "3 hari lalu",
+    img: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&q=80&w=800",
+    desc: "Aktivitas seni ini sangat baik untuk sensorik anak sekaligus belajar mengenal warna dasar.",
+    steps: [
+      "Gunakan cat yang aman (food grade)",
+      "Sediakan kertas gambar besar",
+      "Biarkan anak mencampur warna",
+      "Pujilah hasil karyanya",
+    ],
+  },
+  {
+    id: 302,
+    categoryId: "batita",
+    title: "Pentingnya Rutinitas Sebelum Tidur",
+    author: "dr. Budi",
+    date: "5 hari lalu",
+    img: "https://images.unsplash.com/photo-1587116215900-bb2bba7c7cff?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8QkFCWSUyMFNMRUVQfGVufDB8fDB8fHww",
+    desc: "Jadwal tidur yang konsisten membantu perkembangan otak dan kestabilan emosi batita.",
+    steps: [
+      "Mandi air hangat",
+      "Bacakan buku cerita",
+      "Redupkan lampu kamar",
+      "Hindari gadget sebelum tidur",
+    ],
+  },
+
+  // --- BALITA ---
+  {
+    id: 401,
+    categoryId: "balita",
+    title: "Mengenalkan Literasi Sejak Dini",
+    author: "dr. Sari",
+    date: "1 minggu lalu",
+    img: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8QlVLVXxlbnwwfHwwfHx8MA%3D%3D",
+    desc: "Bukan memaksa membaca, tapi menumbuhkan rasa cinta pada buku dan kata-kata.",
+    steps: [
+      "Ajak ke perpustakaan/toko buku",
+      "Tunjuk gambar saat bercerita",
+      "Gunakan intonasi suara unik",
+      "Biarkan anak memilih bukunya",
+    ],
+  },
+  {
+    id: 402,
+    categoryId: "balita",
+    title: "Mengatasi Anak yang Suka Memukul",
+    author: "dr. Budi",
+    date: "2 minggu lalu",
+    img: "https://images.unsplash.com/photo-1591522810850-58128c5fb089?auto=format&fit=crop&q=80&w=800",
+    desc: "Anak usia 3-5 tahun terkadang memukul karena kesulitan mengungkapkan kemarahannya.",
+    steps: [
+      "Hentikan tangan anak dengan lembut",
+      "Katakan 'Tangan untuk menyayang'",
+      "Ajarkan menarik napas saat marah",
+      "Konsisten berikan konsekuensi",
+    ],
+  },
+
+  // --- PRASEKOLAH ---
+  {
+    id: 501,
+    categoryId: "prasekolah",
+    title: "Latihan Menulis Nama Sendiri",
+    author: "dr. Siska",
+    date: "2 minggu lalu",
+    img: "https://images.unsplash.com/photo-1456735190827-d1262f71b8a3?auto=format&fit=crop&q=80&w=800",
+    desc: "Mempersiapkan anak prasekolah dengan kemampuan dasar menulis secara menyenangkan.",
+    steps: [
+      "Gunakan titik-titik bantu",
+      "Gunakan spidol warna-warni",
+      "Mulai dari huruf depan saja",
+      "Jangan dipaksa jika anak lelah",
+    ],
+  },
+  {
+    id: 502,
+    categoryId: "prasekolah",
+    title: "Ajak Anak Bereksperimen Sains Sederhana",
+    author: "dr. Budi",
+    date: "1 bulan lalu",
+    img: "https://images.unsplash.com/photo-1530210124550-912dc1381cb8?auto=format&fit=crop&q=80&w=800",
+    desc: "Membangun logika berpikir anak melalui eksperimen gunung berapi atau pelangi di gelas.",
+    steps: [
+      "Siapkan soda kue dan cuka",
+      "Gunakan pewarna makanan",
+      "Jelaskan prosesnya dengan simpel",
+      "Biarkan anak mencoba sendiri",
+    ],
+  },
+
+  // --- SEKOLAH ---
+  {
+    id: 601,
+    categoryId: "sekolah",
+    title: "Menu Bekal Sehat yang Tidak Membosankan",
+    author: "Akil Girtzi, S.Gz",
+    date: "1 bulan lalu",
+    img: "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?auto=format&fit=crop&q=80&w=800",
+    desc: "Bekal bergizi memastikan anak tetap fokus belajar di sekolah sampai siang.",
+    steps: [
+      "Gunakan cetakan nasi lucu",
+      "Sertakan buah potong warna-warni",
+      "Pastikan ada sumber protein",
+      "Gunakan wadah sekat yang aman",
+    ],
+  },
+  {
+    id: 602,
+    categoryId: "sekolah",
+    title: "Pentingnya Mengajarkan Pendidikan Seksual Dasar",
+    author: "dr. Siska",
+    date: "2 bulan lalu",
+    img: "https://images.unsplash.com/photo-1526660690293-bcd32dc3b123?auto=format&fit=crop&q=80&w=800",
+    desc: "Lindungi anak dengan mengajarinya bagian tubuh yang tidak boleh disentuh orang lain.",
+    steps: [
+      "Gunakan istilah medis yang benar",
+      "Ajarkan aturan 'Inner Circle'",
+      "Beritahu untuk berani bilang TIDAK",
+      "Jalin komunikasi terbuka",
     ],
   },
 ];

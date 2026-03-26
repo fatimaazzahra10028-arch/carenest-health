@@ -160,7 +160,6 @@ const Navbar = ({
         </div>
 
         <div className="flex items-center gap-2 md:gap-3">
-          {/* NOTIFICATION HUB */}
           <div className="relative" ref={notifRef}>
             <button
               onClick={() => setIsNotifOpen(!isNotifOpen)}
@@ -244,7 +243,6 @@ const Navbar = ({
             />
           </button>
 
-          {/* Wrapper Profile */}
           <div
             className="relative ml-1"
             onMouseEnter={() => setIsHovered(true)}
@@ -272,7 +270,6 @@ const Navbar = ({
               )}
             </AnimatePresence>
 
-            {/* Account Popover */}
             <AnimatePresence>
               {isHovered && user && (
                 <motion.div
@@ -325,7 +322,6 @@ const Navbar = ({
         </div>
       </motion.nav>
 
-      {/* SIDE DRAWER (MOBILE MENU) */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
@@ -370,7 +366,6 @@ const Navbar = ({
                     }}
                     className={`flex items-center gap-4 p-4 rounded-2xl transition-all font-bold group ${activePage === item.id ? "bg-primary text-white shadow-lg shadow-primary/30" : "text-text-muted hover:bg-bg hover:text-primary"}`}
                   >
-                    {/* ICON BACKGROUND LOGIC */}
                     <div
                       className={`p-2.5 rounded-xl transition-colors shrink-0 ${activePage === item.id ? "bg-white/20" : item.color} dark:bg-white/5`}
                     >
@@ -395,6 +390,6 @@ const Navbar = ({
       </AnimatePresence>
     </>
   );
-}
+};
 
 export default Navbar;

@@ -32,10 +32,9 @@ function AppContent() {
   const [showFAQ, setShowFAQ] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [showTopicPage, setShowTopicPage] = useState(null);
-  
-  // FIX PERTAMA: Tambahkan state showFeatured di sini!
-  const [showFeatured, setShowFeatured] = useState(false); 
-  
+
+  const [showFeatured, setShowFeatured] = useState(false);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [allArticles, setAllArticles] = useState([]);
   const { user } = useAuth();
@@ -52,16 +51,14 @@ function AppContent() {
   });
   const blogSectionRef = useRef(null);
 
-  // FUNGSI: Logika penentuan string activePage untuk Navbar
   const getActivePage = () => {
     if (showAbout) return "about";
     if (showContact) return "contact";
     if (showFAQ) return "faq";
-    if (showFeatured) return "featured"; // Tambahkan ini agar navbar sinkron
+    if (showFeatured) return "featured";
     return "home";
   };
 
-  // FUNGSI: Kembali ke Beranda (Reset SEMUA state halaman)
   const handleGoHome = () => {
     setActiveArticle(null);
     setShowFavorites(false);
@@ -72,7 +69,7 @@ function AppContent() {
     setShowAbout(false);
     setShowFAQ(false);
     setShowContact(false);
-    setShowFeatured(false); // FIX KEDUA: Pastikan featured ditutup saat pulang ke home
+    setShowFeatured(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -104,11 +101,26 @@ function AppContent() {
         activePage={getActivePage()}
         onOpenAuth={() => setShowAuth(true)}
         onGoHome={handleGoHome}
-        onOpenFavorites={() => { handleGoHome(); setShowFavorites(true); }}
-        onOpenAbout={() => { handleGoHome(); setShowAbout(true); }}
-        onOpenFeatured={() => { handleGoHome(); setShowFeatured(true); }}
-        onOpenFaq={() => { handleGoHome(); setShowFAQ(true); }}
-        onOpenContact={() => { handleGoHome(); setShowContact(true); }}
+        onOpenFavorites={() => {
+          handleGoHome();
+          setShowFavorites(true);
+        }}
+        onOpenAbout={() => {
+          handleGoHome();
+          setShowAbout(true);
+        }}
+        onOpenFeatured={() => {
+          handleGoHome();
+          setShowFeatured(true);
+        }}
+        onOpenFaq={() => {
+          handleGoHome();
+          setShowFAQ(true);
+        }}
+        onOpenContact={() => {
+          handleGoHome();
+          setShowContact(true);
+        }}
         isFavoritePage={showFavorites}
       />
 
@@ -116,69 +128,173 @@ function AppContent() {
       <main className="relative z-10 min-h-screen pt-4 md:pt-10">
         <AnimatePresence mode="wait">
           {showAbout ? (
-            <motion.div key="about" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+            <motion.div
+              key="about"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
               <AboutPage onBack={handleGoHome} />
             </motion.div>
           ) : showFAQ ? (
-            <motion.div key="faq" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+            <motion.div
+              key="faq"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
               <FAQPage onBack={handleGoHome} />
             </motion.div>
           ) : showFeatured ? (
-            <motion.div key="featured-page" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="py-12">
+            <motion.div
+              key="featured-page"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="py-12"
+            >
               <div className="text-center mb-4">
                 <h1 className="text-4xl font-kids font-bold text-text-main">
                   Fitur <span className="text-primary">Unggulan</span>
                 </h1>
-                <p className="text-text-muted mt-2">Pilih alat bantu untuk tumbuh kembang si kecil</p>
+                <p className="text-text-muted mt-2">
+                  Pilih alat bantu untuk tumbuh kembang si kecil
+                </p>
               </div>
               <FeatureCards
-                onGrowthClick={() => { handleGoHome(); setShowGrowthTracker(true); }}
-                onImmunizationClick={() => { handleGoHome(); setShowImmunization(true); }}
-                onMPASIClick={() => { handleGoHome(); setShowMPASI(true); }}
+                onGrowthClick={() => {
+                  handleGoHome();
+                  setShowGrowthTracker(true);
+                }}
+                onImmunizationClick={() => {
+                  handleGoHome();
+                  setShowImmunization(true);
+                }}
+                onMPASIClick={() => {
+                  handleGoHome();
+                  setShowMPASI(true);
+                }}
                 onCommunityClick={() => setShowAIChat(true)}
               />
               <div className="flex justify-center mt-10">
-                <button onClick={handleGoHome} className="text-text-muted hover:text-primary font-bold flex items-center gap-2 transition-all">
+                <button
+                  onClick={handleGoHome}
+                  className="text-text-muted hover:text-primary font-bold flex items-center gap-2 transition-all"
+                >
                   ← Kembali ke Beranda
                 </button>
               </div>
             </motion.div>
           ) : showContact ? (
-            <motion.div key="contact" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+            <motion.div
+              key="contact"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
               <ContactPage onBack={handleGoHome} />
             </motion.div>
           ) : showFavorites ? (
-            <motion.div key="fav" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}>
-              <FavoritePage onBack={handleGoHome} onArticleClick={handleOpenArticle} />
+            <motion.div
+              key="fav"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+            >
+              <FavoritePage
+                onBack={handleGoHome}
+                onArticleClick={handleOpenArticle}
+              />
             </motion.div>
           ) : showGrowthTracker ? (
-            <motion.div key="growth" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-              <GrowthTracker onBack={handleGoHome} onSave={(data) => setChildData(data)} initialData={childData} />
+            <motion.div
+              key="growth"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <GrowthTracker
+                onBack={handleGoHome}
+                onSave={(data) => setChildData(data)}
+                initialData={childData}
+              />
             </motion.div>
           ) : showImmunization ? (
-            <motion.div key="imm" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}>
-              <ImmunizationTracker childData={childData} onBack={handleGoHome} />
+            <motion.div
+              key="imm"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+            >
+              <ImmunizationTracker
+                childData={childData}
+                onBack={handleGoHome}
+              />
             </motion.div>
           ) : showMPASI ? (
-            <motion.div key="mpasi" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
+            <motion.div
+              key="mpasi"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+            >
               <MPASIPage onBack={handleGoHome} />
             </motion.div>
           ) : activeArticle ? (
-            <motion.div key="detail" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}>
-              <BlogDetail article={activeArticle} onBack={() => setActiveArticle(null)} onArticleClick={handleOpenArticle} allArticles={allArticles} onConsultClick={startAIScreening} />
+            <motion.div
+              key="detail"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+            >
+              <BlogDetail
+                article={activeArticle}
+                onBack={() => setActiveArticle(null)}
+                onArticleClick={handleOpenArticle}
+                allArticles={allArticles}
+                onConsultClick={startAIScreening}
+              />
             </motion.div>
           ) : showTopicPage ? (
-            <motion.div key="topic" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-              <TopicPage categoryId={showTopicPage} allArticles={allArticles} onBack={handleGoHome} onArticleClick={handleOpenArticle} />
+            <motion.div
+              key="topic"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <TopicPage
+                categoryId={showTopicPage}
+                allArticles={allArticles}
+                onBack={handleGoHome}
+                onArticleClick={handleOpenArticle}
+              />
             </motion.div>
           ) : (
-            <motion.div key="home" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-              <HeroSection searchQuery={searchQuery} setSearchQuery={setSearchQuery} onSearch={handleSearchTrigger} onStartAI={startAIScreening} />
+            <motion.div
+              key="home"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              <HeroSection
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                onSearch={handleSearchTrigger}
+                onStartAI={startAIScreening}
+              />
               <div ref={blogSectionRef}>
-                <CategoryBlogSystem onArticleClick={handleOpenArticle} searchQuery={searchQuery} onArticlesLoaded={setAllArticles} onViewAll={(id) => setShowTopicPage(id)} />
+                <CategoryBlogSystem
+                  onArticleClick={handleOpenArticle}
+                  searchQuery={searchQuery}
+                  onArticlesLoaded={setAllArticles}
+                  onViewAll={(id) => setShowTopicPage(id)}
+                />
               </div>
-              <FeatureCards 
-                onMPASIClick={() => { handleGoHome(); setShowMPASI(true); }}
+              <FeatureCards
+                onMPASIClick={() => {
+                  handleGoHome();
+                  setShowMPASI(true);
+                }}
                 onGrowthClick={() => setShowGrowthTracker(true)}
                 onImmunizationClick={() => setShowImmunization(true)}
               />
@@ -197,8 +313,16 @@ function AppContent() {
       <AnimatePresence>
         {showAuth && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="relative w-full max-w-5xl">
-              <AuthPage onSuccess={() => setShowAuth(false)} onClose={() => setShowAuth(false)} />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="relative w-full max-w-5xl"
+            >
+              <AuthPage
+                onSuccess={() => setShowAuth(false)}
+                onClose={() => setShowAuth(false)}
+              />
             </motion.div>
           </div>
         )}
@@ -206,7 +330,11 @@ function AppContent() {
 
       <AnimatePresence>
         {showAIChat && (
-          <AIChatModal isOpen={showAIChat} onClose={() => setShowAIChat(false)} user={user} />
+          <AIChatModal
+            isOpen={showAIChat}
+            onClose={() => setShowAIChat(false)}
+            user={user}
+          />
         )}
       </AnimatePresence>
 

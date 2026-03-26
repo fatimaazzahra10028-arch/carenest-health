@@ -1,41 +1,34 @@
-/* 1. Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Quicksand:wght@500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Quicksand:wght@500;600;700&display=swap");
 
 @import "tailwindcss";
 
 @theme {
-  /* Palette Warna Utama (Light Mode) */
-  --color-primary: #7DA2C3;
-  --color-secondary: #A8E6CF;
-  --color-accent: #FFD3B6;
-  --color-bg: #F8FAFC;
-  --color-card: #FFFFFF;
-  --color-text-main: #1E293B;
-  --color-text-muted: #64748B;
-  --color-border-soft: #F1F5F9;
-  
-  /* Definisi Font & Radius */
+  --color-primary: #7da2c3;
+  --color-secondary: #a8e6cf;
+  --color-accent: #ffd3b6;
+  --color-bg: #f8fafc;
+  --color-card: #ffffff;
+  --color-text-main: #1e293b;
+  --color-text-muted: #64748b;
+  --color-border-soft: #f1f5f9;
+
   --font-outfit: "Outfit", sans-serif;
   --font-kids: "Quicksand", sans-serif;
   --radius-4xl: 2rem;
   --radius-5xl: 3.5rem;
 }
 
-/* --- REVISI DARK MODE SOFT --- */
 @layer base {
   :root.dark {
-    /* Menggunakan 'Midnight Slate' - Biru abu-abu yang sangat lembut */
-    --color-bg: #0F172A;          /* Warna dasar malam yang tenang */
-    --color-card: #1E293B;        /* Kartu sedikit lebih terang, tapi tidak mencolok */
-    --color-border-soft: #334155; /* Border yang nyaris menyatu (low contrast) */
-    
-    /* Warna Teks yang tidak menyilaukan */
-    --color-text-main: #F1F5F9;   /* Putih susu/tulang (Soft White) */
-    --color-text-muted: #94A3B8;  /* Abu-abu kebiruan untuk teks pendukung */
-    
-    /* Menyesuaikan Primary agar tetap 'pop' tapi tidak neon */
-    --color-primary: #94B8D6;     
-    --color-secondary: #1F2937;   /* Warna checklist saat selesai di dark mode */
+    --color-bg: #0f172a;
+    --color-card: #1e293b;
+    --color-border-soft: #334155;
+
+    --color-text-main: #f1f5f9;
+    --color-text-muted: #94a3b8;
+
+    --color-primary: #94b8d6;
+    --color-secondary: #1f2937;
   }
 
   html {
@@ -46,27 +39,30 @@
     background-color: var(--color-bg);
     color: var(--color-text-main);
     font-family: var(--font-outfit);
-    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s ease;
-    
+    transition:
+      background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.4s ease;
+
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
 
-  h1, h2, h3, .font-kids {
+  h1,
+  h2,
+  h3,
+  .font-kids {
     font-family: var(--font-kids);
     @apply font-bold tracking-tight;
   }
 
   ::selection {
     background-color: var(--color-primary);
-    color: #0F172A;
+    color: #0f172a;
   }
 }
 
-/* 3. Custom Utilities */
 @layer utilities {
-  /* Glass card di dark mode sekarang menggunakan transparansi yang lebih halus */
   .dark .glass-card {
     background-color: rgba(30, 41, 59, 0.7);
     @apply backdrop-blur-xl border border-white/5 shadow-2xl;
@@ -76,7 +72,6 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60;
   }
 
-  /* Shadow di dark mode dibuat lebih pekat tapi blur luas */
   .dark .shadow-soft {
     box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
   }
