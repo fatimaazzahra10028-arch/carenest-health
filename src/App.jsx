@@ -206,7 +206,13 @@ function AppContent() {
 
       <AnimatePresence>
         {showAIChat && (
-          <AIChatModal isOpen={showAIChat} onClose={() => setShowAIChat(false)} user={user} />
+         
+<AIChatModal 
+  isOpen={showAIChat} 
+  onClose={() => setShowAIChat(false)} 
+  user={user} 
+  onArticleClick={handleOpenArticle} 
+/>
         )}
       </AnimatePresence>
 

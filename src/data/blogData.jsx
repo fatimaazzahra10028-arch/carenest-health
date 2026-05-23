@@ -73,7 +73,7 @@ export const allArticles = [
     title: "Perawatan Tali Pusar Bayi Baru Lahir",
     author: "dr. Siska",
     date: "2 Jam lalu",
-    img: "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/3376801/pexels-photo-3376801.jpeg",
     desc: "Tali pusar bayi baru lahir memerlukan perawatan khusus agar tetap kering dan terhindar dari infeksi.",
     steps: [
       "Cuci tangan sebelum menyentuh",
@@ -88,7 +88,7 @@ export const allArticles = [
     title: "Teknik Menggendong M-Shape yang Aman",
     author: "dr. Budi",
     date: "5 Jam lalu",
-    img: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.unsplash.com/photo-1773243086594-43577199874f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     desc: "Posisi M-Shape adalah posisi paling ergonomis untuk mendukung pertumbuhan tulang panggul bayi neonatal.",
     steps: [
       "Pastikan lutut lebih tinggi dari bokong",
@@ -103,7 +103,7 @@ export const allArticles = [
     title: "Mengenali Tanda Bayi Kuning (Ikterus)",
     author: "dr. Siska",
     date: "1 hari lalu",
-    img: "https://images.unsplash.com/photo-1515488764276-beab7607c1e6?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.unsplash.com/photo-1559036185-44213a3b201e?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     desc: "Waspadai perubahan warna kulit dan mata bayi pada minggu pertama kelahirannya.",
     steps: [
       "Cek di bawah cahaya terang",
@@ -118,7 +118,7 @@ export const allArticles = [
     title: "Pentingnya Kolostrum Bagi Kekebalan Tubuh",
     author: "dr. Sari",
     date: "2 hari lalu",
-    img: "https://images.unsplash.com/photo-1544126592-807daf21565c?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/3873213/pexels-photo-3873213.jpeg",
     desc: "Tetesan pertama ASI mengandung nutrisi emas yang tidak boleh dilewatkan oleh bayi baru lahir.",
     steps: [
       "Lakukan IMD setelah lahir",
@@ -133,7 +133,7 @@ export const allArticles = [
     title: "Mengenal Refleks Alami pada Newborn",
     author: "dr. Siska",
     date: "1 jam lalu",
-    img: "https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/325690/pexels-photo-325690.jpeg",
     desc: "Refleks moro, menghisap, dan menggenggam adalah tanda sistem saraf bayi berkembang baik.",
     steps: [
       "Cek refleks genggam",
@@ -148,7 +148,7 @@ export const allArticles = [
     title: "Skincare Aman untuk Kulit Sensitif Bayi",
     author: "dr. Sari",
     date: "4 jam lalu",
-    img: "https://images.unsplash.com/photo-1600880292089-90a7e086f0ed?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/265987/pexels-photo-265987.jpeg",
     desc: "Kulit bayi baru lahir sangat tipis. Hindari produk berbahan parfum dan alkohol keras.",
     steps: [
       "Pilih label hypoallergenic",
@@ -163,7 +163,7 @@ export const allArticles = [
     title: "Tips Menyusui Nyaman untuk Ibu Baru",
     author: "dr. Siska",
     date: "3 jam lalu",
-    img: "https://images.unsplash.com/photo-1546198632-9ef6368bef12?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/7282908/pexels-photo-7282908.jpeg",
     desc: "Kenyamanan ibu adalah kunci keberhasilan ASI eksklusif. Temukan posisi terbaikmu.",
     steps: [
       "Gunakan bantal menyusui",
@@ -180,7 +180,7 @@ export const allArticles = [
     title: "Jadwal MPASI Pertama: Menu 4 Bintang",
     author: "Akil Girtzi, S.Gz",
     date: "1 hari lalu",
-    img: "https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/5083228/pexels-photo-5083228.jpeg",
     desc: "Memasuki usia 6 bulan, kebutuhan nutrisi bayi meningkat. Menu 4 Bintang memastikan gizi lengkap.",
     steps: [
       "Karbohidrat sebagai energi",
@@ -195,7 +195,7 @@ export const allArticles = [
     title: "Stimulasi Tummy Time Agar Cepat Merangkak",
     author: "dr. Sari",
     date: "2 hari lalu",
-    img: "https://images.unsplash.com/photo-1510154221590-ff63e90a136f?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/6209327/pexels-photo-6209327.jpeg",
     desc: "Tummy time melatih otot leher dan bahu bayi. Lakukan secara rutin sejak bayi pulang ke rumah.",
     steps: [
       "Letakkan di permukaan datar",
@@ -210,7 +210,7 @@ export const allArticles = [
     title: "Mengatasi Biang Keringat Pada Kulit Bayi",
     author: "dr. Siska",
     date: "3 hari lalu",
-    img: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/15511394/pexels-photo-15511394.jpeg",
     desc: "Cuaca panas seringkali membuat kulit bayi kemerahan. Gunakan pakaian berbahan katun tipis.",
     steps: [
       "Pilih baju menyerap keringat",
@@ -225,7 +225,7 @@ export const allArticles = [
     title: "Tanda Bayi Siap Mulai MPASI",
     author: "Akil Girtzi, S.Gz",
     date: "1 hari lalu",
-    img: "https://images.unsplash.com/photo-1617331140180-e8262094733a?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/5082047/pexels-photo-5082047.jpeg",
     desc: "Jangan hanya patokan umur. Pastikan leher sudah tegak dan bayi tertarik pada makanan.",
     steps: [
       "Refleks lidah berkurang",
@@ -240,7 +240,7 @@ export const allArticles = [
     title: "Mengatasi Sembelit Saat Awal MPASI",
     author: "Akil Girtzi, S.Gz",
     date: "2 hari lalu",
-    img: "https://images.unsplash.com/photo-1515488764276-beab7607c1e6?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/7491267/pexels-photo-7491267.jpeg",
     desc: "Perubahan tekstur makanan membuat pencernaan kaget. Serat dan air adalah kunci.",
     steps: [
       "Berikan puree pepaya",
@@ -255,7 +255,7 @@ export const allArticles = [
     title: "Pentingnya Imunisasi Dasar Lengkap",
     author: "dr. Budi",
     date: "1 minggu lalu",
-    img: "https://images.unsplash.com/photo-1584362917165-526a968579e8?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/5994625/pexels-photo-5994625.jpeg",
     desc: "Lindungi bayi dari penyakit berbahaya dengan mengikuti jadwal imunisasi nasional.",
     steps: [
       "Catat di buku KIA",
@@ -265,20 +265,20 @@ export const allArticles = [
     ],
   },
   {
-    id: 52,
-    categoryId: "bayi",
-    title: "Pentingnya Imunisasi Dasar Lengkap11",
-    author: "dr. Budi",
-    date: "1 minggu lalu",
-    img: "https://images.unsplash.com/photo-1584362917165-526a968579e8?auto=format&fit=crop&q=80&w=800",
-    desc: "Lindungi bayi dari penyakit berbahaya dengan mengikuti jadwal imunisasi nasional.",
-    steps: [
-      "Catat di buku KIA",
-      "Pastikan bayi sehat saat disuntik",
-      "Kompres bekas suntikan",
-      "Pantau efek samping (demam)",
-    ],
-  },
+  id: 52,
+  categoryId: "bayi",
+  title: "Mengatur Pola Tidur Bayi (Sleep Training)",
+  author: "dr. Sari",
+  date: "3 hari lalu",
+  img: "https://images.pexels.com/photos/6021136/pexels-photo-6021136.jpeg",
+  desc: "Membantu bayi mengenali ritme siang-malam agar tidur lebih nyenyak dan mendukung hormon pertumbuhan.",
+  steps: [
+    "Buat rutinitas sebelum tidur yang tenang",
+    "Redupkan lampu kamar saat malam hari",
+    "Tidurkan bayi saat mulai mengantuk, bukan saat rewel",
+    "Batasi durasi tidur siang agar tidak over-tired",
+  ],
+},
 
   // --- BATITA (1-3 TAHUN) ---
   {
@@ -287,7 +287,7 @@ export const allArticles = [
     title: "Anak Pilih-pilih Makanan? Ini Solusinya",
     author: "dr. Budi",
     date: "3 hari lalu",
-    img: "https://images.unsplash.com/photo-1566454544259-f4b94c3d758c?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/8119991/pexels-photo-8119991.jpeg",
     desc: "Fase Picky Eater sering terjadi pada batita. Moms perlu kreativitas ekstra.",
     steps: [
       "Jangan paksa anak makan",
@@ -302,7 +302,7 @@ export const allArticles = [
     title: "Mengatasi Gigitan Batita ke Temannya",
     author: "dr. Siska",
     date: "4 hari lalu",
-    img: "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/5096292/pexels-photo-5096292.jpeg",
     desc: "Batita menggigit karena belum bisa bicara (frustasi). Ajarkan ekspresi emosi.",
     steps: [
       "Beritahu 'Gigi untuk makan'",
@@ -317,7 +317,7 @@ export const allArticles = [
     title: "Manfaat Bermain Sensory Bin",
     author: "dr. Sari",
     date: "1 minggu lalu",
-    img: "https://images.unsplash.com/photo-1513159419869-16d4219614c1?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/3933271/pexels-photo-3933271.jpeg",
     desc: "Bermain beras, kacang, atau air membantu motorik halus dan konsentrasi anak.",
     steps: [
       "Siapkan wadah besar",
@@ -332,7 +332,7 @@ export const allArticles = [
     title: "Tips Sukses Toilet Training",
     author: "dr. Siska",
     date: "2 minggu lalu",
-    img: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/7086464/pexels-photo-7086464.jpeg",
     desc: "Melepas popok adalah langkah besar kemandirian. Mulailah saat anak sudah siap secara fisik.",
     steps: [
       "Gunakan pispot menarik",
@@ -347,7 +347,7 @@ export const allArticles = [
     title: "Menghadapi Tantrum di Depan Umum",
     author: "dr. Budi",
     date: "1 bulan lalu",
-    img: "https://images.unsplash.com/photo-1591522810850-58128c5fb089?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/7743765/pexels-photo-7743765.jpeg",
     desc: "Jangan panik saat si kecil mengamuk di supermarket. Tetap tenang adalah kuncinya.",
     steps: [
       "Bawa ke tempat tenang",
@@ -364,7 +364,7 @@ export const allArticles = [
     title: "Aktivitas Motorik Kasar di Rumah",
     author: "dr. Sari",
     date: "6 hari lalu",
-    img: "https://images.unsplash.com/photo-1516627144065-aba326eeecdf?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/4934167/pexels-photo-4934167.jpeg",
     desc: "Melatih motorik kasar membantu balita mengontrol gerakan tubuh dan keseimbangan.",
     steps: [
       "Bermain jalur selotip",
@@ -379,7 +379,7 @@ export const allArticles = [
     title: "Mengajarkan Sopan Santun Sederhana",
     author: "dr. Budi",
     date: "1 minggu lalu",
-    img: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/7705705/pexels-photo-7705705.jpeg",
     desc: "Kata 'Tolong', 'Maaf', dan 'Terima Kasih' harus dicontohkan langsung oleh orang tua.",
     steps: [
       "Jadilah teladan utama",
@@ -394,7 +394,7 @@ export const allArticles = [
     title: "Kenapa Anak Suka Bertanya 'Kenapa?'",
     author: "dr. Sari",
     date: "2 minggu lalu",
-    img: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/16117754/pexels-photo-16117754.jpeg",
     desc: "Ini adalah masa 'Golden Age' rasa ingin tahu. Jawablah dengan jujur dan sederhana.",
     steps: [
       "Jangan matikan rasa ingin tahu",
@@ -409,7 +409,7 @@ export const allArticles = [
     title: "Membatasi Screen Time pada Balita",
     author: "dr. Siska",
     date: "3 minggu lalu",
-    img: "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/9146098/pexels-photo-9146098.png",
     desc: "Terlalu banyak gadget bisa menghambat bicara. Tetapkan aturan waktu yang tegas.",
     steps: [
       "Maksimal 1 jam sehari",
@@ -426,7 +426,7 @@ export const allArticles = [
     title: "Cara Menyiapkan Mental Anak Masuk TK",
     author: "dr. Siska",
     date: "1 minggu lalu",
-    img: "https://images.unsplash.com/photo-1503676260728-1c00da096a0b?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/8422164/pexels-photo-8422164.jpeg",
     desc: "Sekolah pertama adalah langkah besar. Bantu si kecil agar tidak merasa cemas.",
     steps: [
       "Ceritakan hal seru di sekolah",
@@ -441,7 +441,7 @@ export const allArticles = [
     title: "Melatih Kemandirian Memakai Baju",
     author: "dr. Sari",
     date: "2 minggu lalu",
-    img: "https://images.unsplash.com/photo-1594608661623-aa0bd3a69d98?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/4933858/pexels-photo-4933858.jpeg",
     desc: "Bantu anak merasa percaya diri dengan mengajarinya berpakaian sendiri tanpa bantuan.",
     steps: [
       "Pilih baju tanpa kancing sulit",
@@ -456,7 +456,7 @@ export const allArticles = [
     title: "Mengembangkan Bakat Seni Sejak Dini",
     author: "dr. Budi",
     date: "1 bulan lalu",
-    img: "https://images.unsplash.com/photo-1460518451285-97b6aa326961?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/7898617/pexels-photo-7898617.jpeg",
     desc: "Mencoret-coret dan mewarnai bukan sekadar main, tapi ekspresi emosi dan kreatifitas.",
     steps: [
       "Sediakan kertas dan krayon",
@@ -473,7 +473,7 @@ export const allArticles = [
     title: "Menjaga Kesehatan Mata di Era Digital",
     author: "dr. Budi",
     date: "3 minggu lalu",
-    img: "https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/9786302/pexels-photo-9786302.jpeg",
     desc: "Anak usia sekolah sering terpapar layar. Moms harus membatasi durasi agar mata sehat.",
     steps: [
       "Aturan 20-20-20",
@@ -488,7 +488,7 @@ export const allArticles = [
     title: "Cara Menghadapi Anak Malas Belajar",
     author: "dr. Budi",
     date: "1 bulan lalu",
-    img: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/4172984/pexels-photo-4172984.jpeg",
     desc: "Cari tahu penyebabnya, apakah bosan, terlalu sulit, atau ada masalah dengan teman.",
     steps: [
       "Buat suasana belajar nyaman",
@@ -503,7 +503,7 @@ export const allArticles = [
     title: "Pentingnya Olahraga bagi Fokus Anak",
     author: "dr. Sari",
     date: "2 bulan lalu",
-    img: "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/2462041/pexels-photo-2462041.jpeg",
     desc: "Aktivitas fisik meningkatkan oksigen ke otak, membuat anak lebih mudah berkonsentrasi.",
     steps: [
       "Ajak bersepeda sore",
@@ -518,7 +518,7 @@ export const allArticles = [
     title: "Membangun Kepercayaan Diri di Sekolah",
     author: "dr. Siska",
     date: "3 bulan lalu",
-    img: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&q=80&w=800",
+    img: "https://images.pexels.com/photos/10646599/pexels-photo-10646599.jpeg",
     desc: "Anak yang percaya diri akan lebih berprestasi dan terhindar dari perilaku bullying.",
     steps: [
       "Fokus pada kelebihan anak",

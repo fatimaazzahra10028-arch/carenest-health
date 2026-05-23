@@ -7,7 +7,10 @@ import {
   CaretLeft, Lightbulb
 } from "@phosphor-icons/react";
 
-const AIChatModal = ({ isOpen, onClose, user }) => {
+// Mengimpor data artikel asli dari blogData
+import { allArticles } from "../../data/blogData"; 
+
+const AIChatModal = ({ isOpen, onClose, user, onArticleClick }) => {
   const [view, setView] = useState("chat"); 
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
@@ -25,25 +28,15 @@ const AIChatModal = ({ isOpen, onClose, user }) => {
     "Posisi gendong M-Shape"
   ];
 
-  const articleDb = [
-    { 
-      id: 1, 
-      tags: ["tali pusar", "pusar", "newborn", "infeksi"], 
-      title: "Perawatan Tali Pusar Bayi Baru Lahir", 
-      link: "/blog/1",
-      proAnswer: "Untuk perawatan tali pusar, kuncinya adalah 'dry care'. Biarkan area pusar kering secara alami, jangan gunakan alkohol atau bedak."
-    },
-    { 
-      id: 13, 
-      tags: ["kuning", "ikterus", "bayi kuning"], 
-      title: "Mengenali Tanda Bayi Kuning", 
-      link: "/blog/13",
-      proAnswer: "Bayi kuning wajar terjadi di minggu pertama. Pastikan si kecil menyusu 8-12 kali sehari untuk membantu membuang bilirubin."
-    },
-    // ... data lainnya
-  ];
+  // Mentransformasikan data artikel asli agar kompatibel dengan kebutuhan bot (proAnswer & link)
+  const articleDb = allArticles.map((art) => ({
+    ...art,
+    link: `/blog/${art.id}`,
+    proAnswer: art.desc
+  }));
 
-  const fuse = new Fuse(articleDb, { keys: ["tags", "title"], threshold: 0.4 });
+  // Konfigurasi FuseJS disesuaikan dengan key dari data asli (title & desc)
+  const fuse = new Fuse(articleDb, { keys: ["title", "desc"], threshold: 0.5 });
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -154,10 +147,17 @@ const AIChatModal = ({ isOpen, onClose, user }) => {
                   <div className="pt-4 space-y-2">
                     <p className="text-[10px] font-black text-text-muted uppercase tracking-widest px-2">Rekomendasi Artikel:</p>
                     {suggestions.map((art, i) => (
-                      <a key={i} href={art.link} className="flex items-center justify-between p-4 bg-card border border-border-soft rounded-2xl hover:shadow-md transition-all group">
+                      <button 
+                        key={i} 
+                        onClick={() => {
+                          onArticleClick(art); // Memicu perubahan state activeArticle di App.jsx
+                          onClose();           // Otomatis menutup modal AI Chat
+                        }}
+                        className="w-full flex items-center justify-between p-4 bg-card border border-border-soft rounded-2xl hover:shadow-md transition-all group text-left"
+                      >
                         <span className="text-xs font-bold text-text-main group-hover:text-primary transition-colors">{art.title}</span>
-                        <CaretRight size={16} className="text-primary" />
-                      </a>
+                        <CaretRight size={16} className="text-primary flex-shrink-0" />
+                      </button>
                     ))}
                   </div>
                 )}
@@ -176,7 +176,13 @@ const AIChatModal = ({ isOpen, onClose, user }) => {
                     <input type="text" placeholder="Usia si kecil (contoh: 6 bulan)" className="w-full p-4 bg-card rounded-2xl outline-none border border-border-soft text-sm text-text-main focus:border-primary transition-all" onChange={(e) => setConsultData({...consultData, age: e.target.value})} />
                     <textarea placeholder="Keluhan utama Moms..." rows="3" className="w-full p-4 bg-card rounded-2xl outline-none border border-border-soft text-sm text-text-main focus:border-primary transition-all resize-none" onChange={(e) => setConsultData({...consultData, symptom: e.target.value})} />
                  </div>
-                 <button onClick={() => window.open(`https://wa.me/628123456789?text=Halo dokter...`, "_blank")} className="w-full bg-green-500 hover:bg-green-600 text-white p-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-green-500/20 transition-all active:scale-95">
+                 <button 
+                  onClick={() => {
+                    const text = encodeURIComponent(`Halo Dokter, saya ingin berkonsultasi.\n\nUsia Anak: ${consultData.age}\nKeluhan: ${consultData.symptom}`);
+                    window.open(`https://wa.me/628123456789?text=${text}`, "_blank");
+                  }} 
+                  className="w-full bg-green-500 hover:bg-green-600 text-white p-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-green-500/20 transition-all active:scale-95"
+                 >
                     <WhatsappLogo size={24} weight="fill" /> Kirim ke WhatsApp
                  </button>
               </div>
