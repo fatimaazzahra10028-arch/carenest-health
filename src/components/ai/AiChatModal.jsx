@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Fuse from "fuse.js";
-import { 
-  Robot, X, WhatsappLogo, CaretRight, 
-  PaperPlaneRight, Stethoscope,
-  CaretLeft, Lightbulb
+import {
+  Robot,
+  X,
+  WhatsappLogo,
+  CaretRight,
+  PaperPlaneRight,
+  Stethoscope,
+  CaretLeft,
+  Lightbulb,
 } from "@phosphor-icons/react";
 
 // Mengimpor data artikel asli dari blogData
@@ -25,7 +30,7 @@ const AIChatModal = ({ isOpen, onClose, user, onArticleClick }) => {
     "Tanda bayi kuning?",
     "Tips MPASI 6 bulan",
     "Anak susah makan",
-    "Posisi gendong M-Shape"
+    "Posisi gendong M-Shape",
   ];
 
   // Mentransformasikan data artikel asli agar kompatibel dengan kebutuhan bot (proAnswer & link)
@@ -40,7 +45,10 @@ const AIChatModal = ({ isOpen, onClose, user, onArticleClick }) => {
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
     }
   }, [messages, isTyping]);
 
@@ -50,10 +58,12 @@ const AIChatModal = ({ isOpen, onClose, user, onArticleClick }) => {
       setSuggestions([]);
       setView("chat");
     } else {
-      setMessages([{ 
-        role: "bot", 
-        content: `Halo Moms ${user?.name || "Putri"}! ✨ Ada yang ingin ditanyakan seputar kesehatan si kecil hari ini?` 
-      }]);
+      setMessages([
+        {
+          role: "bot",
+          content: `Halo Moms ${user?.name || "Putri"}! ✨ Ada yang ingin ditanyakan seputar kesehatan si kecil hari ini?`,
+        },
+      ]);
     }
   }, [isOpen, user]);
 
@@ -66,13 +76,20 @@ const AIChatModal = ({ isOpen, onClose, user, onArticleClick }) => {
       const searchResults = fuse.search(text.toLowerCase());
       if (searchResults.length > 0) {
         const bestMatch = searchResults[0].item;
-        setMessages((prev) => [...prev, { role: "bot", content: bestMatch.proAnswer }]);
-        setSuggestions(searchResults.map(r => r.item));
+        setMessages((prev) => [
+          ...prev,
+          { role: "bot", content: bestMatch.proAnswer },
+        ]);
+        setSuggestions(searchResults.map((r) => r.item));
       } else {
-        setMessages((prev) => [...prev, { 
-          role: "bot", 
-          content: "Mohon maaf Moms, saya belum menemukan jawaban spesifik. Tapi Moms bisa coba konsultasi langsung dengan dokter spesialis kami." 
-        }]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "bot",
+            content:
+              "Mohon maaf Moms, saya belum menemukan jawaban spesifik. Tapi Moms bisa coba konsultasi langsung dengan dokter spesialis kami.",
+          },
+        ]);
       }
       setIsTyping(false);
     }, 1200);
@@ -90,38 +107,57 @@ const AIChatModal = ({ isOpen, onClose, user, onArticleClick }) => {
   return (
     <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/20 dark:bg-black/40 backdrop-blur-md p-4 font-outfit">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
         className="bg-card w-full max-w-lg h-[85vh] rounded-[2.5rem] shadow-soft overflow-hidden flex flex-col border border-border-soft transition-colors duration-500"
       >
         {/* Header - Menggunakan text-text-main */}
         <div className="p-6 flex justify-between items-center border-b border-border-soft">
           <div className="flex items-center gap-3">
-            {view === "form" && <CaretLeft size={24} onClick={() => setView("chat")} className="cursor-pointer text-text-main" />}
+            {view === "form" && (
+              <CaretLeft
+                size={24}
+                onClick={() => setView("chat")}
+                className="cursor-pointer text-text-main"
+              />
+            )}
             <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
               <Robot size={28} weight="duotone" />
             </div>
             <div>
-              <h3 className="font-bold text-text-main text-lg leading-none">MomsBot Expert</h3>
-              <p className="text-[10px] text-green-500 font-black uppercase tracking-widest mt-1">● Online</p>
+              <h3 className="font-bold text-text-main text-lg leading-none">
+              </h3>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-bg rounded-full transition-colors">
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-bg rounded-full transition-colors"
+          >
             <X size={24} className="text-text-muted" />
           </button>
         </div>
 
-        {/* Chat Area - Menggunakan bg-bg untuk kontras chat bubble */}
-        <div className="flex-grow p-6 overflow-y-auto bg-bg/50 space-y-6 scrollbar-hide" ref={scrollRef}>
+        <div
+          className="flex-grow p-6 overflow-y-auto bg-bg/50 space-y-6 scrollbar-hide"
+          ref={scrollRef}
+        >
           <AnimatePresence>
             {view === "chat" ? (
               <>
                 {messages.map((msg, i) => (
-                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} key={i} className={`flex ${msg.role === "bot" ? "justify-start" : "justify-end"}`}>
-                    <div className={`max-w-[85%] px-5 py-3.5 text-sm leading-relaxed shadow-soft ${
-                      msg.role === "bot" 
-                      ? "bg-card rounded-3xl rounded-bl-none text-text-main border border-border-soft" 
-                      : "bg-primary text-white rounded-3xl rounded-br-none shadow-primary/20"
-                    }`}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    key={i}
+                    className={`flex ${msg.role === "bot" ? "justify-start" : "justify-end"}`}
+                  >
+                    <div
+                      className={`max-w-[85%] px-5 py-3.5 text-sm leading-relaxed shadow-soft ${
+                        msg.role === "bot"
+                          ? "bg-card rounded-3xl rounded-bl-none text-text-main border border-border-soft"
+                          : "bg-primary text-white rounded-3xl rounded-br-none shadow-primary/20"
+                      }`}
+                    >
                       {msg.content}
                     </div>
                   </motion.div>
@@ -130,22 +166,33 @@ const AIChatModal = ({ isOpen, onClose, user, onArticleClick }) => {
                 {messages.length === 1 && (
                   <div className="flex flex-wrap gap-2 mt-4">
                     {quickQuestions.map((q, i) => (
-                      <button 
-                        key={i} onClick={() => processChat(q)}
+                      <button
+                        key={i}
+                        onClick={() => processChat(q)}
                         className="text-[11px] font-bold bg-card border border-border-soft text-text-muted px-4 py-2.5 rounded-full hover:border-primary hover:text-primary transition-all flex items-center gap-2 shadow-sm"
                       >
-                        <Lightbulb size={14} weight="fill" className="text-amber-400" />
+                        <Lightbulb
+                          size={14}
+                          weight="fill"
+                          className="text-amber-400"
+                        />
                         {q}
                       </button>
                     ))}
                   </div>
                 )}
 
-                {isTyping && <div className="text-xs text-primary font-bold animate-pulse ml-2 italic">MomsBot sedang mengetik...</div>}
+                {isTyping && (
+                  <div className="text-xs text-primary font-bold animate-pulse ml-2 italic">
+                    MomsBot sedang mengetik...
+                  </div>
+                )}
 
                 {suggestions.length > 0 && (
                   <div className="pt-4 space-y-2">
-                    <p className="text-[10px] font-black text-text-muted uppercase tracking-widest px-2">Rekomendasi Artikel:</p>
+                    <p className="text-[10px] font-black text-text-muted uppercase tracking-widest px-2">
+                      Rekomendasi Artikel:
+                    </p>
                     {suggestions.map((art, i) => (
                       <button 
                         key={i} 
@@ -163,7 +210,6 @@ const AIChatModal = ({ isOpen, onClose, user, onArticleClick }) => {
                 )}
               </>
             ) : (
-              /* Form View - Menggunakan variabel input */
               <div className="p-4 text-center space-y-6">
                  <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary">
                     <Stethoscope size={40} weight="duotone" />
@@ -190,22 +236,28 @@ const AIChatModal = ({ isOpen, onClose, user, onArticleClick }) => {
           </AnimatePresence>
         </div>
 
-        {/* Footer Input - Border-t menggunakan border-soft */}
         <div className="p-6 bg-card border-t border-border-soft">
           <form onSubmit={handleSendMessage} className="flex gap-3">
-            <input 
-              value={inputValue} 
+            <input
+              value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Tanya MomsBot..." 
+              placeholder="Tanya MomsBot..."
               className="flex-grow p-4 bg-bg rounded-2xl text-sm outline-none border border-border-soft focus:ring-2 focus:ring-primary/20 text-text-main placeholder:text-text-muted transition-all"
             />
-            <button type="submit" className="bg-primary p-4 rounded-2xl text-white shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+            <button
+              type="submit"
+              className="bg-primary p-4 rounded-2xl text-white shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+            >
               <PaperPlaneRight size={22} weight="fill" />
             </button>
           </form>
           {view === "chat" && (
-            <button onClick={() => setView("form")} className="w-full mt-4 text-[11px] font-bold text-text-muted hover:text-primary flex items-center justify-center gap-2 transition-colors">
-              <Stethoscope size={16} /> Butuh bantuan dokter spesialis? Klik di sini
+            <button
+              onClick={() => setView("form")}
+              className="w-full mt-4 text-[11px] font-bold text-text-muted hover:text-primary flex items-center justify-center gap-2 transition-colors"
+            >
+              <Stethoscope size={16} /> Butuh bantuan dokter spesialis? Klik di
+              sini
             </button>
           )}
         </div>

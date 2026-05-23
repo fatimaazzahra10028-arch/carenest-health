@@ -1,22 +1,21 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  // Ambil data user dari localStorage saat inisialisasi
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('moms_user');
+    const savedUser = localStorage.getItem("moms_user");
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem('moms_user', JSON.stringify(userData));
+    localStorage.setItem("moms_user", JSON.stringify(userData));
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('moms_user');
+    localStorage.removeItem("moms_user");
   };
 
   return (
